@@ -1,0 +1,2434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Gugut Children's Library</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦉</text></svg>">
+<meta name="theme-color" content="#142B1A">
+<meta name="description" content="Gugut Montessori — multilingual children's books in Amharic, Oromiffa, Tigrinya, Somali &amp; Wolaytta">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  /* ── GUGUT BRAND PALETTE (extracted from official logo) ── */
+  --green-dark:#142B1A;   /* very dark forest – nav bg, header */
+  --green:#2D7030;        /* Gugut primary green – owl body */
+  --green-mid:#3D9040;    /* mid green – hover, secondary */
+  --green-light:#6BBF6B;  /* light green – subtle accents */
+  --green-pale:#E2F2E2;   /* pale green – tag backgrounds */
+  --amber:#F5C020;        /* Gugut YELLOW-GOLD – CTAs, wordmark accent */
+  --amber-dark:#C9A010;   /* darker gold – hover state */
+  --cream:#F8FDF8;        /* near-white with green tint */
+  --sand:#FFFBE6;         /* warm yellow-tint – secondary tags */
+  --brown:#4A3210;        /* deep warm brown */
+  --text:#1C1C1C;--text-mid:#444;--text-light:#888;
+  --shadow:0 4px 24px rgba(0,0,0,.10);--radius:16px;
+  --bg:var(--cream);--card-bg:#fff;--border:#deeede;--bar-bg:#fff;
+}
+body.night{
+  --bg:#0F1117;--card-bg:#1A1D27;--border:#2a2d3a;--bar-bg:#13151f;--cream:#0F1117;
+  --text:#E8EAF6;--text-mid:#9FA8DA;--text-light:#8892B0;--sand:#1e2030;
+}
+body{font-family:'Nunito',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s;}
+:focus-visible{outline:2.5px solid var(--amber);outline-offset:2px;border-radius:4px;}
+button:focus-visible{outline:2.5px solid var(--amber);outline-offset:2px;}
+
+/* ── LAYOUT ── */
+.app{display:flex;flex-direction:column;min-height:100vh;}
+.view{display:none;flex:1;flex-direction:column;}
+.view.active{display:flex;}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--green-dark);color:#fff;padding:0 20px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25);}
+.topbar-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;height:60px;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;flex-shrink:0;padding:4px 0;}
+.logo-icon{width:38px;height:38px;background:var(--amber);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.logo h1{font-size:16px;font-weight:800;letter-spacing:.3px;}
+.logo span{font-size:10px;opacity:.65;letter-spacing:1px;text-transform:uppercase;display:block;}
+.topbar-search{flex:1;max-width:320px;position:relative;}
+.topbar-search input{width:100%;padding:8px 14px 8px 36px;border-radius:24px;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:13px;outline:none;}
+.topbar-search input::placeholder{color:rgba(255,255,255,.5);}
+.topbar-search .sico{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.55;font-size:14px;}
+.topbar-actions{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.tbtn{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.tbtn:hover{background:rgba(255,255,255,.15);}
+.tbtn.amber{background:var(--amber);color:var(--green-dark);font-size:13px;font-weight:800;padding:0 14px;width:auto;border-radius:24px;}
+.tbtn.amber:hover{background:var(--amber-dark);color:#fff;}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{background:var(--bar-bg);border-top:1px solid var(--border);display:flex;position:sticky;bottom:0;z-index:100;}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 12px;cursor:pointer;border:none;background:none;color:var(--text-light);font-size:10px;font-weight:600;letter-spacing:.3px;transition:color .2s;}
+.bnav-item .bico{font-size:20px;transition:transform .2s;}
+.bnav-item.active{color:var(--green);}
+.bnav-item.active .bico{transform:scale(1.15);}
+
+/* ── FILTERS ── */
+.filters{background:var(--bar-bg);border-bottom:1px solid var(--border);padding:0 16px;position:sticky;top:60px;z-index:90;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.filters::-webkit-scrollbar{display:none;}
+.filters-inner{display:flex;align-items:center;gap:8px;padding:10px 0;white-space:nowrap;min-width:max-content;}
+.flabel{font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-right:2px;}
+.fdiv{width:1px;height:20px;background:var(--border);flex-shrink:0;margin:0 4px;}
+.pill{padding:5px 13px;border-radius:24px;border:1.5px solid var(--border);background:var(--card-bg);font-size:12px;font-weight:600;cursor:pointer;color:var(--text-mid);transition:all .15s;white-space:nowrap;}
+.pill:hover{border-color:var(--green-mid);color:var(--green);}
+.pill.active{background:var(--green);border-color:var(--green);color:#fff;}
+
+/* ── SCROLL CONTAINER ── */
+.scroll{flex:1;overflow-y:auto;padding:20px 16px 24px;max-width:1200px;width:100%;margin:0 auto;}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,var(--green) 0%,var(--green-dark) 100%);border-radius:20px;color:#fff;padding:28px 24px;margin-bottom:24px;position:relative;overflow:hidden;}
+.hero::before{content:'🦉';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:80px;opacity:.12;}
+.hero h2{font-size:22px;font-weight:800;margin-bottom:6px;}
+.hero p{font-size:14px;opacity:.8;max-width:320px;line-height:1.5;margin-bottom:16px;}
+.hero-stats{display:flex;gap:20px;}
+.hstat-n{font-size:22px;font-weight:800;color:var(--amber);}
+.hstat-l{font-size:10px;opacity:.65;text-transform:uppercase;}
+
+/* ── SECTIONS ── */
+.section{margin-bottom:32px;}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--green-pale);}
+.section-hdr.plain{border-bottom:none;padding-bottom:0;}
+.section-icon{font-size:20px;margin-right:8px;}
+.section-title{font-size:16px;font-weight:700;color:var(--green-dark);}
+body.night .section-title{color:var(--green-light);}
+.section-sub{font-size:12px;color:var(--text-light);}
+.see-all{font-size:12px;color:var(--green-mid);font-weight:600;cursor:pointer;background:none;border:none;text-decoration:none;}
+
+/* ── BOOK GRID ── */
+.book-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
+
+/* ── BOOK CARD ── */
+.bcard{background:var(--card-bg);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 2px 8px rgba(0,0,0,.07);}
+.bcard:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
+.bcover{width:100%;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;overflow:hidden;}
+/* Shimmer pulse while thumbnail is loading */
+.bcover.thumb-loading::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 30%,rgba(255,255,255,.25) 50%,transparent 70%);background-size:200% 100%;animation:thumbShimmer 1.6s ease-in-out infinite;}
+@keyframes thumbShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* Fade in when thumbnail arrives */
+@keyframes thumbFadeIn{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:scale(1)}}
+.bcover.thumb-loaded{animation:thumbFadeIn .45s ease-out;}
+.c1{background:linear-gradient(145deg,#E8F5E9,#A5D6A7);}
+.c2{background:linear-gradient(145deg,#FFF3E0,#FFCC80);}
+.c3{background:linear-gradient(145deg,#E3F2FD,#90CAF9);}
+.c4{background:linear-gradient(145deg,#FCE4EC,#F48FB1);}
+.c5{background:linear-gradient(145deg,#F3E5F5,#CE93D8);}
+.c6{background:linear-gradient(145deg,#E0F2F1,#80CBC4);}
+.c7{background:linear-gradient(145deg,#FFF8E1,#FFE082);}
+.c8{background:linear-gradient(145deg,#E8EAF6,#9FA8DA);}
+.cover-overlay{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:700;padding:5px 8px;line-height:1.3;}
+.lang-badge{position:absolute;top:6px;left:6px;background:var(--green-dark);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:24px;}
+.fav-btn{position:absolute;top:6px;right:6px;background:rgba(255,255,255,.85);border:none;border-radius:50%;width:26px;height:26px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.fav-btn:hover{background:#fff;}
+.binfo{padding:10px 10px 12px;}
+.btitle{font-size:13px;font-weight:700;line-height:1.3;margin-bottom:3px;}
+.bmeta{display:flex;gap:5px;flex-wrap:wrap;}
+.tag{font-size:10px;padding:2px 7px;border-radius:24px;font-weight:600;}
+.tag-age{background:var(--green-pale);color:var(--green-dark);}
+.tag-lang{background:var(--sand);color:var(--brown);}
+body.night .tag-lang{background:#2a2030;color:#CE93D8;}
+
+/* ── FEATURED ── */
+.featured{background:linear-gradient(135deg,var(--green-dark),var(--green-mid));border-radius:18px;color:#fff;padding:20px;display:flex;gap:14px;cursor:pointer;margin-bottom:24px;transition:transform .2s;overflow:hidden;position:relative;}
+.featured:hover{transform:scale(1.01);}
+.featured::after{content:'✨';position:absolute;right:16px;top:12px;font-size:32px;opacity:.25;}
+.feat-emo{font-size:48px;flex-shrink:0;align-self:center;}
+.feat-text h3{font-size:17px;font-weight:800;margin-bottom:4px;}
+.feat-text p{font-size:12px;opacity:.8;margin-bottom:12px;line-height:1.5;}
+.feat-cta{display:inline-flex;align-items:center;gap:6px;background:var(--amber);color:var(--green-dark);border:none;padding:8px 16px;border-radius:24px;font-size:13px;font-weight:700;cursor:pointer;}
+
+/* ── HORIZONTAL SCROLL ROW ── */
+.hscroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;}
+.hscroll::-webkit-scrollbar{display:none;}
+.hscroll .bcard{min-width:140px;flex-shrink:0;}
+
+/* ── STREAK / STATS CARDS ── */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;}
+.stat-card{background:var(--card-bg);border-radius:14px;padding:14px 12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.stat-n{font-size:22px;font-weight:800;color:var(--green);}
+.stat-l{font-size:11px;color:var(--text-light);margin-top:2px;}
+.streak-card{background:linear-gradient(135deg,var(--amber-dark),var(--amber));color:var(--green-dark);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.streak-icon{font-size:32px;}
+.streak-text h4{font-size:15px;font-weight:800;}
+.streak-text p{font-size:12px;opacity:.85;}
+
+/* ── RECENTLY READ ── */
+.rr-item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--card-bg);border-radius:12px;cursor:pointer;transition:box-shadow .15s;margin-bottom:8px;}
+.rr-item:hover{box-shadow:var(--shadow);}
+.rr-emo{font-size:28px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px;flex-shrink:0;}
+.rr-info{flex:1;min-width:0;}
+.rr-title{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rr-meta{font-size:11px;color:var(--text-light);margin-top:2px;}
+.progress-bar{width:100%;height:4px;background:var(--green-pale);border-radius:4px;margin-top:6px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--green-mid);border-radius:4px;transition:width .3s;}
+
+/* ── READER MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:500;display:none;flex-direction:column;}
+.overlay.open{display:flex;}
+.reader-bar{background:var(--green-dark);padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+#pdfCanvas{user-select:none;-webkit-user-select:none;-moz-user-select:none;display:block;max-width:100%;}
+#pdfViewer{user-select:none;-webkit-user-select:none;min-height:0;}
+/* Transparent shield over the canvas blocks right-click "Save Image As" drag */
+#pdfShield{position:absolute;inset:0;z-index:2;cursor:default;}
+.reader-title{flex:1;min-width:0;}
+.reader-title h3{font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.reader-title p{font-size:11px;color:rgba(255,255,255,.6);margin-top:1px;}
+.ribtn{width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.15);color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .15s;flex-shrink:0;}
+.ribtn:hover{background:rgba(255,255,255,.25);}
+/* Audio button pulses when playing */
+.ribtn-audio{background:var(--amber);color:var(--green-dark);font-size:18px;width:38px;height:38px;}
+.ribtn-audio:hover{background:#ffca28;}
+.ribtn-audio.playing{animation:audioPulse 1.4s ease-in-out infinite;}
+@keyframes audioPulse{0%,100%{box-shadow:0 0 0 0 rgba(245,192,32,.6)}50%{box-shadow:0 0 0 8px rgba(245,192,32,0)}}
+.reader-body{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px 0;gap:16px;}
+/* PDF canvas scroll container */
+#pdfScrollArea{flex:1;min-height:0;overflow-y:auto;width:100%;display:flex;justify-content:center;align-items:flex-start;padding:16px;box-sizing:border-box;background:#1a1a1a;}
+/* PDF nav controls inside viewer */
+.pdf-nav{display:flex;align-items:center;gap:14px;padding:10px 16px;flex-shrink:0;background:#111;justify-content:center;width:100%;}
+.pdf-nav-btn{width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,.1);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.pdf-nav-btn:hover{background:rgba(255,255,255,.2);}
+.pdf-nav-btn:disabled{opacity:.25;cursor:default;}
+#pdfPageInd{color:#ccc;font-size:13px;min-width:80px;text-align:center;}
+#pdfLoadMsg{color:#aaa;font-size:14px;text-align:center;padding:60px 20px;}
+#pdfOpenTab{color:var(--amber);font-size:11px;text-decoration:none;margin-left:4px;opacity:.8;}
+
+/* Font size control */
+.font-sm .page-text{font-size:13px!important;}
+.font-md .page-text{font-size:16px!important;}
+.font-lg .page-text{font-size:20px!important;}
+.font-xl .page-text{font-size:24px!important;}
+
+.book-spread{display:flex;gap:3px;width:100%;max-width:700px;border-radius:14px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.5);}
+/* ── DRAMATIC 2-PHASE PAGE FLIP ── */
+/* Phase 1: current pages fold away to the left (like lifting a page) */
+@keyframes pageFlipOut{
+  0%  {transform:perspective(700px) rotateY(0deg) scale(1);opacity:1;}
+  100%{transform:perspective(700px) rotateY(-90deg) scale(0.88);opacity:0;}
+}
+/* Phase 1 backward: fold away to the right */
+@keyframes pageFlipOutBack{
+  0%  {transform:perspective(700px) rotateY(0deg) scale(1);opacity:1;}
+  100%{transform:perspective(700px) rotateY(90deg) scale(0.88);opacity:0;}
+}
+/* Phase 2: new pages arrive from the opposite side */
+@keyframes pageFlipIn{
+  0%  {transform:perspective(700px) rotateY(90deg) scale(0.88);opacity:0;}
+  100%{transform:perspective(700px) rotateY(0deg) scale(1);opacity:1;}
+}
+@keyframes pageFlipInBack{
+  0%  {transform:perspective(700px) rotateY(-90deg) scale(0.88);opacity:0;}
+  100%{transform:perspective(700px) rotateY(0deg) scale(1);opacity:1;}
+}
+.flip-out     {animation:pageFlipOut     0.22s ease-in  forwards;}
+.flip-out-back{animation:pageFlipOutBack 0.22s ease-in  forwards;}
+.flip-in      {animation:pageFlipIn      0.22s ease-out forwards;}
+.flip-in-back {animation:pageFlipInBack  0.22s ease-out forwards;}
+/* PDF page transition */
+@keyframes pdfFade{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:translateX(0)}}
+#pdfScrollArea.pdf-turn{animation:pdfFade .3s ease-out;}
+.page{flex:1;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;gap:10px;min-height:260px;}
+.page.right-p{background:#fafafa;}
+.page-emo{font-size:64px;line-height:1;}
+.page-text{font-size:16px;line-height:1.7;color:#333;text-align:center;font-family:Georgia,serif;transition:font-size .2s;}
+.page-local{font-size:17px;color:var(--green-dark);font-weight:600;text-align:center;margin-top:4px;}
+.page-num{font-size:11px;color:#aaa;margin-top:auto;}
+
+/* Highlight word during TTS */
+.highlight{background:var(--amber);color:var(--green-dark);border-radius:4px;padding:1px 3px;
+  transition:background .1s;font-weight:700;box-shadow:0 1px 4px rgba(245,192,32,.4);}
+/* PDF overlay text for word highlighting */
+#pdfTextOverlay{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;
+  display:flex;flex-wrap:wrap;align-content:flex-start;padding:12px;gap:0;z-index:3;
+  font-family:'Nunito',sans-serif;font-size:16px;color:transparent;}
+.tts-word{color:transparent;padding:1px 2px;border-radius:3px;transition:background .1s;}
+.tts-word.lit{background:rgba(245,192,32,.55);color:var(--green-dark);font-weight:700;}
+
+/* Audio controls */
+.audio-bar{background:#111;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.audio-play{width:44px;height:44px;border-radius:50%;border:none;background:var(--amber);color:var(--green-dark);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s;}
+.audio-play:hover{background:#ffb74d;}
+.audio-progress{flex:1;height:4px;background:rgba(255,255,255,.2);border-radius:4px;cursor:pointer;position:relative;}
+.audio-fill{height:100%;background:var(--amber);border-radius:4px;width:0%;transition:width .2s;}
+.audio-time{font-size:11px;color:rgba(255,255,255,.5);flex-shrink:0;min-width:60px;text-align:right;}
+.speed-btn{font-size:11px;font-weight:700;color:rgba(255,255,255,.7);background:rgba(255,255,255,.12);border:none;border-radius:12px;padding:4px 9px;cursor:pointer;}
+.speed-btn:hover{background:rgba(255,255,255,.2);}
+
+/* Nav controls */
+.reader-nav{display:flex;align-items:center;gap:14px;padding:12px 16px;flex-shrink:0;background:#000;justify-content:center;}
+.nav-btn{width:42px;height:42px;border-radius:50%;border:none;background:rgba(255,255,255,.1);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.nav-btn:hover{background:rgba(255,255,255,.2);}
+.nav-btn:disabled{opacity:.25;cursor:default;}
+.page-ind{color:rgba(255,255,255,.55);font-size:13px;min-width:80px;text-align:center;}
+
+/* Font size popover — positioned relative to the overlay (fixed), appears above the reader-bar */
+.font-popover{position:fixed;top:60px;right:16px;background:var(--green-dark);border-radius:14px;padding:12px;display:none;gap:8px;z-index:600;box-shadow:0 4px 20px rgba(0,0,0,.5);}
+.font-popover.open{display:flex;}
+.fsize-btn{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;font-weight:700;font-size:13px;transition:background .2s;}
+.fsize-btn:hover,.fsize-btn.active{background:var(--amber);color:var(--green-dark);}
+
+/* ── ADMIN ── */
+.admin-header{background:linear-gradient(135deg,var(--green-dark),#0d2b1d);padding:20px 16px;color:#fff;}
+.admin-header h2{font-size:18px;font-weight:800;margin-bottom:4px;}
+.admin-header p{font-size:13px;opacity:.7;}
+.admin-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px;}
+.astat{background:var(--card-bg);border-radius:12px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.astat-n{font-size:20px;font-weight:800;color:var(--green);}
+.astat-l{font-size:10px;color:var(--text-light);margin-top:2px;}
+.admin-section{padding:0 16px 20px;}
+.admin-section h3{font-size:14px;font-weight:700;color:var(--text-mid);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px;}
+.book-row{display:flex;align-items:center;gap:12px;background:var(--card-bg);border-radius:12px;padding:12px;margin-bottom:8px;box-shadow:0 1px 6px rgba(0,0,0,.06);}
+.br-emo{font-size:24px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:var(--green-pale);flex-shrink:0;}
+.br-info{flex:1;min-width:0;}
+.br-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.br-meta{font-size:11px;color:var(--text-light);margin-top:2px;}
+.br-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:24px;}
+.published{background:#E8F5E9;color:#2D6A4F;}
+.draft{background:#FFF3E0;color:#E65100;}
+.br-actions{display:flex;gap:6px;flex-shrink:0;}
+.abtn{border:none;border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;transition:background .2s;}
+.abtn-edit{background:var(--green-pale);color:var(--green-dark);}
+.abtn-del{background:#FCE4EC;color:#C62828;}
+.upload-card{background:linear-gradient(135deg,var(--green-pale),#b7e4c7);border:2px dashed var(--green-light);border-radius:16px;padding:24px;text-align:center;cursor:pointer;margin-bottom:16px;transition:background .2s;}
+.upload-card:hover{background:linear-gradient(135deg,#c8f0d8,#95d5b2);}
+.upload-card .uico{font-size:36px;margin-bottom:8px;}
+.upload-card p{font-size:14px;color:var(--green-dark);font-weight:600;}
+.upload-card span{font-size:12px;color:var(--green-mid);}
+.form-grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+.ff{display:flex;flex-direction:column;gap:4px;}
+.ff label{font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.3px;}
+.ff input,.ff select,.ff textarea{padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;background:var(--card-bg);color:var(--text);transition:border-color .2s;}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--green);}
+.ff.full{grid-column:1/-1;}
+.action-row{display:flex;gap:8px;margin-top:12px;justify-content:flex-end;}
+.btn-outline{padding:9px 18px;border:1.5px solid var(--border);border-radius:24px;background:var(--card-bg);color:var(--text-mid);font-size:13px;cursor:pointer;font-weight:600;}
+.btn-green{padding:9px 20px;border:none;border-radius:24px;background:var(--amber);color:var(--green-dark);font-size:13px;cursor:pointer;font-weight:800;transition:background .2s;font-family:'Nunito',sans-serif;}
+.btn-green:hover{background:var(--amber-dark);color:#fff;}
+.analytics-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.ana-card{background:var(--card-bg);border-radius:12px;padding:14px;box-shadow:0 1px 6px rgba(0,0,0,.06);}
+.ana-card h4{font-size:12px;font-weight:700;color:var(--text-light);text-transform:uppercase;margin-bottom:10px;}
+.ana-bar-row{margin-bottom:6px;}
+.ana-label{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px;}
+.ana-bar{height:6px;background:var(--green-pale);border-radius:4px;overflow:hidden;}
+.ana-fill{height:100%;background:var(--green-mid);border-radius:4px;}
+
+/* ── PROFILE ── */
+.profile-header{background:linear-gradient(135deg,var(--green-dark),var(--green));padding:28px 16px 20px;text-align:center;color:#fff;}
+.avatar{width:72px;height:72px;border-radius:50%;background:var(--amber);margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:36px;border:3px solid rgba(255,255,255,.3);}
+.profile-header h2{font-size:18px;font-weight:800;}
+.profile-header p{font-size:13px;opacity:.7;margin-top:3px;}
+.profile-body{padding:16px;}
+.badge-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;margin-bottom:20px;}
+.badge{text-align:center;flex-shrink:0;width:70px;}
+.badge-icon{width:52px;height:52px;border-radius:50%;margin:0 auto 5px;display:flex;align-items:center;justify-content:center;font-size:24px;}
+.badge-earned{background:linear-gradient(135deg,var(--amber-dark),var(--amber));}
+.badge-locked{background:var(--border);opacity:.5;}
+.badge-label{font-size:10px;font-weight:600;color:var(--text-mid);}
+.setting-row{display:flex;align-items:center;gap:12px;padding:14px;background:var(--card-bg);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:box-shadow .15s;}
+.setting-row:hover{box-shadow:var(--shadow);}
+.setting-icon{font-size:20px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;}
+.setting-info{flex:1;}
+.setting-title{font-size:14px;font-weight:600;}
+.setting-sub{font-size:12px;color:var(--text-light);margin-top:1px;}
+.toggle{width:44px;height:24px;background:var(--border);border-radius:24px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;}
+.toggle.on{background:var(--green);}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s;}
+.toggle.on::after{left:23px;}
+.fav-section{margin-bottom:20px;}
+.fav-section h3{font-size:14px;font-weight:700;color:var(--green-dark);margin-bottom:10px;}
+body.night .fav-section h3{color:var(--green-light);}
+
+/* ── UPLOAD MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:800;display:none;align-items:flex-end;justify-content:center;padding:0;}
+.modal-overlay.open{display:flex;}
+.modal-sheet{background:var(--card-bg);border-radius:24px 24px 0 0;padding:24px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;}
+.modal-sheet h3{font-size:18px;font-weight:800;margin-bottom:4px;color:var(--green-dark);}
+body.night .modal-sheet h3{color:var(--green-light);}
+.modal-sheet>p{font-size:13px;color:var(--text-light);margin-bottom:16px;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--green-dark);color:#fff;padding:11px 20px;border-radius:30px;font-size:13px;font-weight:600;box-shadow:var(--shadow);z-index:9999;opacity:0;transition:opacity .3s,transform .3s;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:48px 24px;color:var(--text-light);}
+.empty .eico{font-size:56px;margin-bottom:12px;}
+.empty h3{font-size:18px;font-weight:700;color:var(--text-mid);margin-bottom:6px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:500px){
+  .book-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
+  .book-spread{flex-direction:column;}
+  .page.right-p{border-top:1px solid #eee;}
+  .hero h2{font-size:18px;}
+}
+</style>
+</head>
+<body class="font-md">
+<!-- ⚠️ File:// protocol — auto-redirect to localhost -->
+<div id="fileBanner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#e65100;color:#fff;padding:14px 20px;font-family:Nunito,sans-serif;font-size:14px;font-weight:700;text-align:center;box-shadow:0 3px 12px rgba(0,0,0,.3);">
+  ⚠️ Books can't load from here. &nbsp;
+  <button onclick="location.href='http://localhost:8765/gugut-library-v3.html'" style="background:#fff;color:#e65100;border:none;padding:6px 16px;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px;">▶ Open with Launcher</button>
+  &nbsp;&nbsp;
+  <span style="font-size:12px;opacity:0.85">or double-click <em>Start Gugut Library.command</em> first</span>
+</div>
+<script>
+if(location.protocol === 'file:') {
+  const fb = document.getElementById('fileBanner');
+  fb.style.display = 'block';
+  // Pad the sticky topbar down so it doesn't hide under the banner
+  document.querySelector('.topbar').style.top = '52px';
+  // Auto-redirect if the local server is running
+  fetch('http://localhost:8765/gugut-library-v3.html', {method:'HEAD', mode:'no-cors'})
+    .then(() => {
+      fb.innerHTML = '✅ Local server found — redirecting… <small style="opacity:.75">(or click: <a href="http://localhost:8765/gugut-library-v3.html" style="color:#fff">open</a>)</small>';
+      setTimeout(() => { location.href = 'http://localhost:8765/gugut-library-v3.html'; }, 1500);
+    }).catch(() => {
+      fb.innerHTML = '⚠️ <strong>Books can\'t load from here.</strong> &nbsp; <button onclick="location.href=\'http://localhost:8765/gugut-library-v3.html\'" style="background:#fff;color:#e65100;border:none;padding:5px 14px;border-radius:8px;cursor:pointer;font-weight:800;font-size:13px;">▶ Open with Launcher</button> &nbsp; <small style="opacity:.8">or run <em>Start Gugut Library.command</em> first</small>';
+    });
+}
+</script>
+
+
+<div class="app">
+
+<!-- ══════════════════════════════════
+     TOP BAR
+══════════════════════════════════ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="#" class="logo" onclick="handleLogoTap();return false;">
+      <img id="logoImg" src="gugut%20logo%20wide.png" alt="Gugut Montessori" style="height:42px;width:auto;display:block;"
+        onerror="this.onerror=null;this.src='gugut%20logo.png';this.onerror=function(){this.onerror=null;this.style.display='none';document.getElementById('logoFallback').style.display='flex';};" />
+      <div id="logoFallback" style="display:none;align-items:center;gap:8px;">
+        <div class="logo-icon">🦉</div>
+        <div><h1>Gugut</h1><span>Library</span></div>
+      </div>
+    </a>
+    <div class="topbar-search" id="searchWrap">
+      <span class="sico">🔍</span>
+      <input type="text" placeholder="Search books…" id="searchInput" oninput="handleSearch()"/>
+    </div>
+    <div class="topbar-actions">
+      <button class="tbtn" onclick="toggleNight()" title="Night mode" id="nightBtn" aria-label="Toggle night mode">🌙</button>
+      <button class="tbtn amber" id="addBookBtn" onclick="openUpload()" style="display:none">＋ Add Book</button>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════
+     LIBRARY VIEW
+══════════════════════════════════ -->
+<div class="view active" id="view-library">
+  <div class="filters">
+    <div class="filters-inner">
+      <span class="flabel">Lang</span>
+      <button class="pill active" data-lang="all" onclick="setLang(this,'all')">All</button>
+      <button class="pill" data-lang="Amharic" onclick="setLang(this,'Amharic')">አማርኛ</button>
+      <button class="pill" data-lang="Oromiffa" onclick="setLang(this,'Oromiffa')">Oromiffa</button>
+      <button class="pill" data-lang="Tigrinya" onclick="setLang(this,'Tigrinya')">ትግርኛ</button>
+      <button class="pill" data-lang="Somali" onclick="setLang(this,'Somali')">Soomaali</button>
+      <button class="pill" data-lang="Wolaytta" onclick="setLang(this,'Wolaytta')">Wolaytta</button>
+      <div class="fdiv"></div>
+      <span class="flabel">Stage</span>
+      <button class="pill active" data-age="all" onclick="setAge(this,'all')">All</button>
+      <button class="pill" data-age="0-3" onclick="setAge(this,'0-3')" title="Ages 0–3">⭐</button>
+      <button class="pill" data-age="3-6" onclick="setAge(this,'3-6')" title="Ages 3–6">⭐⭐</button>
+      <button class="pill" data-age="6-9" onclick="setAge(this,'6-9')" title="Ages 6–9">⭐⭐⭐</button>
+    </div>
+  </div>
+  <div class="scroll" id="libraryScroll">
+    <div id="libraryContent"></div>
+    <div class="empty" id="emptyState" style="display:none">
+      <div class="eico">🔍</div>
+      <h3 id="emptyTitle">No books found</h3>
+      <p id="emptyMsg">Try a different filter or search term.</p>
+      <button onclick="activeLang='all';activeAge='all';searchQ='';document.getElementById('searchInput').value='';renderLibrary();" style="margin-top:12px;background:var(--green);color:#fff;border:none;border-radius:20px;padding:8px 20px;font-weight:700;cursor:pointer;font-size:13px;">Clear filters</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     MY BOOKS VIEW
+══════════════════════════════════ -->
+<div class="view" id="view-mybooks">
+  <div class="scroll">
+    <div class="streak-card">
+      <div class="streak-icon" id="streakIcon">📖</div>
+      <div class="streak-text">
+        <h4 id="streakTitle">Start your reading streak!</h4>
+        <p id="streakSub">Read a book to begin your streak 🦉</p>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-n" id="statBooksRead">0</div><div class="stat-l">Books Read</div></div>
+      <div class="stat-card"><div class="stat-n" id="statFavs">0</div><div class="stat-l">Favourites</div></div>
+      <div class="stat-card"><div class="stat-n" id="statLanguages">0</div><div class="stat-l">Languages</div></div>
+    </div>
+    <div class="section">
+      <div class="section-hdr plain"><span class="section-title">📖 Continue Reading</span></div>
+      <div id="continueReading"></div>
+    </div>
+    <div class="section">
+      <div class="section-hdr plain"><span class="section-title">❤️ Favourites</span></div>
+      <div id="favBooks"></div>
+    </div>
+    <div class="section">
+      <div class="section-hdr plain"><span class="section-title">⬇️ Downloaded for Offline</span></div>
+      <div class="rr-item" onclick="showToast('📥 Offline reading coming in the full app!')">
+        <div class="rr-emo c1">🌧️</div>
+        <div class="rr-info">
+          <div class="rr-title">Liya and the Rain</div>
+          <div class="rr-meta">Amharic · Ages 3–6 · Saved offline</div>
+        </div>
+        <span style="color:var(--green-mid);font-size:12px;font-weight:700;">✓ Saved</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     ADMIN VIEW
+══════════════════════════════════ -->
+<div class="view" id="view-admin">
+  <div class="scroll" style="padding:0;">
+    <div class="admin-header">
+      <h2>🛠 Admin Dashboard</h2>
+      <p>Manage your Gugut Children's Library</p>
+    </div>
+    <div class="admin-stats">
+      <div class="astat"><div class="astat-n">8</div><div class="astat-l">Total Books</div></div>
+      <div class="astat"><div class="astat-n">342</div><div class="astat-l">Readers</div></div>
+      <div class="astat"><div class="astat-n">1.2k</div><div class="astat-l">Reads This Month</div></div>
+    </div>
+    <div class="admin-section">
+      <div class="analytics-row">
+        <div class="ana-card">
+          <h4>Top Languages</h4>
+          <div class="ana-bar-row">
+            <div class="ana-label"><span>Amharic</span><span>48%</span></div>
+            <div class="ana-bar"><div class="ana-fill" style="width:48%"></div></div>
+          </div>
+          <div class="ana-bar-row">
+            <div class="ana-label"><span>Oromiffa</span><span>28%</span></div>
+            <div class="ana-bar"><div class="ana-fill" style="width:28%"></div></div>
+          </div>
+          <div class="ana-bar-row">
+            <div class="ana-label"><span>Tigrinya</span><span>14%</span></div>
+            <div class="ana-bar"><div class="ana-fill" style="width:14%"></div></div>
+          </div>
+          <div class="ana-bar-row">
+            <div class="ana-label"><span>Other</span><span>10%</span></div>
+            <div class="ana-bar"><div class="ana-fill" style="width:10%"></div></div>
+          </div>
+        </div>
+        <div class="ana-card">
+          <h4>Top Age Bands</h4>
+          <div class="ana-bar-row">
+            <div class="ana-label"><span>Ages 3–6</span><span>55%</span></div>
+            <div class="ana-bar"><div class="ana-fill" style="width:55%"></div></div>
+          </div>
+          <div class="ana-bar-row">
+            <div class="ana-label"><span>Ages 6–9</span><span>30%</span></div>
+            <div class="ana-bar"><div class="ana-fill" style="width:30%"></div></div>
+          </div>
+          <div class="ana-bar-row">
+            <div class="ana-label"><span>Ages 0–3</span><span>15%</span></div>
+            <div class="ana-bar"><div class="ana-fill" style="width:15%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="admin-section">
+      <div class="upload-card" onclick="openUpload()">
+        <div class="uico">📤</div>
+        <p>Upload a New Book</p>
+        <span>PDF + audio file · Set language, age band & cover</span>
+      </div>
+    </div>
+    <div class="admin-section">
+      <h3>All Books</h3>
+      <div id="adminBookList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PROFILE VIEW
+══════════════════════════════════ -->
+<div class="view" id="view-profile">
+  <div class="scroll" style="padding:0;">    <div style="margin-bottom:24px;">
+      <h3 style="margin-bottom:12px;color:var(--green-dark);font-weight:700;">Reading Level</h3>
+      <div id="levelCard" style="background:linear-gradient(135deg,var(--green),var(--green-dark));color:#fff;border-radius:14px;padding:20px;text-align:center;margin-bottom:16px;">
+        <div style="font-size:48px;margin-bottom:8px;" id="levelEmoji">🌱</div>
+        <p style="font-size:16px;font-weight:800;margin:0 0 4px;" id="levelName">Seedling</p>
+        <p style="font-size:12px;opacity:.8;margin:0 0 12px;" id="levelLocal">ዘር</p>
+        <div style="width:100%;height:6px;background:rgba(255,255,255,.2);border-radius:4px;margin-bottom:8px;overflow:hidden;">
+          <div id="levelProgress" style="height:100%;background:var(--amber);width:0%;border-radius:4px;transition:width .3s;"></div>
+        </div>
+        <p style="font-size:11px;opacity:.7;margin:0;" id="levelText">0 books to next level</p>
+      </div>
+      
+      <div id="levelPathRow" style="display:flex;justify-content:space-around;align-items:flex-end;gap:4px;padding:12px 8px;background:var(--card-bg);border-radius:12px;overflow-x:auto;"></div>
+      <script>
+      (function(){
+        const row=document.getElementById('levelPathRow');
+        const completed=countCompletedBooks();
+        const current=getLevel();
+        levels.forEach(l=>{
+          const earned=completed>=l.books;
+          const isCurrent=l.level===current.level;
+          row.innerHTML+=`<div style="text-align:center;opacity:${earned?1:.4};flex-shrink:0;min-width:52px;">
+            <div style="font-size:${isCurrent?28:20}px;margin-bottom:3px;${isCurrent?'filter:drop-shadow(0 0 6px '+l.color+')':''}">${l.emoji}</div>
+            <p style="font-size:9px;color:var(--text-light);margin:0;font-weight:${isCurrent?700:400};">${l.name}</p>
+          </div>`;
+        });
+      })();
+      </script>
+    </div>
+    <div class="profile-header">
+      <div class="avatar">👩</div>
+      <h2>Sule's Library</h2>
+      <p>sshifaw@gmail.com · Parent & Admin</p>
+    </div>
+    <div class="profile-body">
+      <div class="section-hdr plain" style="margin-bottom:12px;"><span class="section-title">🏆 Badges Earned</span></div>
+      <div class="badge-row">
+        <div class="badge"><div class="badge-icon badge-locked" data-badge="first-read">🦉</div><div class="badge-label">First Read</div></div>
+        <div class="badge"><div class="badge-icon badge-locked" data-badge="streak3">🔥</div><div class="badge-label">3-Day Streak</div></div>
+        <div class="badge"><div class="badge-icon badge-locked" data-badge="multilingual">🌍</div><div class="badge-label">Multilingual</div></div>
+        <div class="badge"><div class="badge-icon badge-locked" data-badge="streak7">⭐</div><div class="badge-label">7-Day Streak</div></div>
+        <div class="badge"><div class="badge-icon badge-locked" data-badge="books20">📚</div><div class="badge-label">20 Books</div></div>
+        <div class="badge"><div class="badge-icon badge-locked" data-badge="alllang">🎓</div><div class="badge-label">All Languages</div></div>
+      </div>
+      <div class="section-hdr plain" style="margin-bottom:12px;"><span class="section-title">⚙️ Settings</span></div>
+      <div class="setting-row" onclick="toggleNight();showToast('Night mode toggled')">
+        <div class="setting-icon">🌙</div>
+        <div class="setting-info"><div class="setting-title">Night Mode</div><div class="setting-sub">Dark theme for bedtime reading</div></div>
+        <div class="toggle" id="nightToggle"></div>
+      </div>
+      <div class="setting-row" onclick="cycleFont();showToast('Font size: '+fontLabel())">
+        <div class="setting-icon">🔤</div>
+        <div class="setting-info"><div class="setting-title">Text Size</div><div class="setting-sub" id="fontSizeLabel">Medium</div></div>
+        <span style="font-size:13px;font-weight:600;color:var(--green-mid);">Aa →</span>
+      </div>
+      <div class="setting-row" onclick="showToast('🔔 Notification settings — coming in the full app!')">
+        <div class="setting-icon">🔔</div>
+        <div class="setting-info"><div class="setting-title">Reading Reminders</div><div class="setting-sub">Daily reminder at 7:00 PM</div></div>
+        <div class="toggle on"></div>
+      </div>
+      <div class="setting-row" onclick="showToast('👨‍👩‍👧 Parental controls — coming in the full app!')">
+        <div class="setting-icon">👨‍👩‍👧</div>
+        <div class="setting-info"><div class="setting-title">Parental Controls</div><div class="setting-sub">Set age lock for children's profiles</div></div>
+        <span style="font-size:13px;font-weight:600;color:var(--green-mid);">›</span>
+      </div>
+      <div class="setting-row" onclick="showToast('🏫 Classroom mode — coming in the full app!')">
+        <div class="setting-icon">🏫</div>
+        <div class="setting-info"><div class="setting-title">Classroom Mode</div><div class="setting-sub">Share books with students via code</div></div>
+        <span style="font-size:13px;font-weight:600;color:var(--green-mid);">›</span>
+      </div>
+      <div class="setting-row" onclick="showToast('📤 About Gugut Montessori')">
+        <div class="setting-icon">🦉</div>
+        <div class="setting-info"><div class="setting-title">About Gugut</div><div class="setting-sub">gugutmontessori.com</div></div>
+        <span style="font-size:13px;font-weight:600;color:var(--green-mid);">›</span>
+      </div>
+      <div class="setting-row" id="adminLoginRow" onclick="openAdminLogin()">
+        <div class="setting-icon">🔐</div>
+        <div class="setting-info"><div class="setting-title" id="adminRowTitle">Admin Access</div><div class="setting-sub" id="adminRowSub">Sign in to manage the library</div></div>
+        <span style="font-size:13px;font-weight:600;color:var(--amber);" id="adminRowArrow">›</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     BOTTOM NAV
+══════════════════════════════════ -->
+<nav class="bottom-nav">
+  <button class="bnav-item active" id="bnav-library" onclick="switchView('library')">
+    <span class="bico">📚</span>Library
+  </button>
+  <button class="bnav-item" id="bnav-mybooks" onclick="switchView('mybooks')">
+    <span class="bico">❤️</span>My Books
+  </button>
+  <button class="bnav-item" id="bnav-map" onclick="switchView('map')">
+    <span class="bico">🗺️</span><span>Explore</span>
+  </button>
+  <button class="bnav-item" id="bnav-admin" onclick="switchView('admin')" style="display:none">
+    <span class="bico">🛠</span>Admin
+  </button>
+  <button class="bnav-item" id="bnav-profile" onclick="switchView('profile')">
+    <span class="bico">👤</span>Profile
+  </button>
+</nav>
+
+</div><!-- end .app -->
+
+<!-- ══════════════════════════════════
+     READER OVERLAY
+══════════════════════════════════ -->
+<div class="overlay" id="readerOverlay">
+  <div class="reader-bar">
+    <div class="reader-title">
+      <h3 id="readerTitle"></h3>
+      <p id="readerMeta"></p>
+    </div>
+    <button class="ribtn" onclick="toggleFavFromReader()" id="favReaderBtn" title="Favourite">🤍</button>
+    <!-- Audio play/pause always visible in header -->
+    <button class="ribtn ribtn-audio" id="audioHeaderBtn" onclick="toggleAudio()" title="Play narration">🔊</button>
+    <button class="ribtn" onclick="toggleFontPopover()" title="Text size">Aa</button>
+    <button class="ribtn" onclick="closeReader()" aria-label="Close book">✕</button>
+  </div>
+  <!-- Font size popover: MUST be outside <button> — block elements inside <button> break HTML parsing -->
+  <div class="font-popover" id="fontPopover">
+    <button class="fsize-btn" onclick="setFont('sm',event)">S</button>
+    <button class="fsize-btn active" onclick="setFont('md',event)" id="fmd">M</button>
+    <button class="fsize-btn" onclick="setFont('lg',event)" id="flg">L</button>
+    <button class="fsize-btn" onclick="setFont('xl',event)" id="fxl">XL</button>
+  </div>
+
+  <div class="reader-body">
+    <!-- PDF viewer (shown when book has a pdf_url) -->
+    <div id="pdfViewer" style="display:none;flex:1;width:100%;min-height:0;flex-direction:column;">
+      <!-- Loading message -->
+      <div id="pdfLoadMsg">📖 Loading book…</div>
+      <!-- Canvas scroll area -->
+      <div id="pdfScrollArea" style="display:none;">
+        <canvas id="pdfCanvas"></canvas>
+      </div>
+      <!-- PDF nav controls -->
+      <div class="pdf-nav">
+        <button class="pdf-nav-btn" id="prevPdfBtn" onclick="changePdfPage(-1)" disabled>‹</button>
+        <span id="pdfPageInd">Page 1</span>
+        <button class="pdf-nav-btn" id="nextPdfBtn" onclick="changePdfPage(1)" disabled>›</button>
+        <a id="pdfOpenTab" href="#" target="_blank" title="Open PDF in new tab">↗</a>
+      </div>
+    </div>
+    <!-- Emoji page reader (shown for books without PDF) -->
+    <div class="book-spread" id="bookSpread">
+      <div class="page" id="leftPage">
+        <div class="page-emo" id="leftEmo"></div>
+        <p class="page-text" id="leftText"></p>
+        <p class="page-local" id="leftLocal"></p>
+        <div class="page-num" id="leftNum"></div>
+      </div>
+      <div class="page right-p" id="rightPage">
+        <div class="page-emo" id="rightEmo"></div>
+        <p class="page-text" id="rightText"></p>
+        <p class="page-local" id="rightLocal"></p>
+        <div class="page-num" id="rightNum"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio bar -->
+  <div class="audio-bar">
+    <button class="audio-play" id="playBtn" onclick="toggleAudio()">▶</button>
+    <div class="audio-progress" onclick="scrubAudio(event)">
+      <div class="audio-fill" id="audioFill"></div>
+    </div>
+    <span class="audio-time" id="audioTime">0:00</span>
+    <button class="speed-btn" onclick="cycleSpeed()">1×</button>
+    <button id="autoReadBtn" onclick="toggleAutoRead()" title="Read whole book aloud"
+      style="font-size:11px;font-weight:800;background:var(--amber);color:var(--green-dark);border:none;border-radius:14px;padding:5px 11px;cursor:pointer;white-space:nowrap;transition:background .2s;">📖 Read Book</button>
+  </div>
+
+  <div class="reader-nav">
+    <button class="nav-btn" id="prevBtn" onclick="changePage(-1)">‹</button>
+    <span class="page-ind" id="pageInd"></span>
+    <button class="nav-btn" id="nextBtn" onclick="changePage(1)">›</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     UPLOAD SHEET
+══════════════════════════════════ -->
+<div class="modal-overlay" id="uploadOverlay">
+  <div class="modal-sheet">
+    <h3>📤 Upload a New Book</h3>
+    <p>Add a PDF and audio file, fill in the details, and it goes live instantly.</p>
+    <label class="upload-card" for="pdfFileInput" style="cursor:pointer;">
+      <div class="uico">📄</div>
+      <p id="pdfLabel">Choose PDF file</p>
+      <span>Tap to select from your device</span>
+      <input type="file" id="pdfFileInput" accept=".pdf" style="display:none" onchange="document.getElementById('pdfLabel').textContent = this.files[0]?.name || 'Choose PDF file'"/>
+    </label>
+    <label class="upload-card" for="audioFileInput" style="cursor:pointer;background:linear-gradient(135deg,#e8f4fd,#b3d9f2);border-color:#90CAF9;">
+      <div class="uico">🎙️</div>
+      <p id="audioLabel">Choose Audio file</p>
+      <span>MP3 narration in the local language (optional)</span>
+      <input type="file" id="audioFileInput" accept=".mp3,.m4a,.ogg,.wav" style="display:none" onchange="document.getElementById('audioLabel').textContent = this.files[0]?.name || 'Choose Audio file'"/>
+    </label>
+    <div class="form-grid2">
+      <div class="ff full"><label>Book Title (English)</label><input type="text" id="uploadTitle" placeholder="e.g. Liya and the Rain"/></div>
+      <div class="ff full"><label>Title in Local Language</label><input type="text" id="uploadLocalTitle" placeholder="e.g. ሊያ እና ዝናቡ"/></div>
+      <div class="ff"><label>Language</label>
+        <select id="uploadLang">
+          <option value="Amharic">Amharic</option><option value="Oromiffa">Oromiffa</option><option value="Tigrinya">Tigrinya</option><option value="Somali">Somali</option><option value="Wolaytta">Wolaytta</option>
+        </select>
+      </div>
+      <div class="ff"><label>Age Band</label>
+        <select id="uploadAge"><option value="0-3">0–3</option><option value="3-6">3–6</option><option value="6-9">6–9</option></select>
+      </div>
+      <div class="ff full"><label>Short Description</label><textarea id="uploadDesc" rows="2" placeholder="A short summary for the library card…" style="resize:none;"></textarea></div>
+      <div class="ff"><label>Status</label>
+        <select id="uploadStatus"><option value="published">Published</option><option value="draft">Draft</option></select>
+      </div>
+      <div class="ff"><label>Narrator</label><input type="text" id="uploadNarrator" placeholder="e.g. Hiwot Tadesse"/></div>
+    </div>
+    <div class="action-row">
+      <button class="btn-outline" onclick="closeUpload()">Cancel</button>
+      <button class="btn-green" id="uploadSubmitBtn" onclick="uploadBookToSupabase()">Publish Book</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN MODAL -->
+<div class="modal-overlay" id="adminLoginOverlay">
+  <div class="modal-sheet" style="text-align:center;max-width:360px;margin:0 auto;">
+    <div style="font-size:48px;margin-bottom:12px;">🔐</div>
+    <h3 style="margin-bottom:6px;" id="adminModalTitle">Admin Access</h3>
+    <p style="margin-bottom:20px;" id="adminModalSub">Enter your admin PIN to manage the library</p>
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px;" id="pinDots">
+      <div class="pin-dot" id="dot0"></div>
+      <div class="pin-dot" id="dot1"></div>
+      <div class="pin-dot" id="dot2"></div>
+      <div class="pin-dot" id="dot3"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:240px;margin:0 auto 16px;">
+      <button class="pin-btn" onclick="enterPin('1')">1</button>
+      <button class="pin-btn" onclick="enterPin('2')">2</button>
+      <button class="pin-btn" onclick="enterPin('3')">3</button>
+      <button class="pin-btn" onclick="enterPin('4')">4</button>
+      <button class="pin-btn" onclick="enterPin('5')">5</button>
+      <button class="pin-btn" onclick="enterPin('6')">6</button>
+      <button class="pin-btn" onclick="enterPin('7')">7</button>
+      <button class="pin-btn" onclick="enterPin('8')">8</button>
+      <button class="pin-btn" onclick="enterPin('9')">9</button>
+      <button class="pin-btn" onclick="enterPin('⌫')" style="font-size:18px;">⌫</button>
+      <button class="pin-btn" onclick="enterPin('0')">0</button>
+      <button class="pin-btn btn-outline" onclick="closeAdminLogin()">✕</button>
+    </div>
+    <p style="font-size:11px;color:var(--text-light);">Default PIN: 1234 — change in the full app</p>
+  </div>
+</div>
+
+<style>
+.pin-dot{width:14px;height:14px;border-radius:50%;background:var(--border);transition:background .15s;}
+.pin-dot.filled{background:var(--green);}
+.pin-btn{padding:16px;border:1.5px solid var(--border);border-radius:12px;background:var(--card-bg);font-size:18px;font-weight:700;cursor:pointer;color:var(--text);font-family:'Nunito',sans-serif;transition:background .15s;}
+.pin-btn:hover{background:var(--green-pale);}
+.pin-btn:active{background:var(--green);color:#fff;}
+
+/* ── EXPLORE / PASSPORT STAMPS ── */
+.explore-hero{background:linear-gradient(135deg,#1A5276,#2980B9);border-radius:20px;color:#fff;padding:28px 24px 22px;margin-bottom:20px;text-align:center;}
+.explore-hero-icon{font-size:36px;margin-bottom:8px;}
+.explore-hero h2{font-size:22px;font-weight:800;margin:0 0 6px;}
+.explore-hero p{font-size:13px;opacity:.8;margin:0 0 14px;}
+.explore-hero-stats{display:inline-flex;gap:20px;background:rgba(255,255,255,.15);border-radius:10px;padding:8px 18px;font-size:12px;}
+.explore-hero-stats span{display:flex;align-items:center;gap:4px;}
+.passport-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:8px;}
+@media(min-width:480px){.passport-grid{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:700px){.passport-grid{grid-template-columns:repeat(5,1fr);}}
+.pstamp{background:var(--card-bg);border-radius:16px;padding:18px 12px 14px;text-align:center;cursor:pointer;position:relative;border:2px solid var(--border);transition:transform .2s,box-shadow .2s;overflow:hidden;}
+.pstamp:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
+.pstamp:focus-visible{outline:3px solid var(--amber);outline-offset:2px;}
+.pstamp-inner{position:absolute;inset:5px;border-radius:11px;border:1.5px dashed currentColor;opacity:.18;pointer-events:none;}
+.pstamp-flag{font-size:42px;display:block;margin-bottom:8px;line-height:1;}
+.pstamp-country{font-size:13px;font-weight:800;color:var(--text-dark);margin-bottom:2px;}
+.pstamp-local{font-size:10px;color:var(--text-mid);margin-bottom:5px;}
+.pstamp-lang{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;color:#fff;margin-bottom:10px;}
+.pstamp-bar-wrap{width:100%;height:5px;background:rgba(0,0,0,.08);border-radius:4px;overflow:hidden;margin:5px 0;}
+.pstamp-bar{height:100%;border-radius:4px;transition:width .5s;}
+.pstamp-count{font-size:10px;color:var(--text-light);}
+.pstamp-seal{position:absolute;top:9px;right:9px;width:34px;height:34px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:6.5px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;transform:rotate(-18deg);opacity:0;transition:opacity .3s;text-align:center;line-height:1.15;padding:2px;background:rgba(255,255,255,.92);}
+.pstamp.stamped .pstamp-seal{opacity:1;}
+.pstamp.completed-all .pstamp-seal{background:var(--amber);color:#fff!important;border-color:var(--amber)!important;}
+.explore-tip{text-align:center;font-size:12px;color:var(--text-light);margin:4px 0 20px;}
+</style>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════
+// DATA
+// ═══════════════════════════════════
+const books = [
+  {id:0,title:"Liya and the Rain",local:"ሊያ እና ዝናቡ",lang:"Amharic",age:"3-6",cc:"c1",emo:"🌧️",desc:"A young girl and her grandmother discover the magic of the first rains in the Ethiopian highlands.",status:"published",reads:142,pdf_url:"https://xadoyotpgupduhrsxsdb.supabase.co/storage/v1/object/public/books/Liya_and_the_Rain_Amharic_Ages3-6.pdf",
+    pages:[
+      {emo:"🏡",text:"Liya woke up to the smell of wet earth.",local:"ሊያ ተነሥታ የምድርን ሽታ አሸተተች።"},
+      {emo:"🌧️",text:"Rain was falling on the tin roof — tick, tick, tick.",local:"ዝናብ በብረት ሣር ላይ ይወርድ ነበር።"},
+      {emo:"👵",text:'"Come," said Grandma. "The rain has a gift for us."',local:'"ና" አለች አያቷ። "ዝናቡ ስጦታ አለው።"'},
+      {emo:"🌱",text:"Under the banana tree, tiny green shoots had appeared overnight.",local:"በሙዝ ዛፍ ሥር ትንንሽ ቅጠሎች ወጥተዋል።"},
+      {emo:"🌈",text:"The rain stopped. A rainbow stretched across the valley.",local:"ዝናቡ ቆመ። ቀስተ ደመና ሸለቆውን አቆረሰ።"},
+    ],quiz:[{q:"What did Liya smell when she woke up?",opts:["Flowers 🌸","Wet earth 🌍","Food 🍲","Smoke 💨"],a:1},{q:"What did Grandma say the rain had for them?",opts:["A warning ⚠️","A gift 🎁","A song 🎵","A visitor 👤"],a:1},{q:"What appeared under the banana tree?",opts:["A bird 🐦","Mushrooms 🍄","Tiny green shoots 🌱","A frog 🐸"],a:2}]},
+  {id:1,title:"The Blue Mountain",local:"Tuluu Cuquliisaa",lang:"Oromiffa",age:"6-9",cc:"c2",emo:"⛰️",desc:"A brave boy climbs the legendary blue mountain to find medicine for his sick mother.",status:"published",reads:89,
+    pages:[
+      {emo:"⛰️",text:"Everyone in the village feared the Blue Mountain.",local:"Namooti hundi gara Tuluu Cuquliisaa sodaatu."},
+      {emo:"👦",text:"But Daba's mother was sick. Only the mountain herb could save her.",local:"Garuu haadha Dabaa dhukkubsatteetti."},
+      {emo:"🦅",text:"He climbed all day, past eagles and wild winds.",local:"Guyyaa guutuu ol bahe."},
+      {emo:"🌿",text:"At the top he found the glowing green herb, shining like a star.",local:"Ol irra gad argame."},
+    ]},
+  {id:2,title:"Tsehai and the Seeds",local:"ፀሓይን ዘርኢን",lang:"Tigrinya",age:"3-6",cc:"c3",emo:"🌻",desc:"Little Tsehai learns patience as she plants seeds with her father.",status:"published",reads:76,
+    pages:[
+      {emo:"🌱",text:"Tsehai held three small seeds in her palm.",local:"ፀሓይ ሰለስተ ዘርኢ ኣብ ኢዳ ሓዘት።"},
+      {emo:"👨",text:'"Will they grow into something big?" she asked Papa.',local:'"ናብ ዓቢ ክዓብዩ ዶ?" ንኣቦ ሓተተቶ።'},
+      {emo:"💧",text:"Every day she watered them, morning and evening.",local:"ኩሉ መዓልቲ ኣጠጠቐቶም።"},
+      {emo:"🌻",text:"On the tenth day — tall yellow sunflowers filled the garden.",local:"ኣብ ዓሰርተይ መዓልቲ — ሃብሃቦት ኣብ ሓምሓም ወጹ።"},
+    ]},
+  {id:3,title:"Waris and the Ocean",local:"Waaris iyo Badda",lang:"Somali",age:"6-9",cc:"c4",emo:"🌊",desc:"A Somali girl sees the ocean for the first time and learns about the world beyond her village.",status:"published",reads:54,
+    pages:[
+      {emo:"🌊",text:"Waris had never seen water that stretched to forever.",local:"Waaris waxay aragtay biyo aad u ballaarsan."},
+      {emo:"🐚",text:"She picked up a shell and heard the ocean's deep voice inside.",local:"Waxay qaaday xidid oo maqashay codka badda."},
+      {emo:"🐟",text:"Fishermen sang as they pulled their heavy nets ashore.",local:"Kalluumaysatadu heesaan."},
+    ]},
+  {id:4,title:"The Honey Finder",local:"ማሽ ናዩ",lang:"Wolaytta",age:"3-6",cc:"c5",emo:"🍯",desc:"Mash follows a small bird through the forest and discovers a hidden hive of honey.",status:"published",reads:38,pdf_url:"https://xadoyotpgupduhrsxsdb.supabase.co/storage/v1/object/public/books/The_Honey_Finder_Wolaytta_Ages3-6.pdf",
+    pages:[
+      {emo:"🐦",text:"A small bird sang from the acacia tree.",local:"Sha'o giddon zari wodhdhiis."},
+      {emo:"🌳",text:"Mash followed the bird deeper into the cool forest.",local:"Mash katan kaaliyis."},
+      {emo:"🍯",text:"Behind the biggest rock — golden honey was dripping down.",local:"Doonan kase, mishira laaqqettis."},
+    ]},
+  {id:5,title:"Counting Stars",local:"ኮከቦቹን ቁጠሪ",lang:"Amharic",age:"0-3",cc:"c6",emo:"⭐",desc:"A joyful counting book set under an Ethiopian night sky.",status:"published",reads:201,pdf_url:"https://xadoyotpgupduhrsxsdb.supabase.co/storage/v1/object/public/books/Counting_Stars_Amharic_Ages0-3.pdf",
+    pages:[
+      {emo:"🌙",text:"One big, bright moon in the dark sky.",local:"አንድ ትልቅ ጨረቃ።"},
+      {emo:"✨",text:"Two little fireflies dancing in the garden.",local:"ሁለት ትንንሽ ብርሃናት።"},
+      {emo:"⭐",text:"Three, four, five... a whole sky full of stars!",local:"ሦስት፣ አራት፣ አምስት... ሰማዩ በሙሉ ኮከቦች!"},
+    ],quiz:[{q:"What was in the dark sky at the start?",opts:["The sun ☀️","One big bright moon 🌕","Clouds ☁️","An owl 🦉"],a:1},{q:"What were dancing in the garden?",opts:["Stars ⭐","Butterflies 🦋","Two little fireflies ✨","Children 👦"],a:2},{q:"How many stars filled the sky at the end?",opts:["Just one ☝️","A whole sky full 🌟","Five exactly 5️⃣","None 0️⃣"],a:1}]},
+  {id:6,title:"The Market Day",local:"Guyyaa Gabaa",lang:"Oromiffa",age:"3-6",cc:"c7",emo:"🛒",desc:"Join Kuma and his mother as they walk to the colorful weekly market.",status:"published",reads:67,
+    pages:[
+      {emo:"🌅",text:"Before sunrise, Kuma's mother began to pack the basket.",local:"Aduu baatee dura, haati Kumaa gita guutuu eegalte."},
+      {emo:"🛒",text:"At the market, every color and smell was a new adventure.",local:"Gabaa keessatti, halluu fi uriin haaraa ture."},
+      {emo:"🍊",text:"Kuma chose a bright orange for the walk back home.",local:"Kumaan mandarin filatee mana deebi'e."},
+    ]},
+  {id:7,title:"My Body, My Words",local:"ኣካለይ፡ ቃላተይ",lang:"Tigrinya",age:"0-3",cc:"c8",emo:"👐",desc:"A bilingual concept book teaching body parts in Tigrinya.",status:"draft",reads:0,
+    pages:[
+      {emo:"👁️",text:"Eyes — we use them to see the beautiful world.",local:"ዓይኒ (aini) — ንርኢ።"},
+      {emo:"👂",text:"Ears — we use them to hear stories and songs.",local:"እዝኒ (izni) — ንሰምዕ።"},
+      {emo:"👐",text:"Hands — we use them to hold and to hug.",local:"ኢድ (id) — ንሕቁፍ።"},
+    ]},
+  {id:8,title:"Hana Washes Her Hands",local:"ሃና እጆቿን ሁልጊዜ ትታጠባለች",lang:"Amharic",age:"3-6",cc:"c1",emo:"🤲",desc:"Hana loves to play until her hands are dusty — then comes the best part: washing time!",status:"published",reads:0,pdf_url:"https://xadoyotpgupduhrsxsdb.supabase.co/storage/v1/object/public/books/Hana_Washes_Her_Hands.pdf",
+    pages:[{emo:"🤲",text:"Hana always washes her hands.",local:"ሃና እጆቿን ሁልጊዜ ትታጠባለች።"}],quiz:[{q:"What did Hana love to do?",opts:["Sleep 😴","Cook 🍳","Play until her hands were dusty 🤲","Sing 🎵"],a:2},{q:"What comes after Hana plays?",opts:["Eating 🍽️","Washing time! 🚿","School 📚","Running 🏃"],a:1},{q:"What is the story about?",opts:["A clean owl 🦉","A girl who always washes her hands 🤲","Cooking soup 🍲","Playing football ⚽"],a:1}]},
+  {id:9,title:"The King's Secret",local:"የንጉሱ ምስጢር",lang:"Amharic",age:"6-9",cc:"c2",emo:"👑",desc:"A king hides a funny secret under his crown — but secrets have a way of getting out.",status:"published",reads:0,pdf_url:"https://xadoyotpgupduhrsxsdb.supabase.co/storage/v1/object/public/books/The_Kings_Secret.pdf",
+    pages:[{emo:"👑",text:"The king had a secret no one could know.",local:"ንጉሡ ምስጢር ነበረው።"}],quiz:[{q:"What did the king have that was unusual?",opts:["A small nose 👃","Long ears like a donkey 🫏","Green eyes 👁️","Tiny feet 🦶"],a:1},{q:"How did the king hide his secret?",opts:["With a scarf 🧣","Under water 💧","With a big crown 👑","In a cave 🏔️"],a:2},{q:"Who knew the king's secret?",opts:["Everyone 👥","Nobody 🚫","Only his hairdresser ✂️","His mother 👩"],a:2}]},
+  {id:10,title:"The Lion and the Hare",local:"አንበሳ እና ጥንቸሏ",lang:"Amharic",age:"6-9",cc:"c3",emo:"🦁",desc:"A clever hare outsmarts a fearsome lion who demands one animal from the forest every day.",status:"published",reads:0,pdf_url:"https://xadoyotpgupduhrsxsdb.supabase.co/storage/v1/object/public/books/The_Lion_and_the_Hare.pdf",
+    pages:[{emo:"🦁",text:"A fearsome lion ruled the forest.",local:"አስፈሪ አንበሳ ጫካውን ይገዛ ነበር።"}]},
+  {id:11,title:"The Mouse and the Lion",local:"አይጧ እና አንበሳው",lang:"Amharic",age:"3-6",cc:"c4",emo:"🐭",desc:"A tiny mouse and a great lion learn that even the smallest creature can make a big difference.",status:"published",reads:0,pdf_url:"https://xadoyotpgupduhrsxsdb.supabase.co/storage/v1/object/public/books/The_Mouse_and_the_Lion.pdf",
+    pages:[{emo:"🐭",text:"A tiny mouse was hurrying through the warm grass.",local:"አንዲት ትንሽ አይጥ በሞቀው ሣር ውስጥ ትሮጣ ነበር።"}]},
+];
+
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+let activeLang='all', activeAge='all', searchQ='';
+let currentBookId=0, currentPage=0;
+// ── Persistent state via localStorage ──
+const _LS_KEY='gugut_v1';
+function _loadLS(){ try{ return JSON.parse(localStorage.getItem(_LS_KEY)||'{}'); }catch(e){ return {}; } }
+let _ls=_loadLS();
+let favourites=new Set(_ls.favs||[]);
+let readProgress=_ls.progress||{};
+let isNight=_ls.night||false;
+let fontSize=_ls.fontSize||'md';
+let _streakDays=_ls.streakDays||0;
+let _lastReadDate=_ls.lastReadDate||'';
+function _saveState(){
+  try{
+    localStorage.setItem(_LS_KEY,JSON.stringify({
+      favs:[...favourites],progress:readProgress,night:isNight,fontSize:fontSize,
+      streakDays:_streakDays,lastReadDate:_lastReadDate,
+      firstVisit:_ls.firstVisit||new Date().toISOString().slice(0,10)
+    }));
+  }catch(e){}
+}
+function _recordReadToday(){
+  const today=new Date().toISOString().slice(0,10);
+  if(_lastReadDate===today) return;
+  const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
+  _streakDays=(_lastReadDate===yesterday)?_streakDays+1:1;
+  _lastReadDate=today;
+  _saveState();
+}
+let fontsizes=['sm','md','lg','xl'];
+let fontLabels={sm:'Small',md:'Medium',lg:'Large',xl:'Extra Large'};
+// TTS state
+let ttsUtterance=null, ttsPlaying=false, ttsTimer=null, ttsProgress=0;
+let audioInterval=null;
+// Auto-read (read-aloud whole book) state
+let autoReadMode=false;
+let _currentPdfPageText=null; // populated by _startPdfPageRead()
+// Pre-recorded audio element
+let _audioEl=null, _audioFlipInterval=null;
+// Language → BCP-47 TTS code
+const LANG_TTS={'Amharic':'am-ET','Tigrinya':'ti-ET','Oromiffa':'om','Somali':'so-SO','Wolaytta':'en-US'};
+
+// ═══════════════════════════════════
+// VIEW SWITCHING
+// ═══════════════════════════════════
+function switchView(v){
+  document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.bnav-item').forEach(el=>el.classList.remove('active'));
+  const vEl=document.getElementById('view-'+v);
+  vEl.classList.add('active');
+  document.getElementById('bnav-'+v).classList.add('active');
+  document.getElementById('searchWrap').style.display=v==='library'?'':'none';
+  const sc=vEl.querySelector('.scroll'); if(sc) sc.scrollTop=0;
+  if(v==='mybooks') renderMyBooks();
+  if(v==='admin') renderAdmin();
+}
+
+// ═══════════════════════════════════
+// LIBRARY RENDER
+// ═══════════════════════════════════
+function filtered(){
+  return books.filter(b=>{
+    const lo=activeLang==='all'||b.lang===activeLang;
+    const ao=activeAge==='all'||b.age===activeAge;
+    const so=!searchQ||b.title.toLowerCase().includes(searchQ)||b.local.toLowerCase().includes(searchQ)||b.lang.toLowerCase().includes(searchQ);
+    return lo&&ao&&so;
+  });
+}
+
+function renderLibrary(){
+  const f=filtered();
+  const container=document.getElementById('libraryContent');
+  const empty=document.getElementById('emptyState');
+  if(f.length===0){
+    container.innerHTML='';empty.style.display='';
+    const te=document.getElementById('emptyTitle'),me=document.getElementById('emptyMsg');
+    if(te) te.textContent=searchQ?'No results for "'+searchQ+'"':'No books found';
+    if(me) me.textContent=(activeLang!=='all')?'No '+activeLang+' books match your filters.':'Try a different filter or search term.';
+    return;
+  }
+  empty.style.display='none';
+
+  const showHero=activeLang==='all'&&activeAge==='all'&&!searchQ;
+  let html='';
+
+  if(showHero){
+    html+=`<div class="featured" onclick="openReader(0)">
+      <div class="feat-emo">🌧️</div>
+      <div class="feat-text">
+        <h3>Liya and the Rain · ሊያ እና ዝናቡ</h3>
+        <p>This week's featured book — a journey through the first rains of the highlands. Ages 3–6 · Amharic</p>
+        <button class="feat-cta">▶ Read Now</button>
+      </div>
+    </div>`;
+    // Group by language
+    const langs=[...new Set(f.map(b=>b.lang))];
+    const lconf={Amharic:{flag:'🇪🇹',native:'አማርኛ'},Oromiffa:{flag:'🌿',native:'Afaan Oromoo'},Tigrinya:{flag:'⭐',native:'ትግርኛ'},Somali:{flag:'🌊',native:'Soomaali'},Wolaytta:{flag:'🍯',native:'Wolaytta'}};
+    langs.forEach(lang=>{
+      const lb=f.filter(b=>b.lang===lang&&b.status==='published');
+      if(!lb.length) return;
+      const c=lconf[lang]||{flag:'📖',native:lang};
+      html+=`<div class="section">
+        <div class="section-hdr">
+          <span class="section-title">${c.flag} ${lang} <span style="font-weight:400;color:var(--text-light);font-size:13px;">${c.native}</span></span>
+          <span class="section-sub">${lb.length} book${lb.length!==1?'s':''}</span>
+        </div>
+        <div class="book-grid">${lb.map(bCardHTML).join('')}</div>
+      </div>`;
+    });
+  } else {
+    html+=`<div class="section-hdr plain" style="margin-bottom:14px;"><span class="section-title">${f.length} book${f.length!==1?'s':''} found</span></div>`;
+    html+=`<div class="book-grid">${f.map(bCardHTML).join('')}</div>`;
+  }
+  container.innerHTML=html;
+}
+
+function _readTime(b){
+  if(b.pdf_url) return '📄 PDF';
+  const mins=Math.max(1,Math.round(((b.pages||[]).length)*1.5));
+  return '~'+mins+' min';
+}
+function _diffStars(age){
+  // Map age band to difficulty stars shown on card
+  const map={'0-3':'⭐','3-6':'⭐⭐','6-9':'⭐⭐⭐'};
+  return map[age]||'⭐';
+}
+function bCardHTML(b){
+  const fav=favourites.has(b.id);
+  const prog=readProgress[b.id]||0;
+  const progBar=prog>0?`<div style="height:3px;background:var(--green-pale);border-radius:3px;margin-top:5px;overflow:hidden;"><div style="width:${prog}%;height:100%;background:var(--green-mid);border-radius:3px;"></div></div>`:'';
+  return `<div class="bcard" onclick="openReader(${b.id})">
+    <div class="bcover ${b.cc}" data-book-id="${b.id}">
+      <span style="font-size:44px">${b.emo}</span>
+      <div class="cover-overlay">${b.local}</div>
+      <div class="lang-badge">${b.lang}</div>
+      <button class="fav-btn" onclick="event.stopPropagation();toggleFav(${b.id})" id="fav-${b.id}">${fav?'❤️':'🤍'}</button>
+    </div>
+    <div class="binfo">
+      <div class="btitle">${b.title}</div>
+      <div class="bmeta">
+        <span class="tag tag-age" title="Ages ${b.age}">${_diffStars(b.age)}</span>
+        <span class="tag tag-lang">${b.lang}</span>
+        <span class="tag" style="background:var(--sand);color:var(--text-mid);font-size:9px;padding:2px 5px;">${_readTime(b)}</span>
+      </div>
+      ${progBar}
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════
+// MY BOOKS
+// ═══════════════════════════════════
+function _updateMyBooksStats(){
+  const booksRead=Object.values(readProgress).filter(p=>p>=100).length;
+  const favCount=favourites.size;
+  const langsRead=new Set(books.filter(b=>(readProgress[b.id]||0)>=100).map(b=>b.lang)).size;
+  const e=id=>document.getElementById(id);
+  if(e('statBooksRead')) e('statBooksRead').textContent=booksRead;
+  if(e('statFavs')) e('statFavs').textContent=favCount;
+  if(e('statLanguages')) e('statLanguages').textContent=langsRead||0;
+  // Streak display
+  const today=new Date().toISOString().slice(0,10);
+  const si=e('streakIcon'),st=e('streakTitle'),ss=e('streakSub');
+  if(_streakDays>=7){if(si)si.textContent='🏆';if(st)st.textContent=_streakDays+'-Day Super Streak!';}
+  else if(_streakDays>=3){if(si)si.textContent='🔥';if(st)st.textContent=_streakDays+'-Day Streak!';}
+  else if(_streakDays===1){if(si)si.textContent='✨';if(st)st.textContent='Day 1 — great start!';}
+  else{if(si)si.textContent='📖';if(st)st.textContent='Start your reading streak!';}
+  if(ss) ss.textContent=(_lastReadDate===today)?'You read today — amazing! 🦉':(_streakDays>0)?'Read today to keep your streak 🦉':'Read a book to start your first streak 🦉';
+  // Dynamic badges
+  const badge=s=>document.querySelector('.badge-icon[data-badge="'+s+'"]');
+  const earn=s=>{const b=badge(s);if(b){b.classList.remove('badge-locked');b.classList.add('badge-earned');}};
+  if(booksRead>=1) earn('first-read');
+  if(langsRead>=2) earn('multilingual');
+  if(_streakDays>=3) earn('streak3');
+  if(_streakDays>=7) earn('streak7');
+  if(booksRead>=20) earn('books20');
+  if(langsRead>=5) earn('alllang');
+}
+function renderMyBooks(){
+  _updateMyBooksStats();
+  // Continue reading
+  const cont=document.getElementById('continueReading');
+  const inProg=Object.entries(readProgress).filter(([id,p])=>p<100&&p>0);
+  if(inProg.length===0){cont.innerHTML='<p style="color:var(--text-light);font-size:13px;">Start reading a book to see your progress here.</p>';
+  } else {
+    cont.innerHTML=inProg.map(([id,p])=>{
+      const b=books.find(bk=>bk.id==id);
+      return `<div class="rr-item" onclick="openReader(${b.id})">
+        <div class="rr-emo ${b.cc}">${b.emo}</div>
+        <div class="rr-info">
+          <div class="rr-title">${b.title}</div>
+          <div class="rr-meta">${b.lang} · Ages ${b.age}</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${p}%"></div></div>
+        </div>
+        <span style="font-size:11px;color:var(--green-mid);font-weight:700;">${p}%</span>
+      </div>`;
+    }).join('');
+  }
+  // Favourites
+  const favEl=document.getElementById('favBooks');
+  const favList=[...favourites].map(id=>books.find(b=>b.id===id)).filter(Boolean);
+  if(favList.length===0){favEl.innerHTML='<p style="color:var(--text-light);font-size:13px;">Tap ❤️ on any book to save it here.</p>';
+  } else {
+    favEl.innerHTML=favList.map(b=>`<div class="rr-item" onclick="openReader(${b.id})">
+      <div class="rr-emo ${b.cc}">${b.emo}</div>
+      <div class="rr-info"><div class="rr-title">${b.title}</div><div class="rr-meta">${b.lang} · Ages ${b.age}</div></div>
+      <button onclick="event.stopPropagation();toggleFav(${b.id});renderMyBooks();" style="background:none;border:none;font-size:18px;cursor:pointer;">❤️</button>
+    </div>`).join('');
+  }
+}
+
+// ═══════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════
+function renderAdmin(){
+  const el=document.getElementById('adminBookList');
+  el.innerHTML=books.map(b=>`<div class="book-row">
+    <div class="br-emo ${b.cc}">${b.emo}</div>
+    <div class="br-info">
+      <div class="br-title">${b.title}</div>
+      <div class="br-meta">${b.lang} · Ages ${b.age} · ${b.reads} reads</div>
+    </div>
+    <span class="br-status ${b.status==='published'?'published':'draft'}">${b.status==='published'?'Live':'Draft'}</span>
+    <div class="br-actions">
+      <button class="abtn abtn-edit" onclick="showToast('✏️ Edit panel — coming in the full app!')">Edit</button>
+      <button class="abtn abtn-del" onclick="showToast('🗑 Delete — coming in the full app!')">Del</button>
+    </div>
+  </div>`).join('');
+}
+
+// ═══════════════════════════════════
+// FILTERS
+// ═══════════════════════════════════
+function setLang(el,v){activeLang=v;document.querySelectorAll('[data-lang]').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderLibrary();}
+function setAge(el,v){activeAge=v;document.querySelectorAll('[data-age]').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderLibrary();}
+let _searchT; function handleSearch(){const v=document.getElementById('searchInput').value.toLowerCase().trim(); clearTimeout(_searchT); _searchT=setTimeout(()=>{searchQ=v;renderLibrary();},160);}
+
+// ═══════════════════════════════════
+// FAVOURITES
+// ═══════════════════════════════════
+function toggleFav(id){
+  if(favourites.has(id)){favourites.delete(id);showToast('Removed from favourites');}else{favourites.add(id);showToast('❤️ Added to favourites!');}
+  const el=document.getElementById('fav-'+id);
+  if(el) el.textContent=favourites.has(id)?'❤️':'🤍';
+  updateFavReaderBtn();
+  _saveState();
+}
+function toggleFavFromReader(){toggleFav(currentBookId);renderLibrary();}
+function updateFavReaderBtn(){
+  const btn=document.getElementById('favReaderBtn');
+  if(btn) btn.textContent=favourites.has(currentBookId)?'❤️':'🤍';
+}
+
+// ═══════════════════════════════════
+// READER
+// ═══════════════════════════════════
+// ── PDF.JS STATE ──
+let pdfDoc=null, pdfPageNum=1, pdfTotalPages=1, pdfRendering=false;
+
+function openReader(id){
+  try {
+    stopAudio();
+    currentBookId=id;
+    currentPage=0;
+    const b=books.find(bk=>bk.id===id);
+    if(!b){ showToast('⚠️ Book not found'); return; }
+    document.getElementById('readerTitle').textContent=`${b.title} · ${b.local}`;
+    document.getElementById('readerMeta').textContent=`${b.lang} · Ages ${b.age}`;
+    updateFavReaderBtn();
+    const pdfViewer=document.getElementById('pdfViewer');
+    const bookSpread=document.getElementById('bookSpread');
+    const readerNav=document.querySelector('.reader-nav');
+    const audioBar=document.querySelector('.audio-bar');
+    if(b.pdf_url){
+      pdfViewer.style.display='flex';
+      bookSpread.style.display='none';
+      if(audioBar) audioBar.style.display='flex';
+      if(readerNav) readerNav.style.display='none';
+      // Reset PDF state UI
+      document.getElementById('pdfLoadMsg').style.display='block';
+      document.getElementById('pdfScrollArea').style.display='none';
+      document.getElementById('pdfPageInd').textContent='Loading…';
+      document.getElementById('prevPdfBtn').disabled=true;
+      document.getElementById('nextPdfBtn').disabled=true;
+      document.getElementById('pdfOpenTab').href=b.pdf_url;
+      pdfDoc=null; pdfRendering=false; pdfPageNum=1;
+    } else {
+      pdfViewer.style.display='none';
+      bookSpread.style.display='';
+      if(readerNav) readerNav.style.display='';
+      if(audioBar) audioBar.style.display='';
+      document.getElementById('prevBtn').onclick=()=>changePage(-1);
+      document.getElementById('nextBtn').onclick=()=>changePage(1);
+    }
+  } catch(err) {
+    console.error('openReader error:', err);
+    showToast('⚠️ ' + err.message);
+  }
+  // Show overlay FIRST so the canvas has valid clientWidth when PDF renders
+  document.getElementById('readerOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+  if(!readProgress[id]) readProgress[id]=0;
+  const b=books.find(bk=>bk.id===id);
+  if(b && b.pdf_url){
+    // Small delay ensures layout is painted before we measure canvas width
+    setTimeout(()=>loadPdf(b.pdf_url), 80);
+  } else if(b) {
+    renderReaderPage();
+  }
+}
+
+async function loadPdf(url){
+  pdfRendering=false; // reset any stale lock
+  try{
+    if(typeof pdfjsLib==='undefined'){showToast('⚠️ PDF library not loaded yet, try again');return;}
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    pdfDoc=null; pdfPageNum=1;
+    document.getElementById('pdfPageInd').textContent='Downloading…';
+    // Fetch as binary — prevents Chrome from intercepting the PDF URL
+    const resp = await fetch(url);
+    if(!resp.ok) throw new Error('Server returned ' + resp.status);
+    const buffer = await resp.arrayBuffer();
+    const loadingTask=pdfjsLib.getDocument({data: new Uint8Array(buffer)});
+    pdfDoc=await loadingTask.promise;
+    pdfTotalPages=pdfDoc.numPages;
+    renderPdfPage(1);
+  }catch(err){
+    console.error('PDF load error:',err);
+    document.getElementById('pdfLoadMsg').textContent='⚠️ Could not load PDF. Try opening in new tab →';
+    document.getElementById('pdfLoadMsg').style.display='block';
+    showToast('⚠️ Could not load PDF: '+err.message);
+  }
+}
+
+async function renderPdfPage(num){
+  if(!pdfDoc||pdfRendering) return;
+  pdfRendering=true;
+  try{
+    const page=await pdfDoc.getPage(num);
+    const canvas=document.getElementById('pdfCanvas');
+    const scrollArea=document.getElementById('pdfScrollArea');
+    // Use scroll area width for sizing; fallback to window width
+    const vw=Math.min(Math.max((scrollArea.clientWidth||window.innerWidth)-32, 100), 700);
+    const viewport=page.getViewport({scale:1});
+    const scale=vw/viewport.width;
+    const scaled=page.getViewport({scale});
+    canvas.width=scaled.width;
+    canvas.height=scaled.height;
+    const ctx=canvas.getContext('2d');
+    const renderTask=page.render({canvasContext:ctx,viewport:scaled});
+    await renderTask.promise;
+    pdfPageNum=num;
+    // Cache page 1 as the book cover thumbnail (reliable: uses the proven reader render path)
+    if(num===1 && currentBookId!=null && !coverCache.has(currentBookId)){
+      try{
+        const thumb=canvas.toDataURL('image/jpeg',0.7);
+        coverCache.set(currentBookId, thumb);
+        const coverEl=document.querySelector(`.bcover[data-book-id="${currentBookId}"]`);
+        if(coverEl) _applyThumb(coverEl, thumb);
+      }catch(e){}
+    }
+    // Show canvas, hide loading message
+    document.getElementById('pdfLoadMsg').style.display='none';
+    scrollArea.style.display='flex';
+    scrollArea.scrollTop=0;
+    document.getElementById('pdfPageInd').textContent=`Page ${num} / ${pdfTotalPages}`;
+    document.getElementById('prevPdfBtn').disabled=num<=1;
+    document.getElementById('nextPdfBtn').disabled=num>=pdfTotalPages;
+    readProgress[currentBookId]=Math.round((num/pdfTotalPages)*100); _saveState(); _recordReadToday();
+    // Auto-read: extract this page's text and speak it
+    if(autoReadMode) setTimeout(()=>_startPdfPageRead(num), 350);
+  }catch(err){
+    if(err && err.name!=='RenderingCancelledException'){
+      console.error('renderPdfPage error:',err);
+      showToast('⚠️ Could not render page: '+err.message);
+    }
+  }finally{
+    pdfRendering=false;
+  }
+}
+
+function changePdfPage(dir){
+  const next=pdfPageNum+dir;
+  if(next<1||next>pdfTotalPages) return;
+  // Brief slide-fade between PDF pages
+  const area=document.getElementById('pdfScrollArea');
+  if(area){ area.classList.add('pdf-turn'); area.addEventListener('animationend',()=>area.classList.remove('pdf-turn'),{once:true}); }
+  renderPdfPage(next);
+}
+function closeReader(){
+  autoReadMode=false;
+  _currentPdfPageText=null;
+  clearInterval(_audioFlipInterval);
+  if(_audioEl){ _audioEl.pause(); _audioEl.src=''; }
+  stopAudio();
+  pdfDoc=null; pdfRendering=false; pdfPageNum=1;
+  document.getElementById('readerOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function renderReaderPage(){
+  const b=books.find(bk=>bk.id===currentBookId);
+  const lp=b.pages[currentPage]||null;
+  const rp=b.pages[currentPage+1]||null;
+  document.getElementById('leftEmo').textContent=lp?lp.emo:'';
+  document.getElementById('leftText').innerHTML=lp?lp.text:'';
+  document.getElementById('leftLocal').textContent=lp?lp.local:'';
+  document.getElementById('leftNum').textContent=lp?`Page ${currentPage+1}`:'';
+  document.getElementById('rightEmo').textContent=rp?rp.emo:'🦉';
+  document.getElementById('rightText').textContent=rp?rp.text:'The End.';
+  document.getElementById('rightLocal').textContent=rp?rp.local:'— ፍጻሜ —';
+  document.getElementById('rightNum').textContent=rp?`Page ${currentPage+2}`:'';
+  const total=b.pages.length;
+  document.getElementById('pageInd').textContent=`${currentPage+1}–${Math.min(currentPage+2,total)} / ${total}`;
+  document.getElementById('prevBtn').disabled=currentPage===0;
+  document.getElementById('nextBtn').disabled=currentPage+2>=total;
+  // update read progress
+  const pct=Math.round(((currentPage+2)/total)*100);
+  readProgress[currentBookId]=Math.min(100,Math.max(readProgress[currentBookId]||0,pct)); _saveState(); _recordReadToday();
+  // Stop old page audio then auto-start narration for new page (slight delay feels natural after flip)
+  stopAudio();
+  setTimeout(()=>startAudio(), 250);
+}
+function changePage(dir){
+  const b=books.find(bk=>bk.id===currentBookId);
+  const spread=document.getElementById('bookSpread');
+  // Phase 1 — pages fold away
+  const outCls = dir>0 ? 'flip-out' : 'flip-out-back';
+  const inCls  = dir>0 ? 'flip-in'  : 'flip-in-back';
+  spread.classList.remove('flip-out','flip-out-back','flip-in','flip-in-back');
+  spread.classList.add(outCls);
+  setTimeout(()=>{
+    // Swap content at the invisible midpoint
+    spread.classList.remove(outCls);
+    currentPage=Math.max(0,Math.min(currentPage+dir*2,b.pages.length-1));
+    renderReaderPage();
+    // Phase 2 — new pages arrive from the other side
+    spread.classList.add(inCls);
+    spread.addEventListener('animationend',()=>spread.classList.remove(inCls),{once:true});
+  }, 220);
+}
+
+// ═══════════════════════════════════
+// AUDIO (Web Speech API TTS)
+// ═══════════════════════════════════
+let speechRate=1;
+const speeds=[0.75,1,1.25,1.5];
+let speedIdx=1;
+
+function getPageText(){
+  const b=books.find(bk=>bk.id===currentBookId);
+  if(!b) return '';
+  // For PDF books: use extracted page text if available, else description
+  if(b.pdf_url) return _currentPdfPageText || b.desc||b.description||b.title||'';
+  const lp=b.pages[currentPage];
+  const rp=b.pages[currentPage+1];
+  let text=lp?lp.text+' ':'' ;
+  if(rp) text+=rp.text;
+  return text.trim();
+}
+
+function toggleAudio(){
+  if(ttsPlaying){stopAudio();}
+  else{startAudio();}
+}
+
+function _getAudioEl(){
+  if(!_audioEl){
+    _audioEl=document.createElement('audio');
+    _audioEl.style.display='none';
+    document.body.appendChild(_audioEl);
+  }
+  return _audioEl;
+}
+
+function startAudio(){
+  stopAudio();
+  const b=books.find(bk=>bk.id===currentBookId);
+  if(!b) return;
+
+  // ── Use pre-recorded audio if the book has one ──
+  if(b.audio_url){
+    _startRecordedAudio(b);
+    return;
+  }
+
+  // ── Otherwise fall back to TTS ──
+  if(!window.speechSynthesis){showToast('🎙️ Audio not supported in this browser');return;}
+  const text=getPageText();
+  if(!text) return;
+  // Wrap words in spans for highlighting
+  _wrapTextForHighlight(text, b);
+  ttsUtterance=new SpeechSynthesisUtterance(text);
+  ttsUtterance.rate=speeds[speedIdx];
+  ttsUtterance.pitch=1.05;
+  ttsUtterance.lang=LANG_TTS[b.lang]||'en-US';
+  ttsUtterance.onstart=()=>{
+    ttsPlaying=true;
+    document.getElementById('playBtn').textContent='⏸';
+    const hBtn=document.getElementById('audioHeaderBtn');
+    if(hBtn){hBtn.textContent='⏸';hBtn.classList.add('playing');}
+    let elapsed=0;
+    const estimated=text.length*60/speeds[speedIdx];
+    clearInterval(audioInterval);
+    audioInterval=setInterval(()=>{
+      elapsed+=100;
+      const pct=Math.min(100,(elapsed/estimated)*100);
+      document.getElementById('audioFill').style.width=pct+'%';
+      const secs=Math.floor(elapsed/1000);
+      document.getElementById('audioTime').textContent=`${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`;
+    },100);
+  };
+  // Word-by-word highlight via boundary events
+  ttsUtterance.onboundary=(e)=>{
+    if(e.name!=='word') return;
+    document.querySelectorAll('.tts-word').forEach(w=>w.classList.remove('lit'));
+    // Find word span whose data-start matches charIndex
+    const span=document.querySelector(`.tts-word[data-start="${e.charIndex}"]`);
+    if(span){
+      span.classList.add('lit');
+      span.scrollIntoView({block:'nearest',behavior:'smooth'});
+    }
+  };
+  ttsUtterance.onend=()=>{ _clearHighlights(); stopAudio(true); };
+  ttsUtterance.onerror=()=>{ _clearHighlights(); stopAudio(); };
+  window.speechSynthesis.speak(ttsUtterance);
+}
+
+function _startRecordedAudio(b){
+  const el=_getAudioEl();
+  el.src=b.audio_url;
+  el.playbackRate=speeds[speedIdx];
+  el.load();
+
+  el.oncanplaythrough=null; // clear old handler
+  el.onplay=()=>{
+    ttsPlaying=true;
+    document.getElementById('playBtn').textContent='⏸';
+    const hBtn=document.getElementById('audioHeaderBtn');
+    if(hBtn){hBtn.textContent='⏸';hBtn.classList.add('playing');}
+    // Real progress bar
+    clearInterval(audioInterval);
+    audioInterval=setInterval(()=>{
+      if(!el.duration) return;
+      const pct=(el.currentTime/el.duration)*100;
+      document.getElementById('audioFill').style.width=pct+'%';
+      const secs=Math.floor(el.currentTime);
+      document.getElementById('audioTime').textContent=`${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`;
+    },100);
+  };
+
+  el.onended=()=>{ clearInterval(_audioFlipInterval); stopAudio(true); };
+  el.onerror=()=>{ showToast('⚠️ Audio file could not be loaded'); stopAudio(); };
+
+  // Auto-flip pages timed to audio duration
+  if(autoReadMode){
+    el.addEventListener('loadedmetadata',function onMeta(){
+      el.removeEventListener('loadedmetadata',onMeta);
+      const totalPages=b.pdf_url ? pdfTotalPages : Math.ceil((b.pages||[]).length/2);
+      if(totalPages<=1) return;
+      const interval=(el.duration/totalPages)*1000;
+      let flipsLeft=totalPages-1;
+      clearInterval(_audioFlipInterval);
+      _audioFlipInterval=setInterval(()=>{
+        if(flipsLeft<=0){clearInterval(_audioFlipInterval);return;}
+        flipsLeft--;
+        if(b.pdf_url) changePdfPage(1);
+        else if(currentPage+2<(b.pages||[]).length) changePage(1);
+      },interval);
+    },{once:true});
+  }
+
+  el.play().catch(()=>{ showToast('⚠️ Could not play audio'); stopAudio(); });
+}
+
+function stopAudio(finished=false){
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  // Stop pre-recorded audio too
+  if(_audioEl && !_audioEl.paused){ _audioEl.pause(); _audioEl.currentTime=0; }
+  clearInterval(_audioFlipInterval);
+  clearInterval(audioInterval);
+  ttsPlaying=false;
+  document.getElementById('playBtn').textContent='▶';
+  const hBtn=document.getElementById('audioHeaderBtn');
+  if(hBtn){hBtn.textContent='🔊';hBtn.classList.remove('playing');}
+  if(!finished){
+    document.getElementById('audioFill').style.width='0%';
+    document.getElementById('audioTime').textContent='0:00';
+  }
+  // Auto-read: advance to next page/spread when current page finishes
+  _clearHighlights();
+  if(finished && autoReadMode){
+    const b=books.find(bk=>bk.id===currentBookId);
+    if(!b){ autoReadMode=false; _updateAutoReadBtn(); return; }
+    if(!b.pdf_url){
+      // Text/emoji book — advance one spread
+      if(currentPage+2 < b.pages.length){
+        setTimeout(()=>changePage(1), 500);
+      } else {
+        // End of book
+        autoReadMode=false;
+        _updateAutoReadBtn();
+        showToast('📚 Finished reading!');
+        showOwl('🎉 The end!','Great listening! You heard the whole book!');
+      }
+    } else {
+      // PDF book — advance one page (audio restart handled inside renderPdfPage)
+      if(pdfPageNum < pdfTotalPages){
+        setTimeout(()=>changePdfPage(1), 500);
+      } else {
+        autoReadMode=false;
+        _updateAutoReadBtn();
+        showToast('📚 Finished reading!');
+        showOwl('🎉 The end!','Great listening! You heard the whole book!');
+      }
+    }
+  }
+}
+
+function scrubAudio(e){
+  const rect=e.currentTarget.getBoundingClientRect();
+  const pct=(e.clientX-rect.left)/rect.width;
+  if(_audioEl && _audioEl.duration && ttsPlaying){
+    // Scrub real audio
+    _audioEl.currentTime=_audioEl.duration*pct;
+    document.getElementById('audioFill').style.width=(pct*100)+'%';
+  } else {
+    showToast('Scrubbing available with recorded audio files');
+  }
+}
+
+function cycleSpeed(){
+  speedIdx=(speedIdx+1)%speeds.length;
+  const labels=['0.75×','1×','1.25×','1.5×'];
+  document.querySelector('.speed-btn').textContent=labels[speedIdx];
+  if(ttsPlaying){
+    if(_audioEl && _audioEl.src && !_audioEl.paused){
+      _audioEl.playbackRate=speeds[speedIdx]; // update live without restarting
+    } else {
+      startAudio(); // restart TTS at new speed
+    }
+  }
+}
+
+// ═══════════════════════════════════
+// WORD HIGHLIGHT HELPERS
+// ═══════════════════════════════════
+function _wrapTextForHighlight(fullText, book){
+  // For text/emoji books: wrap words in left+right page text elements
+  if(!book.pdf_url){
+    [['leftText','leftLocal'],['rightText','rightLocal']].forEach(([tid,lid])=>{
+      const el=document.getElementById(tid);
+      if(!el||!el.textContent.trim()) return;
+      const txt=el.textContent;
+      let html='', pos=fullText.indexOf(txt.trim());
+      if(pos<0) pos=0;
+      let offset=pos;
+      // Split keeping spaces
+      txt.split(/(\s+)/).forEach(token=>{
+        if(/\s+/.test(token)){
+          html+=token;
+          offset+=token.length;
+        } else {
+          html+=`<span class="tts-word" data-start="${offset}">${token}</span>`;
+          offset+=token.length;
+        }
+      });
+      el.innerHTML=html;
+    });
+  }
+}
+
+function _clearHighlights(){
+  document.querySelectorAll('.tts-word').forEach(w=>{
+    // Replace span with plain text to restore original DOM
+    const parent=w.parentNode;
+    if(parent) parent.replaceChild(document.createTextNode(w.textContent),w);
+  });
+  // Clean up any adjacent text nodes
+  ['leftText','rightText'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.normalize();
+  });
+}
+
+// ═══════════════════════════════════
+// AUTO-READ (Read Whole Book)
+// ═══════════════════════════════════
+function toggleAutoRead(){
+  if(autoReadMode){
+    autoReadMode=false;
+    _updateAutoReadBtn();
+    stopAudio();
+  } else {
+    autoReadMode=true;
+    _updateAutoReadBtn();
+    const b=books.find(bk=>bk.id===currentBookId);
+    if(b && b.pdf_url && pdfDoc){
+      _currentPdfPageText=null;
+      _startPdfPageRead(pdfPageNum);
+    } else {
+      startAudio();
+    }
+  }
+}
+
+function _updateAutoReadBtn(){
+  const btn=document.getElementById('autoReadBtn');
+  if(!btn) return;
+  if(autoReadMode){
+    btn.textContent='⏹ Stop';
+    btn.style.background='#e53935';
+    btn.style.color='#fff';
+    btn.title='Stop reading';
+  } else {
+    btn.textContent='📖 Read Book';
+    btn.style.background='var(--amber)';
+    btn.style.color='var(--green-dark)';
+    btn.title='Read whole book aloud';
+  }
+}
+
+async function _startPdfPageRead(pageNum){
+  if(!autoReadMode || !pdfDoc) return;
+  _currentPdfPageText=null;
+  try{
+    const page=await pdfDoc.getPage(pageNum);
+    const tc=await page.getTextContent();
+    const text=tc.items.map(i=>i.str).join(' ').replace(/\s+/g,' ').trim();
+    if(text && text.length>10){
+      _currentPdfPageText=text;
+      startAudio();
+    } else {
+      // No readable text on this page — skip after brief pause
+      setTimeout(()=>{
+        if(!autoReadMode) return;
+        if(pdfPageNum < pdfTotalPages) changePdfPage(1);
+        else{ autoReadMode=false; _updateAutoReadBtn(); showToast('📚 Finished reading!'); }
+      }, 2500);
+    }
+  }catch(e){
+    // Fallback to description
+    _currentPdfPageText=null;
+    startAudio();
+  }
+}
+
+// ═══════════════════════════════════
+// FONT SIZE
+// ═══════════════════════════════════
+function toggleFontPopover(){
+  document.getElementById('fontPopover').classList.toggle('open');
+}
+function setFont(size,e){
+  e.stopPropagation();
+  document.body.classList.remove('font-sm','font-md','font-lg','font-xl');
+  document.body.classList.add('font-'+size);
+  fontSize=size;
+  document.querySelectorAll('.fsize-btn').forEach(b=>b.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById('fontSizeLabel').textContent=fontLabels[size];
+  document.getElementById('fontPopover').classList.remove('open');
+}
+function cycleFont(){
+  const idx=fontsizes.indexOf(fontSize);
+  const next=fontsizes[(idx+1)%fontsizes.length];
+  document.body.classList.remove('font-sm','font-md','font-lg','font-xl');
+  document.body.classList.add('font-'+next);
+  fontSize=next;
+  document.getElementById('fontSizeLabel').textContent=fontLabels[next];
+  _saveState();
+}
+function fontLabel(){return fontLabels[fontSize];}
+
+// ═══════════════════════════════════
+// NIGHT MODE
+// ═══════════════════════════════════
+function toggleNight(){
+  isNight=!isNight;
+  document.body.classList.toggle('night',isNight);
+  document.getElementById('nightBtn').textContent=isNight?'☀️':'🌙';
+  const t=document.getElementById('nightToggle');
+  if(t) t.classList.toggle('on',isNight);
+  _saveState();
+}
+(function _initPersistedSettings(){
+  if(isNight){
+    document.body.classList.add('night');
+    const nb=document.getElementById('nightBtn'); if(nb) nb.textContent='☀️';
+    const nt=document.getElementById('nightToggle'); if(nt) nt.classList.add('on');
+  }
+  if(fontSize!=='md'){
+    document.body.classList.add('font-'+fontSize);
+    const fl=document.getElementById('fontSizeLabel'); if(fl) fl.textContent=fontLabels[fontSize];
+  }
+  if(!_ls.firstVisit) setTimeout(()=>showToast('🦉 Welcome to Gugut Library! Tap any book to start reading.'),1200);
+})();
+
+// ═══════════════════════════════════
+// UPLOAD MODAL
+// ═══════════════════════════════════
+function openUpload(){document.getElementById('uploadOverlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeUpload(){document.getElementById('uploadOverlay').classList.remove('open');document.body.style.overflow='';}
+document.getElementById('uploadOverlay').addEventListener('click',function(e){if(e.target===this)closeUpload();});
+document.getElementById('readerOverlay').addEventListener('click',function(e){if(e.target===this)closeReader();});
+document.addEventListener('click',function(e){
+  const fp=document.getElementById('fontPopover');
+  if(fp.classList.contains('open')&&!fp.contains(e.target)&&!e.target.closest('.ribtn')){fp.classList.remove('open');}
+});
+
+// ═══════════════════════════════════
+// CONTENT PROTECTION
+// ═══════════════════════════════════
+// Right-click protection is handled by #pdfShield overlay (see HTML)
+// Block Ctrl+S / Cmd+S (Save Page) and Ctrl+P / Cmd+P (Print) while reader is open
+document.addEventListener('keydown',function(e){
+  const readerOpen=document.getElementById('readerOverlay').classList.contains('open');
+  if(!readerOpen) return;
+  const isSave=(e.key==='s'||e.key==='S')&&(e.ctrlKey||e.metaKey);
+  const isPrint=(e.key==='p'||e.key==='P')&&(e.ctrlKey||e.metaKey);
+  if(isSave||isPrint){
+    e.preventDefault();
+    showToast('📖 Books are for reading only — printing & saving is disabled.');
+  }
+});
+// CSS: block pointer events that would reveal the canvas URL via drag-and-drop
+// pdfCanvas removed — using iframe viewer instead
+
+// ═══════════════════════════════════
+// SWIPE + KEYBOARD NAVIGATION
+// ═══════════════════════════════════
+(function(){
+  let _tx=0, _ty=0;
+  document.getElementById('readerOverlay').addEventListener('touchstart',function(e){
+    _tx=e.touches[0].clientX; _ty=e.touches[0].clientY;
+  },{passive:true});
+  document.getElementById('readerOverlay').addEventListener('touchend',function(e){
+    const dx=e.changedTouches[0].clientX-_tx;
+    const dy=e.changedTouches[0].clientY-_ty;
+    if(Math.abs(dx)<Math.abs(dy)||Math.abs(dx)<50) return; // ignore vertical or tiny swipes
+    const b=books.find(bk=>bk.id===currentBookId);
+    if(!b) return;
+    if(b.pdf_url){
+      // PDF swipe
+      if(dx<0) changePdfPage(1);
+      else changePdfPage(-1);
+    } else {
+      // Emoji book swipe
+      if(dx<0 && currentPage+2<b.pages.length) changePage(1);
+      else if(dx>0 && currentPage>0) changePage(-1);
+    }
+  },{passive:true});
+
+  // Keyboard arrow keys in reader
+  document.addEventListener('keydown',function(e){
+    if(!document.getElementById('readerOverlay').classList.contains('open')) return;
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'){
+      const b=books.find(bk=>bk.id===currentBookId);
+      if(!b) return;
+      if(b.pdf_url) changePdfPage(1);
+      else if(currentPage+2<b.pages.length) changePage(1);
+      e.preventDefault();
+    } else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){
+      const b=books.find(bk=>bk.id===currentBookId);
+      if(!b) return;
+      if(b.pdf_url) changePdfPage(-1);
+      else if(currentPage>0) changePage(-1);
+      e.preventDefault();
+    } else if(e.key==='Escape'){
+      closeReader();
+    }
+  });
+})();
+
+// ═══════════════════════════════════
+// TOAST
+// ═══════════════════════════════════
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ═══════════════════════════════════
+// ADMIN ACCESS CONTROL
+// ═══════════════════════════════════
+const ADMIN_PIN = '1234'; // Change this in the full app — will be Supabase Auth
+let isAdmin = false;
+let pinEntry = '';
+let logoTapCount = 0;
+
+function handleLogoTap() {
+  logoTapCount++;
+  if (logoTapCount >= 5) { logoTapCount = 0; openAdminLogin(); }
+}
+
+function openAdminLogin() {
+  if (isAdmin) { logoutAdmin(); return; }
+  pinEntry = '';
+  updatePinDots();
+  document.getElementById('adminLoginOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAdminLogin() {
+  document.getElementById('adminLoginOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  pinEntry = '';
+  updatePinDots();
+}
+
+function enterPin(val) {
+  if (val === '⌫') { pinEntry = pinEntry.slice(0, -1); updatePinDots(); return; }
+  if (pinEntry.length >= 4) return;
+  pinEntry += val;
+  updatePinDots();
+  if (pinEntry.length === 4) {
+    setTimeout(() => {
+      if (pinEntry === ADMIN_PIN) {
+        isAdmin = true;
+        enableAdminMode();
+        closeAdminLogin();
+        showToast('🔓 Admin mode enabled — welcome back, Sule!');
+      } else {
+        pinEntry = '';
+        updatePinDots();
+        document.querySelectorAll('.pin-dot').forEach(d => {
+          d.style.background = '#E57373';
+          setTimeout(() => d.style.background = '', 500);
+        });
+        showToast('❌ Incorrect PIN');
+      }
+    }, 150);
+  }
+}
+
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('dot' + i)?.classList.toggle('filled', i < pinEntry.length);
+  }
+}
+
+function enableAdminMode() {
+  document.getElementById('addBookBtn').style.display = '';
+  document.getElementById('bnav-admin').style.display = '';
+  document.getElementById('adminRowTitle').textContent = 'Admin Mode: ON';
+  document.getElementById('adminRowSub').textContent = 'Tap to sign out of admin';
+  document.getElementById('adminRowArrow').textContent = '🔓';
+}
+
+function logoutAdmin() {
+  isAdmin = false;
+  document.getElementById('addBookBtn').style.display = 'none';
+  document.getElementById('bnav-admin').style.display = 'none';
+  document.getElementById('adminRowTitle').textContent = 'Admin Access';
+  document.getElementById('adminRowSub').textContent = 'Sign in to manage the library';
+  document.getElementById('adminRowArrow').textContent = '›';
+  if (document.getElementById('view-admin').classList.contains('active')) switchView('library');
+  showToast('🔒 Signed out of admin mode');
+}
+
+document.getElementById('adminLoginOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeAdminLogin();
+});
+
+// ═══════════════════════════════════
+// SUPABASE INTEGRATION
+// ═══════════════════════════════════
+const SUPABASE_URL = 'https://xadoyotpgupduhrsxsdb.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_FuCQVZcIOATSmv32EDvEgw_rNfsxraj';
+let sb = null;
+
+async function initSupabase() {
+  if (typeof window.supabase === 'undefined') return;
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  await loadBooksFromDB();
+}
+
+async function loadBooksFromDB() {
+  if (!sb) { renderLibrary(); return; }
+  try {
+    const { data, error } = await sb.from('books').select('*').eq('status','published').order('created_at', { ascending: false });
+    if (error) throw error;
+    if (data && data.length > 0) {
+      // Merge DB books with sample books (DB takes priority)
+      const dbBooks = data.map((b, i) => ({
+        id: 1000 + i,
+        title: b.title,
+        local: b.local_title || b.title,
+        lang: b.language,
+        age: b.age_band,
+        cc: ['c1','c2','c3','c4','c5','c6','c7','c8'][i % 8],
+        emo: b.cover_emoji || '📖',
+        desc: b.description || '',
+        status: b.status,
+        reads: b.reads || 0,
+        pdf_url: b.pdf_url,
+        audio_url: b.audio_url,
+        pages: [{ emo: b.cover_emoji || '📖', text: b.description || 'Open the book to read!', local: b.local_title || '' }]
+      }));
+      books.unshift(...dbBooks);
+      showToast(`📚 ${dbBooks.length} book${dbBooks.length !== 1 ? 's' : ''} loaded from library!`);
+    }
+    renderLibrary();
+  } catch(err) {
+    console.error('Supabase load error:', err);
+    renderLibrary();
+  }
+}
+
+// ── REAL UPLOAD TO SUPABASE ──
+async function uploadBookToSupabase() {
+  if (!sb) { showToast('⚠️ Not connected to database'); return false; }
+
+  const titleEl = document.getElementById('uploadTitle');
+  const localTitleEl = document.getElementById('uploadLocalTitle');
+  const langEl = document.getElementById('uploadLang');
+  const ageEl = document.getElementById('uploadAge');
+  const descEl = document.getElementById('uploadDesc');
+  const narratorEl = document.getElementById('uploadNarrator');
+  const statusEl = document.getElementById('uploadStatus');
+  const pdfInput = document.getElementById('pdfFileInput');
+  const audioInput = document.getElementById('audioFileInput');
+
+  if (!titleEl.value.trim()) { showToast('⚠️ Please enter a book title'); return false; }
+  if (!langEl.value) { showToast('⚠️ Please select a language'); return false; }
+
+  const btnEl = document.getElementById('uploadSubmitBtn');
+  btnEl.textContent = 'Uploading…';
+  btnEl.disabled = true;
+
+  try {
+    let pdf_url = null, audio_url = null;
+
+    // Upload PDF
+    if (pdfInput.files[0]) {
+      const pdfFile = pdfInput.files[0];
+      const pdfPath = `${Date.now()}_${pdfFile.name.replace(/\s/g,'_')}`;
+      const { data: pdfData, error: pdfErr } = await sb.storage.from('books').upload(pdfPath, pdfFile, { upsert: true });
+      if (pdfErr) throw pdfErr;
+      const { data: { publicUrl } } = sb.storage.from('books').getPublicUrl(pdfPath);
+      pdf_url = publicUrl;
+    }
+
+    // Upload Audio
+    if (audioInput.files[0]) {
+      const audioFile = audioInput.files[0];
+      const audioPath = `${Date.now()}_${audioFile.name.replace(/\s/g,'_')}`;
+      const { error: audioErr } = await sb.storage.from('audio').upload(audioPath, audioFile, { upsert: true });
+      if (audioErr) throw audioErr;
+      const { data: { publicUrl } } = sb.storage.from('audio').getPublicUrl(audioPath);
+      audio_url = publicUrl;
+    }
+
+    // Insert book record
+    const { error: dbErr } = await sb.from('books').insert({
+      title: titleEl.value.trim(),
+      local_title: localTitleEl.value.trim(),
+      language: langEl.value,
+      age_band: ageEl.value,
+      description: descEl.value.trim(),
+      narrator: narratorEl.value.trim(),
+      status: statusEl.value,
+      pdf_url,
+      audio_url,
+      cover_emoji: '📖',
+    });
+    if (dbErr) throw dbErr;
+
+    showToast('✅ Book uploaded and live in the library!');
+    closeUpload();
+    await loadBooksFromDB();
+    return true;
+  } catch(err) {
+    showToast('❌ Upload failed: ' + err.message);
+    console.error(err);
+    return false;
+  } finally {
+    btnEl.textContent = 'Publish Book';
+    btnEl.disabled = false;
+  }
+}
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+renderLibrary(); // show sample books immediately
+// initSupabase is called via onload on the Supabase script tag below
+</script>
+
+<!-- Supabase JS client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" onload="initSupabase()"></script>
+<script>
+window.__featuresRunning = true;
+// FEATURE 2: OWL MASCOT
+function showOwl(msg, sub) {
+  document.getElementById('owlMsg').textContent = msg;
+  document.getElementById('owlSub').textContent = sub || '';
+  document.getElementById('owlOverlay').style.bottom = '0';
+  document.getElementById('owlOverlay').style.pointerEvents = 'all';
+}
+function hideOwl() {
+  document.getElementById('owlOverlay').style.bottom = '-200px';
+  document.getElementById('owlOverlay').style.pointerEvents = 'none';
+}
+
+// ═══════════════════════════════════
+// FEATURE 3: READING LEVEL SYSTEM
+// ═══════════════════════════════════
+const levels = [
+  {level:1, name:'Seedling',         amharic:'ዘር',              books:0,  color:'#8BC34A', emoji:'🌱', desc:'Just beginning the journey'},
+  {level:2, name:'Word Wanderer',    amharic:'የቃላት ተጓዥ',       books:2,  color:'#2196F3', emoji:'🔍', desc:'Exploring new words'},
+  {level:3, name:'Story Keeper',     amharic:'ታሪክ ጠባቂ',        books:5,  color:'#FF9800', emoji:'📖', desc:'Remembering every tale'},
+  {level:4, name:'Voice of the Land',amharic:'የምድር ድምፅ',       books:9,  color:'#9C27B0', emoji:'🎙️', desc:'Reading in many tongues'},
+  {level:5, name:'Champion Reader',  amharic:'ሻምፒዮን አንባቢ',     books:14, color:'#E91E63', emoji:'🏆', desc:'A true champion'},
+  {level:6, name:'Gugut Scholar',    amharic:'የጉጉት ምሁር',       books:20, color:'#F5C020', emoji:'🦉', desc:'The highest honour'}
+];
+
+function countCompletedBooks() {
+  return Object.values(readProgress).filter(p => p >= 100).length;
+}
+
+function getLevel() {
+  const completed = countCompletedBooks();
+  for (let i = levels.length - 1; i >= 0; i--) {
+    if (completed >= levels[i].books) return levels[i];
+  }
+  return levels[0];
+}
+
+function checkLevelUp(prevLevel) {
+  const currentLevel = getLevel();
+  if (currentLevel.level > prevLevel.level) {
+    setTimeout(() => {
+      showOwl(`⭐ New Level Unlocked!`, `You reached ${currentLevel.emoji} ${currentLevel.name}! Keep reading to climb higher!`);
+    }, 2000);
+  }
+}
+
+// ═══════════════════════════════════
+// FEATURE 4: QUIZ SYSTEM
+// ═══════════════════════════════════
+let quizData = [], quizIdx = 0, quizScore = 0, quizBookId = null;
+
+function startQuiz(bookId) {
+  const b = books.find(bk => bk.id === bookId);
+  if (!b || !b.quiz) return;
+  quizData = b.quiz;
+  quizIdx = 0;
+  quizScore = 0;
+  quizBookId = bookId;
+  document.getElementById('quizOverlay').style.display = 'flex';
+  document.getElementById('quizBookEmo').textContent = b.emo;
+  document.getElementById('quizTitle').textContent = b.title;
+  showQuizQuestion();
+}
+
+function showQuizQuestion() {
+  const q = quizData[quizIdx];
+  document.getElementById('quizProgress').textContent = `Question ${quizIdx+1} of ${quizData.length}`;
+  document.getElementById('quizQuestion').textContent = q.q;
+  document.getElementById('quizResult').style.display = 'none';
+  const opts = document.getElementById('quizOptions');
+  opts.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.textContent = opt;
+    btn.style = 'padding:12px 16px;border-radius:12px;border:2px solid var(--border);background:var(--card-bg);font-size:14px;font-weight:600;cursor:pointer;text-align:left;transition:all .15s;color:var(--text);';
+    btn.onclick = () => answerQuiz(i, q.a, btn);
+    opts.appendChild(btn);
+  });
+}
+
+function answerQuiz(chosen, correct, btn) {
+  document.querySelectorAll('#quizOptions button').forEach(b => b.disabled = true);
+  const isRight = chosen === correct;
+  if (isRight) { 
+    quizScore++; 
+    btn.style.background='#4CAF50'; 
+    btn.style.color='#fff'; 
+    btn.style.borderColor='#4CAF50'; 
+  } else { 
+    btn.style.background='#f44336'; 
+    btn.style.color='#fff'; 
+    btn.style.borderColor='#f44336';
+    document.querySelectorAll('#quizOptions button')[correct].style.background='#4CAF50';
+    document.querySelectorAll('#quizOptions button')[correct].style.color='#fff'; 
+  }
+  document.getElementById('quizResult').style.display = 'block';
+  document.getElementById('quizResultEmo').textContent = isRight ? '🎉' : '💪';
+  document.getElementById('quizResultMsg').textContent = isRight ? 'Correct! Well done!' : 'Not quite — but keep going!';
+  const isLast = quizIdx >= quizData.length - 1;
+  document.getElementById('quizNextBtn').textContent = isLast ? 'See Results 🏆' : 'Next →';
+}
+
+function nextQuizQuestion() {
+  quizIdx++;
+  if (quizIdx >= quizData.length) {
+    showQuizResults();
+  } else {
+    showQuizQuestion();
+  }
+}
+
+function showQuizResults() {
+  document.getElementById('quizOptions').innerHTML = '';
+  document.getElementById('quizQuestion').textContent = '';
+  document.getElementById('quizResult').style.display = 'block';
+  const pct = Math.round((quizScore / quizData.length) * 100);
+  document.getElementById('quizResultEmo').textContent = pct === 100 ? '🏆' : pct >= 66 ? '⭐' : '📖';
+  document.getElementById('quizResultMsg').textContent = `You got ${quizScore} / ${quizData.length}! ${pct===100?'Perfect score! Gugut is proud of you!':pct>=66?'Great job! Keep reading!':'Keep reading to learn more!'}`;
+  document.getElementById('quizNextBtn').textContent = 'Close ✕';
+  document.getElementById('quizNextBtn').onclick = () => { document.getElementById('quizOverlay').style.display='none'; };
+  document.getElementById('quizProgress').textContent = `Quiz Complete!`;
+}
+
+// ═══════════════════════════════════
+// FEATURE 1: ETHIOPIA MAP
+// ═══════════════════════════════════
+const ethiopiaRegions = [
+  {id:'eritrea',  name:'Eritrea',   local:'ኤርትራ',       lang:'Tigrinya', emoji:'🇪🇷', color:'#3A86C0', books:5,  completed:0},
+  {id:'ethiopia', name:'Ethiopia',  local:'ኢትዮጵያ',      lang:'Amharic',  emoji:'🇪🇹', color:'#2E7D32', books:8,  completed:0},
+  {id:'somalia',  name:'Somalia',   local:'Soomaaliya',   lang:'Somali',   emoji:'🇸🇴', color:'#1055A8', books:4,  completed:0},
+  {id:'kenya',    name:'Kenya',     local:'Kenya',        lang:'Oromiffa', emoji:'🇰🇪', color:'#D88010', books:7,  completed:0},
+  {id:'tanzania', name:'Tanzania',  local:'Tanzania',     lang:'Wolaytta', emoji:'🇹🇿', color:'#B71C1C', books:3,  completed:0}
+];
+
+function initMapView() {
+  // Update completion counts from readProgress
+  ethiopiaRegions.forEach(r => {
+    r.completed = books.filter(b => b.lang === r.lang && readProgress[b.id] >= 100).length;
+  });
+
+  // Update hero stats
+  const totalRead = ethiopiaRegions.reduce((s, r) => s + r.completed, 0);
+  const countriesVisited = ethiopiaRegions.filter(r => r.completed > 0).length;
+  const elTotal = document.getElementById('exploreTotal');
+  const elCountries = document.getElementById('exploreCountries');
+  if (elTotal) elTotal.textContent = totalRead;
+  if (elCountries) elCountries.textContent = countriesVisited;
+
+  // Render passport stamp cards
+  const container = document.getElementById('langCards');
+  if (!container) return;
+  container.innerHTML = '';
+
+  ethiopiaRegions.forEach(r => {
+    const pct = r.books > 0 ? Math.round((r.completed / r.books) * 100) : 0;
+    const isStamped = r.completed > 0;
+    const isComplete = r.completed >= r.books;
+    const sealText = isComplete ? '★ Done ★' : isStamped ? 'In\nProgress' : '';
+
+    const card = document.createElement('div');
+    card.className = `pstamp${isStamped ? ' stamped' : ''}${isComplete ? ' completed-all' : ''}`;
+    card.style.color = r.color;
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', `${r.name} – ${r.lang} – ${r.completed} of ${r.books} books read. Tap to explore.`);
+    card.onclick = () => filterByLanguage(r.lang);
+    card.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); filterByLanguage(r.lang); } };
+    card.innerHTML = `
+      <div class="pstamp-inner"></div>
+      <span class="pstamp-flag">${r.emoji}</span>
+      <div class="pstamp-country">${r.name}</div>
+      <div class="pstamp-local">${r.local}</div>
+      <span class="pstamp-lang" style="background:${r.color};">${r.lang}</span>
+      <div class="pstamp-bar-wrap">
+        <div class="pstamp-bar" style="width:${pct}%;background:${r.color};"></div>
+      </div>
+      <div class="pstamp-count">${r.completed}&thinsp;/&thinsp;${r.books} books</div>
+      <div class="pstamp-seal" style="border-color:${r.color};color:${r.color};">${sealText}</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function filterByLanguage(lang) {
+  activeLang = lang;
+  switchView('library');
+  renderLibrary();
+  const pills = document.querySelectorAll('.pill');
+  pills.forEach(p => p.classList.remove('active'));
+  const target = Array.from(pills).find(p => p.textContent === lang);
+  if (target) target.classList.add('active');
+}
+
+// ═══════════════════════════════════
+// FEATURE 5: BOOK COVER THUMBNAILS
+// ═══════════════════════════════════
+const coverCache = new Map();
+
+// Shared DOM canvas for thumbnail rendering (must be in DOM for PDF.js to render)
+const _thumbCanvas = document.createElement('canvas');
+_thumbCanvas.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;pointer-events:none;';
+document.body.appendChild(_thumbCanvas);
+
+// Queue ensures renders happen ONE AT A TIME — prevents PDF.js worker overload
+const _thumbQueue = [];
+let _thumbBusy = false;
+
+function renderBookCover(bookId, pdf_url, canvasEl) {
+  if (coverCache.has(bookId)) {
+    _applyThumb(canvasEl, coverCache.get(bookId));
+    return;
+  }
+  // Show shimmer pulse while thumbnail is being fetched
+  canvasEl.classList.add('thumb-loading');
+  _thumbQueue.push({ bookId, pdf_url, canvasEl });
+  _drainThumbQueue();
+}
+
+function _applyThumb(el, dataUrl) {
+  el.classList.remove('thumb-loading');
+  el.classList.add('thumb-loaded');
+  el.style.backgroundImage = `url(${dataUrl})`;
+  el.style.backgroundSize = 'cover';
+  el.style.backgroundPosition = 'center top';
+  const emo = el.querySelector('span');
+  if (emo) emo.style.display = 'none';
+  // Remove animation class after it plays so it can re-trigger if needed
+  el.addEventListener('animationend', () => el.classList.remove('thumb-loaded'), { once: true });
+}
+
+async function _drainThumbQueue() {
+  if (_thumbBusy || _thumbQueue.length === 0) return;
+  // Don't render thumbnails while reader is open — avoid PDF.js worker conflicts
+  if (document.getElementById('readerOverlay').classList.contains('open')) {
+    setTimeout(_drainThumbQueue, 2000);
+    return;
+  }
+  _thumbBusy = true;
+  const { bookId, pdf_url, canvasEl } = _thumbQueue.shift();
+  try {
+    if (typeof pdfjsLib === 'undefined') { _thumbBusy = false; return; }
+    // Check again in case it was cached while we were waiting
+    if (coverCache.has(bookId)) { _applyThumb(canvasEl, coverCache.get(bookId)); return; }
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    // Full fetch — same proven approach as the reader, works for all PDFs
+    const resp = await fetch(pdf_url);
+    if (!resp.ok) throw new Error('fetch ' + resp.status);
+    const buf = await resp.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(buf) }).promise;
+    const page = await pdf.getPage(1);
+    const viewport = page.getViewport({ scale: 0.3 });
+    // Fresh canvas per render — avoids PDF.js "same canvas" lock errors
+    const freshCanvas = document.createElement('canvas');
+    freshCanvas.width = viewport.width;
+    freshCanvas.height = viewport.height;
+    await page.render({ canvasContext: freshCanvas.getContext('2d'), viewport }).promise;
+    const dataUrl = freshCanvas.toDataURL('image/jpeg', 0.8);
+    coverCache.set(bookId, dataUrl);
+    _applyThumb(canvasEl, dataUrl);
+  } catch(e) { console.warn('Thumb failed bookId=' + bookId + ':', e.message); /* keep emoji fallback */ }
+  finally {
+    _thumbBusy = false;
+    // Small pause between PDFs to avoid overwhelming the worker
+    setTimeout(_drainThumbQueue, 300);
+  }
+}
+
+// ═══════════════════════════════════
+// UPDATE SWITCH VIEW FOR MAP
+// ═══════════════════════════════════
+const originalSwitchView = switchView;
+switchView = function(v) {
+  originalSwitchView(v);
+  if (v === 'map') initMapView();
+};
+
+// ═══════════════════════════════════
+// OVERRIDE RENDER LIBRARY FOR QUIZ
+// ═══════════════════════════════════
+const originalRenderLibrary = renderLibrary;
+renderLibrary = function() {
+  originalRenderLibrary();
+  // Render PDF covers for books with pdf_url
+  document.querySelectorAll('.bcover').forEach(el => {
+    const bookId = parseInt(el.dataset.bookId);
+    const book = books.find(b => b.id === bookId);
+    if (book && book.pdf_url) {
+      renderBookCover(bookId, book.pdf_url, el);
+    }
+  });
+};
+
+// Hook into the close reader function to trigger quiz
+const originalCloseReader = closeReader;
+closeReader = function() {
+  originalCloseReader();
+  // Re-apply any thumbnails that finished rendering while the overlay was open
+  document.querySelectorAll('.bcover').forEach(el => {
+    const bookId = parseInt(el.dataset.bookId);
+    if (!isNaN(bookId) && coverCache.has(bookId)) {
+      _applyThumb(el, coverCache.get(bookId));
+    }
+  });
+  // Resume thumbnail queue if it paused for the reader
+  _drainThumbQueue();
+  // Check if book just reached 100%
+  const book = books.find(b => b.id === currentBookId);
+  if (book && readProgress[currentBookId] >= 100 && book.quiz) {
+    const prevLevel = getLevel();
+    // Show owl celebration
+    showOwl('🎉 አንብበሃል! You finished a book!', 'Amazing reading! Keep going to light up the map.');
+    // Trigger level up check
+    setTimeout(() => {
+      const newLevel = getLevel();
+      if (newLevel.level > prevLevel.level) {
+        checkLevelUp(prevLevel);
+      }
+    }, 2500);
+    // Start quiz after owl
+    setTimeout(() => {
+      hideOwl();
+      startQuiz(currentBookId);
+    }, 5000);
+  }
+};
+
+// ═══════════════════════════════════
+// UPDATE PROFILE LEVEL DISPLAY
+// ═══════════════════════════════════
+function updateProfileLevel() {
+  const level = getLevel();
+  const completed = countCompletedBooks();
+  const nextLevel = levels.find(l => l.level === level.level + 1);
+  const booksNeeded = nextLevel ? nextLevel.books : level.books;
+  const booksToNext = Math.max(0, booksNeeded - completed);
+  
+  document.getElementById('levelEmoji').textContent = level.emoji;
+  document.getElementById('levelName').textContent = level.name;
+  document.getElementById('levelLocal').textContent = level.amharic;
+  
+  if (nextLevel) {
+    const pct = Math.round(((completed - level.books) / (nextLevel.books - level.books)) * 100);
+    document.getElementById('levelProgress').style.width = Math.min(100, pct) + '%';
+    document.getElementById('levelText').textContent = `${booksToNext} books to next level`;
+  } else {
+    document.getElementById('levelProgress').style.width = '100%';
+    document.getElementById('levelText').textContent = 'Maximum level reached! 🎉';
+  }
+}
+
+// Hook into renderMyBooks to update profile when viewing profile
+const originalRenderMyBooks = renderMyBooks;
+renderMyBooks = function() {
+  originalRenderMyBooks();
+  updateProfileLevel();
+};
+</script>
+
+<!-- OWL MASCOT OVERLAY -->
+<div id="owlOverlay" style="position:fixed;bottom:-200px;left:0;right:0;z-index:550;display:flex;flex-direction:column;align-items:center;transition:bottom 0.5s cubic-bezier(.34,1.56,.64,1);pointer-events:none;">
+  <div style="background:var(--green-dark);border-radius:24px 24px 0 0;padding:20px 32px;text-align:center;max-width:360px;width:90%;pointer-events:all;box-shadow:0 -4px 24px rgba(0,0,0,.25);">
+    <img src="gugut%20logo.png" style="height:60px;width:auto;margin-bottom:8px;">
+    <p id="owlMsg" style="color:#fff;font-size:16px;font-weight:700;margin:0 0 4px;"></p>
+    <p id="owlSub" style="color:rgba(255,255,255,0.7);font-size:13px;margin:0 0 12px;line-height:1.5;"></p>
+    <button onclick="hideOwl()" style="background:var(--amber);color:var(--green-dark);border:none;border-radius:20px;padding:8px 24px;font-weight:800;cursor:pointer;font-size:14px;">ቀጥል! (Continue)</button>
+  </div>
+</div>
+
+<!-- QUIZ OVERLAY -->
+<div class="modal-overlay" id="quizOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:520;display:none;align-items:center;justify-content:center;padding:16px;">
+  <div class="modal-sheet" style="background:var(--card-bg);border-radius:18px;max-height:80vh;overflow-y:auto;max-width:500px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+    <div style="display:flex;justify-content:flex-end;margin-bottom:4px;">
+      <button onclick="document.getElementById('quizOverlay').style.display='none';" aria-label="Skip quiz" style="background:none;border:none;color:var(--text-light);font-size:22px;cursor:pointer;padding:0;line-height:1;opacity:.7;">✕</button>
+    </div>
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:44px;margin-bottom:8px;" id="quizBookEmo"></div>
+      <h3 id="quizTitle" style="margin:0 0 4px;color:var(--green-dark);font-size:18px;"></h3>
+      <p style="color:var(--text-light);font-size:12px;margin:0;" id="quizProgress">Question 1 of 3</p>
+    </div>
+    <p id="quizQuestion" style="font-size:17px;font-weight:700;text-align:center;margin-bottom:20px;color:var(--text);"></p>
+    <div id="quizOptions" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;"></div>
+    <div id="quizResult" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:48px;margin-bottom:8px;" id="quizResultEmo"></div>
+      <p id="quizResultMsg" style="font-size:18px;font-weight:800;color:var(--green-dark);margin-bottom:16px;"></p>
+      <button onclick="nextQuizQuestion()" id="quizNextBtn" style="background:var(--green);color:#fff;border:none;border-radius:20px;padding:10px 28px;font-weight:800;font-size:15px;cursor:pointer;">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPLORE VIEW -->
+<div class="view" id="view-map">
+  <div class="scroll" style="display:flex;flex-direction:column;">
+
+    <!-- Hero banner -->
+    <div class="explore-hero">
+      <div class="explore-hero-icon">✈️</div>
+      <h2>Your Reading Journey</h2>
+      <p>Read books to earn passport stamps!</p>
+      <div class="explore-hero-stats">
+        <span>📚 <strong id="exploreTotal">0</strong> books read</span>
+        <span>🌍 <strong id="exploreCountries">0</strong>&thinsp;/&thinsp;5 countries</span>
+      </div>
+    </div>
+
+    <!-- Passport stamp grid (filled by JS) -->
+    <div class="passport-grid" id="langCards"></div>
+
+    <p class="explore-tip">Tap a country to explore its books 📖</p>
+
+  </div>
+</div>
+
+
+</div>
+
+</body>
+</html>
