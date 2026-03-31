@@ -26,6 +26,13 @@
   --brown:#4A3210;        /* deep warm brown */
   --text:#1C1C1C;--text-mid:#444;--text-light:#888;
   --shadow:0 4px 24px rgba(0,0,0,.10);--radius:16px;
+  /* ── SECONDARY PALETTE (kids-app vibrancy) ── */
+  --coral:#E84E40;      /* warm red — alerts, Ethiopia */
+  --teal:#00897B;       /* cool teal — Somalia */
+  --purple:#7B1FA2;     /* deep purple — achievements */
+  --sky:#039BE5;        /* sky blue — Kenya */
+  --orange:#F57C00;     /* warm orange — Tanzania */
+  --green-neon:#76FF03; /* neon accent — reading streak */
   --bg:var(--cream);--card-bg:#fff;--border:#deeede;--bar-bg:#fff;
 }
 body.night{
@@ -60,10 +67,16 @@ button:focus-visible{outline:2.5px solid var(--amber);outline-offset:2px;}
 
 /* ── BOTTOM NAV ── */
 .bottom-nav{background:var(--bar-bg);border-top:1px solid var(--border);display:flex;position:sticky;bottom:0;z-index:100;}
-.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 12px;cursor:pointer;border:none;background:none;color:var(--text-light);font-size:10px;font-weight:600;letter-spacing:.3px;transition:color .2s;}
-.bnav-item .bico{font-size:20px;transition:transform .2s;}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 12px;cursor:pointer;border:none;background:none;color:var(--text-light);font-size:10px;font-weight:600;letter-spacing:.3px;transition:color .2s;position:relative;}
+.bnav-item .bico{font-size:20px;transition:transform .2s;display:flex;align-items:center;justify-content:center;width:24px;height:24px;}
+.bnav-item .bico svg{transition:transform .2s,stroke .2s;}
+.bnav-item.active .bico svg{stroke:var(--green);}
+body.night .bnav-item .bico svg{stroke:var(--text-light);}
+body.night .bnav-item.active .bico svg{stroke:var(--green-light);}
 .bnav-item.active{color:var(--green);}
-.bnav-item.active .bico{transform:scale(1.15);}
+.bnav-item.active .bico{transform:scale(1.2);}
+.bnav-item.active::before{content:'';position:absolute;top:6px;left:50%;transform:translateX(-50%);width:36px;height:36px;background:var(--green-pale);border-radius:12px;z-index:-1;}
+body.night .bnav-item.active::before{background:rgba(45,112,48,.25);}
 
 /* ── FILTERS ── */
 .filters{background:var(--bar-bg);border-bottom:1px solid var(--border);padding:0 16px;position:sticky;top:60px;z-index:90;overflow-x:auto;-webkit-overflow-scrolling:touch;}
@@ -71,16 +84,17 @@ button:focus-visible{outline:2.5px solid var(--amber);outline-offset:2px;}
 .filters-inner{display:flex;align-items:center;gap:8px;padding:10px 0;white-space:nowrap;min-width:max-content;}
 .flabel{font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-right:2px;}
 .fdiv{width:1px;height:20px;background:var(--border);flex-shrink:0;margin:0 4px;}
-.pill{padding:5px 13px;border-radius:24px;border:1.5px solid var(--border);background:var(--card-bg);font-size:12px;font-weight:600;cursor:pointer;color:var(--text-mid);transition:all .15s;white-space:nowrap;}
-.pill:hover{border-color:var(--green-mid);color:var(--green);}
-.pill.active{background:var(--green);border-color:var(--green);color:#fff;}
+.pill{padding:6px 14px;border-radius:24px;border:1.5px solid var(--border);background:var(--card-bg);font-size:12px;font-weight:700;cursor:pointer;color:var(--text-mid);transition:all .18s;white-space:nowrap;}
+.pill:hover{border-color:var(--green-mid);color:var(--green);background:var(--green-pale);}
+.pill.active{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 2px 10px rgba(45,112,48,.35);}
 
 /* ── SCROLL CONTAINER ── */
 .scroll{flex:1;overflow-y:auto;padding:20px 16px 24px;max-width:1200px;width:100%;margin:0 auto;}
 
 /* ── HERO ── */
-.hero{background:linear-gradient(135deg,var(--green) 0%,var(--green-dark) 100%);border-radius:20px;color:#fff;padding:28px 24px;margin-bottom:24px;position:relative;overflow:hidden;}
-.hero::before{content:'🦉';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:80px;opacity:.12;}
+.hero{background:linear-gradient(135deg,#3D9040 0%,var(--green) 45%,var(--green-dark) 100%);border-radius:20px;color:#fff;padding:28px 24px;margin-bottom:24px;position:relative;overflow:hidden;box-shadow:0 4px 20px rgba(20,43,26,.3);}
+.hero::before{content:'🦉';position:absolute;right:16px;top:50%;transform:translateY(-50%) rotate(-5deg);font-size:84px;opacity:.14;transition:transform .3s;}
+.hero:hover::before{transform:translateY(-50%) rotate(5deg) scale(1.1);}
 .hero h2{font-size:22px;font-weight:800;margin-bottom:6px;}
 .hero p{font-size:14px;opacity:.8;max-width:320px;line-height:1.5;margin-bottom:16px;}
 .hero-stats{display:flex;gap:20px;}
@@ -89,41 +103,43 @@ button:focus-visible{outline:2.5px solid var(--amber);outline-offset:2px;}
 
 /* ── SECTIONS ── */
 .section{margin-bottom:32px;}
-.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--green-pale);}
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--green-pale);padding-left:10px;border-left:3px solid var(--green);border-radius:0 0 0 2px;}
 .section-hdr.plain{border-bottom:none;padding-bottom:0;}
 .section-icon{font-size:20px;margin-right:8px;}
-.section-title{font-size:16px;font-weight:700;color:var(--green-dark);}
+.section-title{font-size:18px;font-weight:900;color:var(--green-dark);letter-spacing:-.2px;}
 body.night .section-title{color:var(--green-light);}
 .section-sub{font-size:12px;color:var(--text-light);}
 .see-all{font-size:12px;color:var(--green-mid);font-weight:600;cursor:pointer;background:none;border:none;text-decoration:none;}
 
 /* ── BOOK GRID ── */
-.book-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;}
+.book-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(152px,1fr));gap:16px;}
 
 /* ── BOOK CARD ── */
-.bcard{background:var(--card-bg);border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 2px 8px rgba(0,0,0,.07);}
-.bcard:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
-.bcover{width:100%;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;overflow:hidden;}
+.bcard{background:var(--card-bg);border-radius:18px;overflow:hidden;cursor:pointer;transition:transform .24s,box-shadow .24s;box-shadow:0 2px 12px rgba(0,0,0,.1);border:1px solid rgba(0,0,0,.04);position:relative;}
+.bcard:hover{transform:translateY(-5px) scale(1.015);box-shadow:0 10px 32px rgba(0,0,0,.16);}
+.bcard::after{content:'▶ Read';position:absolute;inset:0 0 auto 0;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(14,38,20,.78);color:#fff;font-size:14px;font-weight:800;letter-spacing:.6px;border-radius:18px;opacity:0;transition:opacity .22s;pointer-events:none;}
+.bcard:hover::after{opacity:1;}
+.bcover{width:100%;aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;overflow:hidden;}
 /* Shimmer pulse while thumbnail is loading */
 .bcover.thumb-loading::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 30%,rgba(255,255,255,.25) 50%,transparent 70%);background-size:200% 100%;animation:thumbShimmer 1.6s ease-in-out infinite;}
 @keyframes thumbShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 /* Fade in when thumbnail arrives */
 @keyframes thumbFadeIn{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:scale(1)}}
 .bcover.thumb-loaded{animation:thumbFadeIn .45s ease-out;}
-.c1{background:linear-gradient(145deg,#E8F5E9,#A5D6A7);}
-.c2{background:linear-gradient(145deg,#FFF3E0,#FFCC80);}
-.c3{background:linear-gradient(145deg,#E3F2FD,#90CAF9);}
-.c4{background:linear-gradient(145deg,#FCE4EC,#F48FB1);}
-.c5{background:linear-gradient(145deg,#F3E5F5,#CE93D8);}
-.c6{background:linear-gradient(145deg,#E0F2F1,#80CBC4);}
-.c7{background:linear-gradient(145deg,#FFF8E1,#FFE082);}
-.c8{background:linear-gradient(145deg,#E8EAF6,#9FA8DA);}
+.c1{background:linear-gradient(150deg,#B9F2BB 0%,#2E8B37 60%,#1B5E20 100%);}
+.c2{background:linear-gradient(150deg,#FFD180 0%,#FF8F00 55%,#E65100 100%);}
+.c3{background:linear-gradient(150deg,#90CAF9 0%,#1976D2 55%,#0D47A1 100%);}
+.c4{background:linear-gradient(150deg,#F48FB1 0%,#D81B60 55%,#880E4F 100%);}
+.c5{background:linear-gradient(150deg,#CE93D8 0%,#8E24AA 55%,#4A148C 100%);}
+.c6{background:linear-gradient(150deg,#80DEEA 0%,#00838F 55%,#004D40 100%);}
+.c7{background:linear-gradient(150deg,#FFF59D 0%,#F9A825 55%,#E65100 100%);}
+.c8{background:linear-gradient(150deg,#9FA8DA 0%,#3949AB 55%,#1A237E 100%);}
 .cover-overlay{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:700;padding:5px 8px;line-height:1.3;}
 .lang-badge{position:absolute;top:6px;left:6px;background:var(--green-dark);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:24px;}
 .fav-btn{position:absolute;top:6px;right:6px;background:rgba(255,255,255,.85);border:none;border-radius:50%;width:26px;height:26px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;}
 .fav-btn:hover{background:#fff;}
-.binfo{padding:10px 10px 12px;}
-.btitle{font-size:13px;font-weight:700;line-height:1.3;margin-bottom:3px;}
+.binfo{padding:10px 12px 13px;}
+.btitle{font-size:13px;font-weight:800;line-height:1.3;margin-bottom:4px;}
 .bmeta{display:flex;gap:5px;flex-wrap:wrap;}
 .tag{font-size:10px;padding:2px 7px;border-radius:24px;font-weight:600;}
 .tag-age{background:var(--green-pale);color:var(--green-dark);}
@@ -200,36 +216,42 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 .font-lg .page-text{font-size:20px!important;}
 .font-xl .page-text{font-size:24px!important;}
 
-.book-spread{display:flex;gap:3px;width:100%;max-width:700px;border-radius:14px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.5);}
-/* ── DRAMATIC 2-PHASE PAGE FLIP ── */
-/* Phase 1: current pages fold away to the left (like lifting a page) */
+/* ── BOOK SPREAD ── */
+.book-flip-wrap{perspective:1500px;perspective-origin:50% 42%;width:100%;max-width:700px;margin:0 auto;}
+.book-spread{display:flex;gap:0;width:100%;border-radius:14px;overflow:hidden;box-shadow:0 14px 52px rgba(0,0,0,.6);transform-style:preserve-3d;will-change:transform;transform-origin:center center;}
+.book-spine{width:7px;background:linear-gradient(to right,rgba(0,0,0,.22),rgba(0,0,0,.08) 45%,rgba(255,255,255,.12) 55%,transparent);flex-shrink:0;}
+
+/* ── PAGE FLIP — natural 2-phase turn with overshoot ── */
 @keyframes pageFlipOut{
-  0%  {transform:perspective(700px) rotateY(0deg) scale(1);opacity:1;}
-  100%{transform:perspective(700px) rotateY(-90deg) scale(0.88);opacity:0;}
+  0%  {transform:rotateY(0deg) scale(1);opacity:1;}
+  38% {transform:rotateY(-54deg) scale(0.97);opacity:.85;}
+  100%{transform:rotateY(-90deg) scale(0.93);opacity:0;}
 }
-/* Phase 1 backward: fold away to the right */
 @keyframes pageFlipOutBack{
-  0%  {transform:perspective(700px) rotateY(0deg) scale(1);opacity:1;}
-  100%{transform:perspective(700px) rotateY(90deg) scale(0.88);opacity:0;}
+  0%  {transform:rotateY(0deg) scale(1);opacity:1;}
+  38% {transform:rotateY(54deg) scale(0.97);opacity:.85;}
+  100%{transform:rotateY(90deg) scale(0.93);opacity:0;}
 }
-/* Phase 2: new pages arrive from the opposite side */
 @keyframes pageFlipIn{
-  0%  {transform:perspective(700px) rotateY(90deg) scale(0.88);opacity:0;}
-  100%{transform:perspective(700px) rotateY(0deg) scale(1);opacity:1;}
+  0%  {transform:rotateY(90deg) scale(0.93);opacity:0;}
+  52% {transform:rotateY(-6deg) scale(1.01);opacity:1;}
+  100%{transform:rotateY(0deg) scale(1);opacity:1;}
 }
 @keyframes pageFlipInBack{
-  0%  {transform:perspective(700px) rotateY(-90deg) scale(0.88);opacity:0;}
-  100%{transform:perspective(700px) rotateY(0deg) scale(1);opacity:1;}
+  0%  {transform:rotateY(-90deg) scale(0.93);opacity:0;}
+  52% {transform:rotateY(6deg) scale(1.01);opacity:1;}
+  100%{transform:rotateY(0deg) scale(1);opacity:1;}
 }
-.flip-out     {animation:pageFlipOut     0.22s ease-in  forwards;}
-.flip-out-back{animation:pageFlipOutBack 0.22s ease-in  forwards;}
-.flip-in      {animation:pageFlipIn      0.22s ease-out forwards;}
-.flip-in-back {animation:pageFlipInBack  0.22s ease-out forwards;}
+.flip-out     {animation:pageFlipOut     0.38s cubic-bezier(0.4,0,0.8,0.2) forwards;}
+.flip-out-back{animation:pageFlipOutBack 0.38s cubic-bezier(0.4,0,0.8,0.2) forwards;}
+.flip-in      {animation:pageFlipIn      0.44s cubic-bezier(0.1,0.8,0.3,1) forwards;}
+.flip-in-back {animation:pageFlipInBack  0.44s cubic-bezier(0.1,0.8,0.3,1) forwards;}
 /* PDF page transition */
 @keyframes pdfFade{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:translateX(0)}}
 #pdfScrollArea.pdf-turn{animation:pdfFade .3s ease-out;}
-.page{flex:1;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;gap:10px;min-height:260px;}
-.page.right-p{background:#fafafa;}
+.page{flex:1;background:linear-gradient(160deg,#fefefe,#f8f6f2);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;gap:10px;min-height:260px;position:relative;}
+.page::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(0,0,0,.028) 27px,rgba(0,0,0,.028) 28px);pointer-events:none;}
+.page.right-p{background:linear-gradient(160deg,#f9f7f3,#f4f2ee);}
 .page-emo{font-size:64px;line-height:1;}
 .page-text{font-size:16px;line-height:1.7;color:#333;text-align:center;font-family:Georgia,serif;transition:font-size .2s;}
 .page-local{font-size:17px;color:var(--green-dark);font-weight:600;text-align:center;margin-top:4px;}
@@ -348,7 +370,7 @@ body.night .modal-sheet h3{color:var(--green-light);}
 .modal-sheet>p{font-size:13px;color:var(--text-light);margin-bottom:16px;}
 
 /* ── TOAST ── */
-.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--green-dark);color:#fff;padding:11px 20px;border-radius:30px;font-size:13px;font-weight:600;box-shadow:var(--shadow);z-index:9999;opacity:0;transition:opacity .3s,transform .3s;white-space:nowrap;}
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--green-dark);color:#fff;padding:11px 22px;border-radius:30px;font-size:13px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.3);z-index:9999;opacity:0;transition:opacity .28s,transform .28s cubic-bezier(0.22,1,0.36,1);white-space:nowrap;border-left:3px solid var(--amber);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
 /* ── EMPTY ── */
@@ -359,10 +381,41 @@ body.night .modal-sheet h3{color:var(--green-light);}
 /* ── RESPONSIVE ── */
 @media(max-width:500px){
   .book-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
+  .book-flip-wrap{max-width:100%;}
   .book-spread{flex-direction:column;}
-  .page.right-p{border-top:1px solid #eee;}
+  .book-spine{width:100%;height:6px;background:linear-gradient(to bottom,rgba(0,0,0,.18),rgba(0,0,0,.06) 45%,rgba(255,255,255,.12) 55%,transparent);}
+  .page.right-p{border-top:none;}
   .hero h2{font-size:18px;}
 }
+
+/* ── AFRICA MAP ── */
+.africa-map-wrap{border-radius:20px;overflow:hidden;margin-bottom:20px;box-shadow:0 6px 28px rgba(0,60,140,.28),0 1px 0 rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.1);}
+body.night .africa-map-wrap{box-shadow:0 6px 28px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.08);}
+.africa-map-wrap svg{width:100%;height:auto;display:block;}
+.africa-land{cursor:default;}
+#countryMarkers g{cursor:pointer;transition:filter .18s;}
+#countryMarkers g:hover{filter:brightness(1.15) drop-shadow(0 0 10px rgba(255,215,50,.85)) !important;}
+.africa-tip{text-align:center;font-size:12px;color:var(--text-light);margin:4px 0 12px;}
+
+/* ── READING STREAK ── */
+.streak-bar{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,#7B3F00,#C86020);border-radius:14px;padding:10px 16px;margin:0 16px 16px;color:#fff;}
+.streak-flame{font-size:26px;filter:drop-shadow(0 2px 6px rgba(255,120,0,.7));animation:flicker 1.8s ease-in-out infinite alternate;}
+@keyframes flicker{0%{transform:scale(1) rotate(-3deg);}50%{transform:scale(1.08) rotate(2deg);}100%{transform:scale(0.96) rotate(-1deg);}}
+.streak-info{flex:1;}
+.streak-num{font-size:20px;font-weight:900;line-height:1;}
+.streak-label{font-size:10px;opacity:.8;letter-spacing:.5px;text-transform:uppercase;}
+.streak-days{display:flex;gap:4px;}
+.streak-day{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;letter-spacing:.3px;}
+.streak-day.done{background:var(--amber);color:var(--green-dark);}
+
+/* ── STAR RATING / ACHIEVEMENT ── */
+.stars{display:flex;gap:2px;align-items:center;}
+.star{color:#DDD;font-size:14px;transition:color .15s,transform .15s;}
+.star.lit{color:var(--amber);filter:drop-shadow(0 0 3px rgba(245,192,32,.6));transform:scale(1.1);}
+.achievement-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:.3px;}
+.badge-gold{background:linear-gradient(135deg,#F5C020,#E8A010);color:#4A3210;box-shadow:0 2px 10px rgba(245,192,32,.4);}
+.badge-silver{background:linear-gradient(135deg,#C8C8C8,#A8A8A8);color:#333;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.badge-bronze{background:linear-gradient(135deg,#CD7F32,#A05A20);color:#fff;box-shadow:0 2px 8px rgba(160,90,32,.3);}
 </style>
 </head>
 <body class="font-md">
@@ -647,19 +700,19 @@ if(location.protocol === 'file:') {
 ══════════════════════════════════ -->
 <nav class="bottom-nav">
   <button class="bnav-item active" id="bnav-library" onclick="switchView('library')">
-    <span class="bico">📚</span>Library
+    <span class="bico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>Library
   </button>
   <button class="bnav-item" id="bnav-mybooks" onclick="switchView('mybooks')">
-    <span class="bico">❤️</span>My Books
+    <span class="bico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span>My Books
   </button>
   <button class="bnav-item" id="bnav-map" onclick="switchView('map')">
-    <span class="bico">🗺️</span><span>Explore</span>
+    <span class="bico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span>Explore</span>
   </button>
   <button class="bnav-item" id="bnav-admin" onclick="switchView('admin')" style="display:none">
-    <span class="bico">🛠</span>Admin
+    <span class="bico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Admin
   </button>
   <button class="bnav-item" id="bnav-profile" onclick="switchView('profile')">
-    <span class="bico">👤</span>Profile
+    <span class="bico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>Profile
   </button>
 </nav>
 
@@ -706,18 +759,21 @@ if(location.protocol === 'file:') {
       </div>
     </div>
     <!-- Emoji page reader (shown for books without PDF) -->
-    <div class="book-spread" id="bookSpread">
-      <div class="page" id="leftPage">
-        <div class="page-emo" id="leftEmo"></div>
-        <p class="page-text" id="leftText"></p>
-        <p class="page-local" id="leftLocal"></p>
-        <div class="page-num" id="leftNum"></div>
-      </div>
-      <div class="page right-p" id="rightPage">
-        <div class="page-emo" id="rightEmo"></div>
-        <p class="page-text" id="rightText"></p>
-        <p class="page-local" id="rightLocal"></p>
-        <div class="page-num" id="rightNum"></div>
+    <div class="book-flip-wrap">
+      <div class="book-spread" id="bookSpread">
+        <div class="page" id="leftPage">
+          <div class="page-emo" id="leftEmo"></div>
+          <p class="page-text" id="leftText"></p>
+          <p class="page-local" id="leftLocal"></p>
+          <div class="page-num" id="leftNum"></div>
+        </div>
+        <div class="book-spine"></div>
+        <div class="page right-p" id="rightPage">
+          <div class="page-emo" id="rightEmo"></div>
+          <p class="page-text" id="rightText"></p>
+          <p class="page-local" id="rightLocal"></p>
+          <div class="page-num" id="rightNum"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -822,7 +878,7 @@ if(location.protocol === 'file:') {
 .pin-btn:active{background:var(--green);color:#fff;}
 
 /* ── EXPLORE / PASSPORT STAMPS ── */
-.explore-hero{background:linear-gradient(135deg,#1A5276,#2980B9);border-radius:20px;color:#fff;padding:28px 24px 22px;margin-bottom:20px;text-align:center;}
+.explore-hero{background:linear-gradient(135deg,#0A2218 0%,#1a4025 45%,#2D7030 85%,#1a4025 100%);border-radius:20px;color:#fff;padding:30px 24px 24px;margin-bottom:20px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);}
 .explore-hero-icon{font-size:36px;margin-bottom:8px;}
 .explore-hero h2{font-size:22px;font-weight:800;margin:0 0 6px;}
 .explore-hero p{font-size:13px;opacity:.8;margin:0 0 14px;}
@@ -831,7 +887,8 @@ if(location.protocol === 'file:') {
 .passport-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:8px;}
 @media(min-width:480px){.passport-grid{grid-template-columns:repeat(3,1fr);}}
 @media(min-width:700px){.passport-grid{grid-template-columns:repeat(5,1fr);}}
-.pstamp{background:var(--card-bg);border-radius:16px;padding:18px 12px 14px;text-align:center;cursor:pointer;position:relative;border:2px solid var(--border);transition:transform .2s,box-shadow .2s;overflow:hidden;}
+.pstamp{background:var(--card-bg);border-radius:20px;padding:20px 14px 16px;text-align:center;cursor:pointer;position:relative;border:2px solid var(--border);transition:transform .24s,box-shadow .24s,border-color .24s;overflow:hidden;}
+.pstamp:hover{border-color:var(--green-light);}
 .pstamp:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
 .pstamp:focus-visible{outline:3px solid var(--amber);outline-offset:2px;}
 .pstamp-inner{position:absolute;inset:5px;border-radius:11px;border:1.5px dashed currentColor;opacity:.18;pointer-events:none;}
@@ -1358,7 +1415,7 @@ function changePage(dir){
     // Phase 2 — new pages arrive from the other side
     spread.classList.add(inCls);
     spread.addEventListener('animationend',()=>spread.classList.remove(inCls),{once:true});
-  }, 220);
+  }, 380);
 }
 
 // ═══════════════════════════════════
@@ -2149,6 +2206,19 @@ const ethiopiaRegions = [
   {id:'tanzania', name:'Tanzania',  local:'Tanzania',     lang:'Wolaytta', emoji:'🇹🇿', color:'#B71C1C', books:3,  completed:0}
 ];
 
+// Geographic positions of countries in the Africa SVG (viewBox 0 0 530 570)
+// x = (lon + 17) * 7.647, y = (37 - lat) * 7.778
+// Geographic positions – formula: x=(lon+18)*7.571  y=(38-lat)*7.703
+// Capitals: Asmara(38.93E,15.33N), Addis(38.75E,9.03N), Mogadishu(45.34E,2.05N),
+//           Nairobi(36.82E,-1.29N), Dodoma(35.74E,-6.16N)
+const mapPositions = {
+  eritrea:  {cx:431, cy:175, r:18},
+  ethiopia: {cx:430, cy:223, r:24},
+  somalia:  {cx:479, cy:277, r:16},
+  kenya:    {cx:414, cy:303, r:20},
+  tanzania: {cx:406, cy:340, r:18}
+};
+
 function initMapView() {
   // Update completion counts from readProgress
   ethiopiaRegions.forEach(r => {
@@ -2163,7 +2233,57 @@ function initMapView() {
   if (elTotal) elTotal.textContent = totalRead;
   if (elCountries) elCountries.textContent = countriesVisited;
 
-  // Render passport stamp cards
+  // ── Render SVG country markers ──
+  const markersG = document.getElementById('countryMarkers');
+  if (markersG) {
+    markersG.innerHTML = '';
+    const NS = 'http://www.w3.org/2000/svg';
+    ethiopiaRegions.forEach(r => {
+      const p = mapPositions[r.id];
+      if (!p) return;
+      const isStamped = r.completed > 0;
+      const pct = r.books > 0 ? r.completed / r.books : 0;
+      const circ = 2 * Math.PI * (p.r + 5);
+      const dashFilled = pct * circ;
+
+      const g = document.createElementNS(NS, 'g');
+      g.style.cursor = 'pointer';
+      g.style.filter = isStamped
+        ? 'drop-shadow(0 0 7px rgba(255,215,50,.75))'
+        : 'drop-shadow(0 2px 5px rgba(0,0,0,.35))';
+      g.setAttribute('role', 'button');
+      g.setAttribute('tabindex', '0');
+      g.setAttribute('aria-label', r.name + ': ' + r.lang + ', ' + r.completed + '/' + r.books + ' books');
+      g.onclick = () => filterByLanguage(r.lang);
+      g.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); filterByLanguage(r.lang); } };
+
+      const mk = (tag, attrs) => { const el = document.createElementNS(NS,tag); Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v)); return el; };
+
+      // Progress ring background
+      g.appendChild(mk('circle', {cx:p.cx,cy:p.cy,r:p.r+5,fill:'none',stroke:'rgba(255,255,255,.28)','stroke-width':'3'}));
+      // Progress ring fill
+      if(pct > 0) g.appendChild(mk('circle', {cx:p.cx,cy:p.cy,r:p.r+5,fill:'none',stroke:r.color,'stroke-width':'3.5','stroke-linecap':'round','stroke-dasharray':dashFilled+' '+circ,transform:'rotate(-90 '+p.cx+' '+p.cy+')'}));
+      // Country circle
+      g.appendChild(mk('circle', {cx:p.cx,cy:p.cy,r:p.r,fill:r.color,stroke:'#fff','stroke-width':'2.2'}));
+      // Flag emoji
+      const ft = document.createElementNS(NS,'text');
+      ft.setAttribute('x',p.cx); ft.setAttribute('y',p.cy+p.r*0.38);
+      ft.setAttribute('text-anchor','middle'); ft.setAttribute('font-size',Math.round(p.r*1.1));
+      ft.setAttribute('font-family','Nunito,sans-serif'); ft.textContent = r.emoji;
+      g.appendChild(ft);
+      // Label shadow
+      const ly = p.cy + p.r + 15;
+      const lsh = mk('text',{x:String(p.cx+0.5),y:String(ly+0.8),'text-anchor':'middle','font-size':'8.5','font-weight':'800','font-family':'Nunito,sans-serif',fill:'rgba(0,0,0,.55)'});
+      lsh.textContent = r.name; g.appendChild(lsh);
+      // Label
+      const lbl = mk('text',{x:String(p.cx),y:String(ly),'text-anchor':'middle','font-size':'8.5','font-weight':'800','font-family':'Nunito,sans-serif',fill:'#fff'});
+      lbl.textContent = r.name; g.appendChild(lbl);
+
+      markersG.appendChild(g);
+    });
+  }
+
+  // ── Render passport stamp cards below ──
   const container = document.getElementById('langCards');
   if (!container) return;
   container.innerHTML = '';
@@ -2172,28 +2292,25 @@ function initMapView() {
     const pct = r.books > 0 ? Math.round((r.completed / r.books) * 100) : 0;
     const isStamped = r.completed > 0;
     const isComplete = r.completed >= r.books;
-    const sealText = isComplete ? '★ Done ★' : isStamped ? 'In\nProgress' : '';
+    const sealText = isComplete ? '★ Done ★' : isStamped ? 'In Progress' : '';
 
     const card = document.createElement('div');
     card.className = `pstamp${isStamped ? ' stamped' : ''}${isComplete ? ' completed-all' : ''}`;
     card.style.color = r.color;
     card.setAttribute('role', 'button');
     card.setAttribute('tabindex', '0');
-    card.setAttribute('aria-label', `${r.name} – ${r.lang} – ${r.completed} of ${r.books} books read. Tap to explore.`);
+    card.setAttribute('aria-label', r.name + ' – ' + r.lang + ' – ' + r.completed + ' of ' + r.books + ' books read. Tap to explore.');
     card.onclick = () => filterByLanguage(r.lang);
     card.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); filterByLanguage(r.lang); } };
-    card.innerHTML = `
-      <div class="pstamp-inner"></div>
-      <span class="pstamp-flag">${r.emoji}</span>
-      <div class="pstamp-country">${r.name}</div>
-      <div class="pstamp-local">${r.local}</div>
-      <span class="pstamp-lang" style="background:${r.color};">${r.lang}</span>
-      <div class="pstamp-bar-wrap">
-        <div class="pstamp-bar" style="width:${pct}%;background:${r.color};"></div>
-      </div>
-      <div class="pstamp-count">${r.completed}&thinsp;/&thinsp;${r.books} books</div>
-      <div class="pstamp-seal" style="border-color:${r.color};color:${r.color};">${sealText}</div>
-    `;
+    card.innerHTML =
+      '<div class="pstamp-inner"></div>' +
+      '<span class="pstamp-flag">' + r.emoji + '</span>' +
+      '<div class="pstamp-country">' + r.name + '</div>' +
+      '<div class="pstamp-local">' + r.local + '</div>' +
+      '<span class="pstamp-lang" style="background:' + r.color + ';">' + r.lang + '</span>' +
+      '<div class="pstamp-bar-wrap"><div class="pstamp-bar" style="width:' + pct + '%;background:' + r.color + ';"></div></div>' +
+      '<div class="pstamp-count">' + r.completed + ' / ' + r.books + ' books</div>' +
+      '<div class="pstamp-seal" style="border-color:' + r.color + ';color:' + r.color + ';">' + sealText + '</div>';
     container.appendChild(card);
   });
 }
@@ -2410,19 +2527,176 @@ renderMyBooks = function() {
 
     <!-- Hero banner -->
     <div class="explore-hero">
-      <div class="explore-hero-icon">✈️</div>
-      <h2>Your Reading Journey</h2>
-      <p>Read books to earn passport stamps!</p>
+      <div class="explore-hero-icon">🌍</div>
+      <h2>🌍 East Africa Reading Map</h2>
+      <p>Tap a country to explore books in its language!</p>
       <div class="explore-hero-stats">
         <span>📚 <strong id="exploreTotal">0</strong> books read</span>
-        <span>🌍 <strong id="exploreCountries">0</strong>&thinsp;/&thinsp;5 countries</span>
+        <span>⭐ <strong id="exploreCountries">0</strong>&thinsp;/&thinsp;5 countries</span>
       </div>
     </div>
 
-    <!-- Passport stamp grid (filled by JS) -->
+    <!-- Africa SVG Map -->
+    <div class="africa-map-wrap">
+      <svg viewBox="0 0 530 570" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="oceanG" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#A8D8F0"/>
+            <stop offset="60%" stop-color="#72B8E0"/>
+            <stop offset="100%" stop-color="#4A90C4"/>
+          </linearGradient>
+          <radialGradient id="landG" cx="38%" cy="32%" r="68%">
+            <stop offset="0%" stop-color="#E8C97A"/>
+            <stop offset="55%" stop-color="#C8A050"/>
+            <stop offset="100%" stop-color="#9A7030"/>
+          </radialGradient>
+          <radialGradient id="eastG" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#D4B060"/>
+            <stop offset="100%" stop-color="#B89040"/>
+          </radialGradient>
+          <filter id="landSh" x="-6%" y="-6%" width="118%" height="118%">
+            <feDropShadow dx="2" dy="4" stdDeviation="6" flood-color="rgba(0,0,0,.32)"/>
+          </filter>
+          <filter id="markerGlow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- Ocean background -->
+        <rect width="530" height="570" rx="18" fill="url(#oceanG)"/>
+
+        <!-- Subtle wave lines -->
+        <path d="M 0,95 Q 30,91 60,95 Q 90,99 120,95" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M 0,110 Q 30,106 60,110 Q 90,114 120,110" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M 0,360 Q 30,356 60,360 Q 90,364 120,360" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M 0,375 Q 30,371 60,375 Q 90,379 120,375" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.2" stroke-linecap="round"/>
+
+        <!-- Ocean labels -->
+        <text x="52" y="310" font-size="8" fill="rgba(0,40,100,.4)" text-anchor="middle" font-family="Nunito,sans-serif" font-style="italic" transform="rotate(-90 52 310)">Atlantic Ocean</text>
+        <text x="518" y="345" font-size="8" fill="rgba(0,40,100,.4)" text-anchor="middle" font-family="Nunito,sans-serif" font-style="italic" transform="rotate(-90 518 345)">Indian Ocean</text>
+        <text x="438" y="18" font-size="7.5" fill="rgba(0,40,100,.45)" text-anchor="middle" font-family="Nunito,sans-serif" font-style="italic">Red Sea</text>
+        <text x="495" y="145" font-size="6.5" fill="rgba(0,40,100,.35)" text-anchor="middle" font-family="Nunito,sans-serif" font-style="italic">Gulf of Aden</text>
+
+        <!-- ═══ AFRICA CONTINENT (accurate simplified outline) ═══
+             Clockwise from NW Morocco.
+             Formula: x=(lon+18)*7.571   y=(38-lat)*7.703
+             Key reference points:
+               Morocco NW   (-6E,36N)  → 91,15
+               Tunisia      (11E,37N)  → 220,8
+               Libya coast  (13E,33N)  → 235,38
+               Libya/Egypt  (25E,31N)  → 326,54
+               Egypt NE     (33E,30N)  → 386,62
+               Red Sea S    (37E,22N)  → 416,123
+               Djibouti     (43E,11N)  → 462,208
+               Horn tip     (51.5E,12N)→ 526,200
+               Somalia S    (51E,10N)  → 522,215
+               Mogadishu    (45E,2N)   → 478,277
+               Tanzania E   (40E,-10S) → 440,370
+               Mozambique   (35E,-17S) → 402,424
+               Beira        (34E,-20S) → 394,447
+               Maputo       (33E,-26S) → 386,493
+               SA east      (27E,-33S) → 341,547
+               Cape Point   (18.5E,-34S)→ 277,554
+               SA west      (17E,-32S) → 265,539
+               Namibia      (15E,-26.5S)→ 250,503
+               Angola       (12E,-17S) → 227,424
+               Cabinda      (12E,-5S)  → 227,331
+               Cameroon     (9E,4N)    → 204,262
+               Ghana        (0E,5.5N)  → 136,250
+               Ivory Coast  (-5E,5N)   → 98,254
+               Liberia      (-11.5E,4.5N)→ 49,258
+               Sierra Leone (-13.5E,8N)→ 34,231
+               Guinea       (-15E,10.5N)→ 23,212
+               Senegal      (-17E,14N) → 8,185
+               Mauritania   (-17E,21N) → 8,138
+               W.Sahara N   (-13.5E,28N)→ 34,77
+               Morocco SW   (-9E,32N)  → 68,46
+        ═════════════════════════════════════════════════════════ -->
+        <path class="africa-land" filter="url(#landSh)"
+          d="M 91,15
+             Q 155,3 220,8
+             Q 278,22 326,54
+             L 370,54
+             Q 386,54 386,62
+             Q 400,88 416,123
+             Q 438,165 462,208
+             L 526,200 L 522,215
+             Q 500,248 478,277
+             Q 460,325 440,370
+             Q 426,398 402,424
+             Q 394,436 386,493
+             Q 365,524 341,547
+             Q 312,563 277,554
+             Q 264,554 249,503
+             Q 237,477 227,462
+             L 227,424
+             L 227,331
+             Q 215,296 204,277
+             Q 185,260 163,244
+             Q 138,248 98,254
+             Q 72,257 49,258
+             Q 38,245 34,231
+             Q 25,219 23,212
+             Q 12,196 8,185
+             Q 2,178 4,178
+             Q 5,158 8,138
+             Q 19,105 34,77
+             Q 52,54 68,46
+             Q 80,25 91,15 Z"
+          fill="url(#landG)" stroke="rgba(255,255,255,.45)" stroke-width="1.5"/>
+
+        <!-- Madagascar (small island for visual completeness) -->
+        <path d="M 488,368 Q 508,372 516,395 Q 520,420 510,450 Q 500,468 488,460 Q 476,450 474,425 Q 472,400 480,375 Z"
+          fill="#C8A850" stroke="rgba(255,255,255,.4)" stroke-width="1" opacity=".85"/>
+        <text x="502" y="415" font-size="5.5" fill="rgba(0,0,0,.45)" text-anchor="middle" font-family="Nunito,sans-serif">MG</text>
+
+        <!-- East Africa highlight zone -->
+        <path d="M 400,138 Q 440,128 470,158
+                 Q 455,180 462,208 L 522,215
+                 Q 500,248 478,277
+                 Q 460,325 440,370
+                 Q 430,395 415,415
+                 Q 400,375 397,340
+                 Q 398,305 412,283
+                 Q 425,258 428,223
+                 Q 430,188 418,165
+                 Q 408,148 400,138 Z"
+          fill="rgba(255,210,60,.08)" stroke="rgba(255,210,60,.25)" stroke-width="1.5" stroke-dasharray="6,4"/>
+
+        <!-- Connector path linking countries -->
+        <polyline points="431,175 430,223 479,277 414,303 406,340"
+          fill="none" stroke="rgba(255,255,255,.45)" stroke-width="1.8"
+          stroke-dasharray="4,4" stroke-linecap="round"/>
+
+        <!-- Country markers (filled by JS) -->
+        <g id="countryMarkers"></g>
+
+        <!-- Compass rose (bottom-left) -->
+        <g transform="translate(38,530)">
+          <circle cx="0" cy="0" r="15" fill="rgba(255,255,255,.18)" stroke="rgba(255,255,255,.45)" stroke-width="1"/>
+          <polygon points="0,-11 2,-4 0,-1 -2,-4" fill="#1A4A7A"/>
+          <polygon points="0,11 2,4 0,1 -2,4" fill="#1A4A7A" opacity=".38"/>
+          <polygon points="-11,0 -4,2 -1,0 -4,-2" fill="#1A4A7A" opacity=".38"/>
+          <polygon points="11,0 4,2 1,0 4,-2" fill="#1A4A7A" opacity=".38"/>
+          <circle cx="0" cy="0" r="2" fill="#1A4A7A"/>
+          <text x="0" y="-14" font-size="7" fill="#1A4A7A" text-anchor="middle" font-family="Nunito" font-weight="800">N</text>
+        </g>
+
+        <!-- Scale bar -->
+        <g transform="translate(400,548)">
+          <line x1="0" y1="0" x2="60" y2="0" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="0" y1="-3" x2="0" y2="3" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
+          <line x1="60" y1="-3" x2="60" y2="3" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
+          <text x="30" y="-5" font-size="6" fill="rgba(255,255,255,.7)" text-anchor="middle" font-family="Nunito">1000 km</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Country stamp cards (interactive, filled by JS) -->
     <div class="passport-grid" id="langCards"></div>
 
-    <p class="explore-tip">Tap a country to explore its books 📖</p>
+    <p class="africa-tip">Tap a country on the map or a card below to explore its books 📖</p>
 
   </div>
 </div>
