@@ -387,9 +387,9 @@ body.night .modal-sheet h3{color:var(--green-light);}
 .africa-map-wrap{border-radius:20px;overflow:hidden;margin-bottom:20px;box-shadow:0 6px 28px rgba(0,60,140,.28),0 1px 0 rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.1);}
 body.night .africa-map-wrap{box-shadow:0 6px 28px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.08);}
 /* ══ AFRICA MAP (D3) ══ */
-#africaMapContainer{width:100%;border-radius:20px;overflow:hidden;background:linear-gradient(160deg,#A8D8F0 0%,#72B8E0 60%,#4A90C4 100%);box-shadow:0 6px 28px rgba(0,60,140,.28);border:1px solid rgba(255,255,255,.12);position:relative;min-height:340px;max-height:72vh;}
-#africaMapContainer svg{display:block;width:100%;height:100%;max-height:72vh;}
-#africaMapContainer svg{width:100%;height:auto;display:block;}
+#africaMapContainer{width:100%;border-radius:20px;overflow:hidden;background:linear-gradient(160deg,#A8D8F0 0%,#72B8E0 60%,#4A90C4 100%);box-shadow:0 6px 28px rgba(0,60,140,.28);border:1px solid rgba(255,255,255,.12);position:relative;height:clamp(320px,62vh,520px);display:flex;flex-direction:column;}
+#africaMapSvgWrap{flex:1;overflow:hidden;position:relative;}
+#africaMapContainer svg{display:block;width:100%;height:100%;}
 .country-path{fill:#D4B878;stroke:#fff;stroke-width:.6;cursor:pointer;transition:fill .25s,opacity .2s;opacity:.75;}
 .country-path.has-books{fill:#5A9E5A;stroke:rgba(255,255,255,.9);stroke-width:.9;opacity:.95;cursor:pointer;}
 .country-path.visited{fill:#2D7030;stroke:#F5C020;stroke-width:1.2;opacity:1;filter:drop-shadow(0 0 5px rgba(45,112,48,.7));}
@@ -2415,8 +2415,7 @@ function loadAfricaMap() {
         .attr('preserveAspectRatio', 'xMidYMid meet')
         .style('display', 'block')
         .style('width', '100%')
-        .style('height', '100%')
-        .style('max-height', '72vh');
+        .style('height', '100%');
 
       // Ocean background
       const defs = svg.append('defs');
