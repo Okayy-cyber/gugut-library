@@ -12,6 +12,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -185,7 +186,7 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 /* ── READER MODAL ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:500;display:none;flex-direction:column;}
 .overlay.open{display:flex;}
-.reader-bar{background:var(--green-dark);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.reader-bar{background:var(--green-dark);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;position:relative;z-index:10;}
 .reader-back-btn{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);color:#fff;font-size:13px;font-weight:700;padding:6px 14px 6px 10px;border-radius:24px;cursor:pointer;flex-shrink:0;transition:background .18s,transform .15s;letter-spacing:.2px;}
 .reader-back-btn:hover{background:rgba(255,255,255,.25);transform:translateX(-2px);}
 .reader-back-btn svg{flex-shrink:0;}
@@ -240,6 +241,23 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 /* Shadow that sweeps across the page during flip */
 @keyframes shadowSweep{0%{opacity:0;}40%{opacity:.4;}100%{opacity:0;}}
 .page-shadow{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.35),transparent);pointer-events:none;border-radius:inherit;animation:shadowSweep .38s ease-in-out forwards;}
+/* ── STPAGEFLIP PAGES ── */
+#pfWrap{flex:1;min-height:0;display:none;align-items:center;justify-content:center;overflow:hidden;padding:10px 8px;box-sizing:border-box;width:100%;clip-path:inset(0);}
+#pfBook{position:relative;}
+.stpf-page{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:10px!important;padding:22px 18px!important;box-sizing:border-box!important;height:100%!important;background:linear-gradient(160deg,#fefefe,#f8f6f2)!important;overflow:hidden!important;position:relative!important;}
+.stpf-page::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(0,0,0,.028) 27px,rgba(0,0,0,.028) 28px);pointer-events:none;}
+.stpf-page:nth-child(even){background:linear-gradient(160deg,#f9f7f3,#f4f2ee)!important;}
+.stpf-page .pg-emo{font-size:56px;line-height:1;text-align:center;}
+.stpf-page .pg-text{font-size:15px;line-height:1.7;color:#333;text-align:center;font-family:Georgia,serif;margin:0;}
+.stpf-page .pg-local{font-size:16px;color:var(--green-dark);font-weight:600;text-align:center;margin:0;}
+.stpf-page .pg-num{font-size:11px;color:#aaa;margin-top:auto;}
+/* StPageFlip PDF image pages — no padding, image fills the page */
+.stpf-pdf-page{padding:0!important;background:#f5f0eb!important;overflow:hidden!important;}
+.stpf-pdf-page::after{display:none!important;}
+.stpf-pdf-page img{width:100%;height:100%;object-fit:contain;display:block;}
+/* Loading state inside pfBook */
+#pfLoadingState{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;height:280px;color:var(--text-mid);font-size:14px;font-weight:700;}
+#pfLoadingState .pf-spin{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;}
 /* PDF page transition */
 @keyframes pdfFade{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:translateX(0)}}
 #pdfScrollArea.pdf-turn{animation:pdfFade .3s ease-out;}
@@ -272,7 +290,7 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 .speed-btn:hover{background:rgba(255,255,255,.2);}
 
 /* Nav controls */
-.reader-nav{display:flex;align-items:center;gap:14px;padding:12px 16px;flex-shrink:0;background:#000;justify-content:center;}
+.reader-nav{display:flex;align-items:center;gap:14px;padding:12px 16px;flex-shrink:0;background:#000;justify-content:center;position:relative;z-index:10;}
 .nav-btn{width:42px;height:42px;border-radius:50%;border:none;background:rgba(255,255,255,.1);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
 .nav-btn:hover{background:rgba(255,255,255,.2);}
 .nav-btn:disabled{opacity:.25;cursor:default;}
@@ -846,9 +864,13 @@ if(location.protocol === 'file:') {
         <a id="pdfOpenTab" href="#" target="_blank" title="Open PDF in new tab">↗</a>
       </div>
     </div>
-    <!-- Emoji page reader (shown for books without PDF) -->
-    <div class="book-flip-wrap">
-      <div class="book-spread" id="bookSpread">
+    <!-- StPageFlip book reader (shown for non-PDF books) -->
+    <div id="pfWrap">
+      <div id="pfBook"></div>
+    </div>
+    <!-- Legacy spread (hidden — kept for DOM references) -->
+    <div class="book-flip-wrap" style="display:none;">
+      <div class="book-spread" id="bookSpread" style="display:none;">
         <div class="page" id="leftPage">
           <div class="page-emo" id="leftEmo"></div>
           <p class="page-text" id="leftText"></p>
@@ -1335,45 +1357,209 @@ function openReader(id){
     document.getElementById('readerTitle').textContent=`${b.title} · ${b.local}`;
     document.getElementById('readerMeta').textContent=`${b.lang} · Ages ${b.age}`;
     updateFavReaderBtn();
-    const pdfViewer=document.getElementById('pdfViewer');
-    const bookSpread=document.getElementById('bookSpread');
+    // Always hide old viewers — StPageFlip handles everything now
+    document.getElementById('pdfViewer').style.display='none';
+    document.getElementById('bookSpread').style.display='none';
     const readerNav=document.querySelector('.reader-nav');
     const audioBar=document.querySelector('.audio-bar');
-    if(b.pdf_url){
-      pdfViewer.style.display='flex';
-      bookSpread.style.display='none';
-      if(audioBar) audioBar.style.display='flex';
-      if(readerNav) readerNav.style.display='none';
-      // Reset PDF state UI
-      document.getElementById('pdfLoadMsg').style.display='block';
-      document.getElementById('pdfScrollArea').style.display='none';
-      document.getElementById('pdfPageInd').textContent='Loading…';
-      document.getElementById('prevPdfBtn').disabled=true;
-      document.getElementById('nextPdfBtn').disabled=true;
-      document.getElementById('pdfOpenTab').href=b.pdf_url;
-      pdfDoc=null; pdfRendering=false; pdfPageNum=1;
-    } else {
-      pdfViewer.style.display='none';
-      bookSpread.style.display='';
-      if(readerNav) readerNav.style.display='';
-      if(audioBar) audioBar.style.display='';
-      document.getElementById('prevBtn').onclick=()=>changePage(-1);
-      document.getElementById('nextBtn').onclick=()=>changePage(1);
-    }
+    if(readerNav) readerNav.style.display='';
+    if(audioBar) audioBar.style.display='';
+    document.getElementById('pfWrap').style.display='flex';
+    // Show loading spinner immediately
+    document.getElementById('pfBook').innerHTML=
+      '<div id="pfLoadingState"><div class="pf-spin"></div><span>Loading book…</span></div>';
   } catch(err) {
     console.error('openReader error:', err);
     showToast('⚠️ ' + err.message);
   }
-  // Show overlay FIRST so the canvas has valid clientWidth when PDF renders
   document.getElementById('readerOverlay').classList.add('open');
   document.body.style.overflow='hidden';
   if(!readProgress[id]) readProgress[id]=0;
   const b=books.find(bk=>bk.id===id);
-  if(b && b.pdf_url){
-    // Small delay ensures layout is painted before we measure canvas width
-    setTimeout(()=>loadPdf(b.pdf_url), 80);
-  } else if(b) {
-    renderReaderPage();
+  if(!b) return;
+  // Route both PDF and text books through StPageFlip
+  if(b.pdf_url){
+    setTimeout(()=>initPageFlipFromPdf(b), 300);
+  } else {
+    setTimeout(()=>initPageFlip(b), 300);
+  }
+}
+
+// ── StPageFlip instance ──
+let pfInstance = null;
+
+function initPageFlip(b){
+  // Tear down any existing instance
+  if(pfInstance){ try{ pfInstance.destroy(); }catch(e){} pfInstance=null; }
+
+  const container = document.getElementById('pfBook');
+  container.innerHTML = '';
+
+  // Build one div per page
+  b.pages.forEach((pg, i)=>{
+    const div = document.createElement('div');
+    div.className = 'stpf-page';
+    div.innerHTML =
+      '<div class="pg-emo">'+(pg.emo||'')+'</div>'+
+      '<p class="pg-text">'+(pg.text||'')+'</p>'+
+      '<p class="pg-local">'+(pg.local||'')+'</p>'+
+      '<div class="pg-num">Page '+(i+1)+' / '+b.pages.length+'</div>';
+    container.appendChild(div);
+  });
+
+  // Calculate responsive page dimensions — use actual window size, no arbitrary cap
+  const wrap = document.getElementById('pfWrap');
+  const availW = (wrap.clientWidth || window.innerWidth) - 16;
+  const availH = (wrap.clientHeight || window.innerHeight) - 20;
+  // Two pages side by side; each page = half width
+  const pageW = Math.max(140, Math.floor(availW/2) - 4);
+  const pageH = Math.max(200, Math.min(Math.floor(pageW*1.45), availH));
+
+  // Guard: library must be loaded
+  if(typeof St === 'undefined' || !St.PageFlip){
+    showToast('⚠️ Flip library not loaded. Check internet connection.');
+    return;
+  }
+
+  pfInstance = new St.PageFlip(container, {
+    width: pageW,
+    height: pageH,
+    size: 'fixed',
+    maxShadowOpacity: 0.6,
+    showCover: false,
+    useMouseEvents: true,
+    swipeDistance: 30,
+    clickEventForward: true,
+    mobileScrollSupport: false
+  });
+
+  pfInstance.loadFromHTML(container.querySelectorAll('.stpf-page'));
+
+  // Update progress when a page flip happens
+  pfInstance.on('flip', (e)=>{
+    currentPage = e.data;
+    const pct = Math.min(100, Math.round(((e.data+1)/b.pages.length)*100));
+    readProgress[currentBookId] = pct;
+    _saveState(); _recordReadToday();
+    stopAudio();
+    // Update page indicator
+    const ind = document.getElementById('pageInd');
+    if(ind) ind.textContent = (e.data+1)+' / '+b.pages.length;
+  });
+
+  // Wire prev/next buttons to StPageFlip
+  document.getElementById('prevBtn').onclick = ()=>{ if(pfInstance) pfInstance.flipPrev(); };
+  document.getElementById('nextBtn').onclick = ()=>{ if(pfInstance) pfInstance.flipNext(); };
+
+  // Set initial page indicator
+  const ind = document.getElementById('pageInd');
+  if(ind) ind.textContent = '1 / '+b.pages.length;
+}
+
+// ── PDF → StPageFlip: render every PDF page to an image, then flip ──
+async function initPageFlipFromPdf(b){
+  if(pfInstance){ try{ pfInstance.destroy(); }catch(e){} pfInstance=null; }
+  const container = document.getElementById('pfBook');
+  container.innerHTML =
+    '<div id="pfLoadingState"><div class="pf-spin"></div><span>Rendering pages…</span></div>';
+
+  try{
+    if(typeof pdfjsLib==='undefined') throw new Error('PDF library not loaded yet');
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    // Fetch PDF as binary buffer
+    const resp = await fetch(b.pdf_url);
+    if(!resp.ok) throw new Error('Could not download PDF ('+resp.status+')');
+    const buffer = await resp.arrayBuffer();
+    const pdfDocLocal = await pdfjsLib.getDocument({data: new Uint8Array(buffer)}).promise;
+    const totalPages = pdfDocLocal.numPages;
+
+    // Cache cover thumbnail while we're here
+    const offCanvas = document.createElement('canvas');
+    const pageDataUrls = [];
+
+    for(let i=1; i<=totalPages; i++){
+      // Update loading text
+      const ls = document.getElementById('pfLoadingState');
+      if(ls){ const sp=ls.querySelector('span'); if(sp) sp.textContent=`Loading page ${i} of ${totalPages}…`; }
+
+      const page = await pdfDocLocal.getPage(i);
+      const vp0 = page.getViewport({scale:1});
+      // Render at up to 900px wide for crisp images on retina
+      const scale = Math.min(2, 900 / vp0.width);
+      const vp = page.getViewport({scale});
+      offCanvas.width  = vp.width;
+      offCanvas.height = vp.height;
+      const ctx = offCanvas.getContext('2d');
+      ctx.fillStyle='#fff'; ctx.fillRect(0,0,vp.width,vp.height);
+      await page.render({canvasContext:ctx, viewport:vp}).promise;
+      const dataUrl = offCanvas.toDataURL('image/jpeg', 0.88);
+      pageDataUrls.push({src:dataUrl, aspect: vp.height/vp.width});
+
+      // Save cover thumbnail
+      if(i===1 && !coverCache.has(b.id)){
+        try{
+          const thumb = offCanvas.toDataURL('image/jpeg',0.7);
+          coverCache.set(b.id, thumb);
+          const el=document.querySelector(`.bcover[data-book-id="${b.id}"]`);
+          if(el) _applyThumb(el, thumb);
+        }catch(e){}
+      }
+    }
+
+    // Dimensions: use first-page aspect ratio — no arbitrary width cap
+    container.innerHTML = '';
+    const wrap = document.getElementById('pfWrap');
+    const availW = (wrap.clientWidth || window.innerWidth) - 16;
+    const availH = (wrap.clientHeight || window.innerHeight) - 20;
+    const aspect = pageDataUrls[0].aspect; // height/width
+    const pageW  = Math.max(140, Math.floor(availW/2)-4);
+    const pageH  = Math.max(180, Math.min(Math.floor(pageW*aspect), availH));
+
+    if(typeof St==='undefined'||!St.PageFlip) throw new Error('StPageFlip library not loaded');
+
+    pfInstance = new St.PageFlip(container, {
+      width: pageW,
+      height: pageH,
+      size: 'fixed',
+      maxShadowOpacity: 0.5,
+      showCover: true,      // first page = single cover
+      useMouseEvents: true,
+      swipeDistance: 30,
+      clickEventForward: true,
+      mobileScrollSupport: false
+    });
+
+    // Use loadFromImages so StPageFlip renders pages to canvas internally —
+    // avoids the "all pages visible at once" bug that happens with loadFromHTML
+    // when the .stpf-page CSS has display:flex!important.
+    pfInstance.loadFromImages(pageDataUrls.map(pg => pg.src));
+
+    pfInstance.on('flip', e=>{
+      currentPage = e.data;
+      readProgress[currentBookId] = Math.min(100,Math.round(((e.data+1)/totalPages)*100));
+      _saveState(); _recordReadToday();
+      const ind=document.getElementById('pageInd');
+      if(ind) ind.textContent=(e.data+1)+' / '+totalPages;
+    });
+
+    document.getElementById('prevBtn').onclick = ()=>{ if(pfInstance) pfInstance.flipPrev(); };
+    document.getElementById('nextBtn').onclick = ()=>{ if(pfInstance) pfInstance.flipNext(); };
+
+    const ind=document.getElementById('pageInd');
+    if(ind) ind.textContent='1 / '+totalPages;
+
+  }catch(err){
+    console.error('PDF flip error:',err);
+    document.getElementById('pfBook').innerHTML =
+      '<div style="padding:24px;text-align:center;color:var(--text-mid);">'+
+      '<div style="font-size:40px;margin-bottom:12px;">📖</div>'+
+      '<p style="font-weight:700;">Could not load pages.</p>'+
+      '<p style="font-size:13px;opacity:.7;">'+err.message+'</p>'+
+      '<a href="'+b.pdf_url+'" target="_blank" style="display:inline-block;margin-top:12px;'+
+      'background:var(--green);color:#fff;padding:8px 20px;border-radius:20px;font-weight:700;'+
+      'text-decoration:none;font-size:13px;">Open PDF directly ↗</a></div>';
   }
 }
 
@@ -1456,14 +1642,21 @@ function changePdfPage(dir){
   renderPdfPage(next);
 }
 function closeReader(){
-  autoReadMode=false;
-  _currentPdfPageText=null;
-  clearInterval(_audioFlipInterval);
-  if(_audioEl){ _audioEl.pause(); _audioEl.src=''; }
-  stopAudio();
-  pdfDoc=null; pdfRendering=false; pdfPageNum=1;
+  // Close the overlay first — guaranteed even if cleanup below throws
   document.getElementById('readerOverlay').classList.remove('open');
   document.body.style.overflow='';
+  // Cleanup (wrapped so any error can't re-block the UI)
+  try{
+    autoReadMode=false;
+    _currentPdfPageText=null;
+    clearInterval(_audioFlipInterval);
+    if(_audioEl){ try{_audioEl.pause(); _audioEl.src='';}catch(e){} }
+    try{ stopAudio(); }catch(e){}
+    pdfDoc=null; pdfRendering=false; pdfPageNum=1;
+    if(pfInstance){ try{ pfInstance.destroy(); }catch(e){} pfInstance=null; }
+    document.getElementById('pfWrap').style.display='none';
+    document.getElementById('pfBook').innerHTML='';
+  }catch(e){ console.warn('closeReader cleanup error:', e); }
 }
 function renderReaderPage(){
   const b=books.find(bk=>bk.id===currentBookId);
