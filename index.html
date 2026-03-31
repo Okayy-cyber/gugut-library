@@ -10,6 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -183,7 +185,10 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 /* ── READER MODAL ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:500;display:none;flex-direction:column;}
 .overlay.open{display:flex;}
-.reader-bar{background:var(--green-dark);padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.reader-bar{background:var(--green-dark);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.reader-back-btn{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);color:#fff;font-size:13px;font-weight:700;padding:6px 14px 6px 10px;border-radius:24px;cursor:pointer;flex-shrink:0;transition:background .18s,transform .15s;letter-spacing:.2px;}
+.reader-back-btn:hover{background:rgba(255,255,255,.25);transform:translateX(-2px);}
+.reader-back-btn svg{flex-shrink:0;}
 #pdfCanvas{user-select:none;-webkit-user-select:none;-moz-user-select:none;display:block;max-width:100%;}
 #pdfViewer{user-select:none;-webkit-user-select:none;min-height:0;}
 /* Transparent shield over the canvas blocks right-click "Save Image As" drag */
@@ -218,34 +223,24 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 
 /* ── BOOK SPREAD ── */
 .book-flip-wrap{perspective:1500px;perspective-origin:50% 42%;width:100%;max-width:700px;margin:0 auto;}
-.book-spread{display:flex;gap:0;width:100%;border-radius:14px;overflow:hidden;box-shadow:0 14px 52px rgba(0,0,0,.6);transform-style:preserve-3d;will-change:transform;transform-origin:center center;}
+.book-spread{display:flex;gap:0;width:100%;border-radius:14px;overflow:visible;box-shadow:0 14px 52px rgba(0,0,0,.6);transform-style:preserve-3d;will-change:transform;transform-origin:center center;}
+.page{overflow:hidden;border-radius:0;}
+.page:first-child{border-radius:14px 0 0 14px;}
+.page.right-p{border-radius:0 14px 14px 0;}
 .book-spine{width:7px;background:linear-gradient(to right,rgba(0,0,0,.22),rgba(0,0,0,.08) 45%,rgba(255,255,255,.12) 55%,transparent);flex-shrink:0;}
 
-/* ── PAGE FLIP — natural 2-phase turn with overshoot ── */
-@keyframes pageFlipOut{
-  0%  {transform:rotateY(0deg) scale(1);opacity:1;}
-  38% {transform:rotateY(-54deg) scale(0.97);opacity:.85;}
-  100%{transform:rotateY(-90deg) scale(0.93);opacity:0;}
-}
-@keyframes pageFlipOutBack{
-  0%  {transform:rotateY(0deg) scale(1);opacity:1;}
-  38% {transform:rotateY(54deg) scale(0.97);opacity:.85;}
-  100%{transform:rotateY(90deg) scale(0.93);opacity:0;}
-}
-@keyframes pageFlipIn{
-  0%  {transform:rotateY(90deg) scale(0.93);opacity:0;}
-  52% {transform:rotateY(-6deg) scale(1.01);opacity:1;}
-  100%{transform:rotateY(0deg) scale(1);opacity:1;}
-}
-@keyframes pageFlipInBack{
-  0%  {transform:rotateY(-90deg) scale(0.93);opacity:0;}
-  52% {transform:rotateY(6deg) scale(1.01);opacity:1;}
-  100%{transform:rotateY(0deg) scale(1);opacity:1;}
-}
-.flip-out     {animation:pageFlipOut     0.38s cubic-bezier(0.4,0,0.8,0.2) forwards;}
-.flip-out-back{animation:pageFlipOutBack 0.38s cubic-bezier(0.4,0,0.8,0.2) forwards;}
-.flip-in      {animation:pageFlipIn      0.44s cubic-bezier(0.1,0.8,0.3,1) forwards;}
-.flip-in-back {animation:pageFlipInBack  0.44s cubic-bezier(0.1,0.8,0.3,1) forwards;}
+/* ── PAGE FLIP — realistic single-page door-fold ── */
+/* perspective lives on .book-flip-wrap; pages fold about their inner edge */
+.page{backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-origin:center center;transition:none;}
+/* Forward flip: right page folds toward reader (left-edge pivot) */
+@keyframes rfOut{0%{transform:rotateY(0deg);}100%{transform:rotateY(-90deg);}}
+@keyframes rfIn {0%{transform:rotateY(90deg);}55%{transform:rotateY(-4deg);}100%{transform:rotateY(0deg);}}
+/* Backward flip: left page folds toward reader (right-edge pivot) */
+@keyframes lbOut{0%{transform:rotateY(0deg);}100%{transform:rotateY(90deg);}}
+@keyframes lbIn {0%{transform:rotateY(-90deg);}55%{transform:rotateY(4deg);}100%{transform:rotateY(0deg);}}
+/* Shadow that sweeps across the page during flip */
+@keyframes shadowSweep{0%{opacity:0;}40%{opacity:.4;}100%{opacity:0;}}
+.page-shadow{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.35),transparent);pointer-events:none;border-radius:inherit;animation:shadowSweep .38s ease-in-out forwards;}
 /* PDF page transition */
 @keyframes pdfFade{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:translateX(0)}}
 #pdfScrollArea.pdf-turn{animation:pdfFade .3s ease-out;}
@@ -391,6 +386,32 @@ body.night .modal-sheet h3{color:var(--green-light);}
 /* ── AFRICA MAP ── */
 .africa-map-wrap{border-radius:20px;overflow:hidden;margin-bottom:20px;box-shadow:0 6px 28px rgba(0,60,140,.28),0 1px 0 rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.1);}
 body.night .africa-map-wrap{box-shadow:0 6px 28px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.08);}
+/* ══ AFRICA MAP (D3) ══ */
+#africaMapContainer{width:100%;border-radius:20px;overflow:hidden;background:linear-gradient(160deg,#A8D8F0 0%,#72B8E0 60%,#4A90C4 100%);box-shadow:0 6px 28px rgba(0,60,140,.28);border:1px solid rgba(255,255,255,.12);position:relative;min-height:200px;}
+#africaMapContainer svg{width:100%;height:auto;display:block;}
+.country-path{fill:#D4B878;stroke:#fff;stroke-width:.6;cursor:pointer;transition:fill .25s,opacity .2s;opacity:.75;}
+.country-path.has-books{fill:#5A9E5A;stroke:rgba(255,255,255,.9);stroke-width:.9;opacity:.95;cursor:pointer;}
+.country-path.visited{fill:#2D7030;stroke:#F5C020;stroke-width:1.2;opacity:1;filter:drop-shadow(0 0 5px rgba(45,112,48,.7));}
+.country-path.completed{fill:#F5C020;stroke:#fff;stroke-width:1.4;opacity:1;filter:drop-shadow(0 0 8px rgba(245,192,32,.9));}
+.country-path:hover{opacity:1;stroke-width:1.5;stroke:#fff;}
+.has-books:hover{fill:#3D9040;}
+.travel-path{fill:none;stroke:rgba(255,255,255,.22);stroke-width:.8;stroke-dasharray:4,5;}
+.travel-path.active{stroke:rgba(245,192,32,.75);stroke-width:1.5;stroke-dasharray:none;animation:travelGlow 2s ease-in-out infinite alternate;}
+@keyframes travelGlow{0%{stroke-opacity:.6;}100%{stroke-opacity:1;}}
+.country-label{font-size:5px;fill:rgba(255,255,255,.7);text-anchor:middle;pointer-events:none;font-family:Nunito,sans-serif;font-weight:700;}
+.country-marker{cursor:pointer;}
+.map-legend{display:flex;gap:10px;flex-wrap:wrap;padding:10px 14px;background:var(--card-bg);border-top:1px solid var(--border);}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--text-mid);}
+.legend-dot{width:10px;height:10px;border-radius:50%;}
+.map-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;gap:10px;color:rgba(255,255,255,.8);}
+.map-loading-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.map-offline{text-align:center;padding:40px 20px;color:rgba(255,255,255,.8);}
+.country-tooltip{position:absolute;background:rgba(20,43,26,.95);color:#fff;padding:8px 14px;border-radius:12px;font-size:12px;font-weight:700;pointer-events:none;opacity:0;transition:opacity .18s;z-index:50;border:1px solid rgba(245,192,32,.4);white-space:nowrap;backdrop-filter:blur(8px);}
+.country-tooltip.visible{opacity:1;}
+#mapProgressBar{height:5px;background:linear-gradient(90deg,var(--green),var(--amber));border-radius:0;transition:width .6s;}
+#mapProgressTrack{height:5px;background:rgba(255,255,255,.15);width:100%;}
+
 .africa-map-wrap svg{width:100%;height:auto;display:block;}
 .africa-land{cursor:default;}
 #countryMarkers g{cursor:pointer;transition:filter .18s;}
@@ -453,12 +474,28 @@ if(location.protocol === 'file:') {
   <div class="topbar-inner">
     <a href="#" class="logo" onclick="handleLogoTap();return false;">
       <img id="logoImg" src="gugut%20logo%20wide.png" alt="Gugut Montessori" style="height:42px;width:auto;display:block;"
-        onerror="this.onerror=null;this.src='gugut%20logo.png';this.onerror=function(){this.onerror=null;this.style.display='none';document.getElementById('logoFallback').style.display='flex';};" />
-      <div id="logoFallback" style="display:none;align-items:center;gap:8px;">
-        <div class="logo-icon">🦉</div>
-        <div><h1>Gugut</h1><span>Library</span></div>
+        onerror="this.onerror=null;this.style.display='none';document.getElementById('logoFallback').style.display='flex';" />
+      <div id="logoFallback" style="display:none;align-items:center;gap:10px;">
+        <div class="logo-icon" style="width:40px;height:40px;background:var(--amber);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🦉</div>
+        <div>
+          <div style="font-size:18px;font-weight:900;line-height:1;letter-spacing:-.3px;">Gugut</div>
+          <div style="font-size:9px;opacity:.65;letter-spacing:1.5px;text-transform:uppercase;margin-top:1px;">Montessori Library</div>
+        </div>
       </div>
     </a>
+    <script>
+    // Ensure fallback shows if image fails to load within 2s (handles cached 404s)
+    (function(){
+      var img = document.getElementById('logoImg');
+      var fb  = document.getElementById('logoFallback');
+      function showFallback(){ img.style.display='none'; fb.style.display='flex'; }
+      if(img){ img.addEventListener('error', showFallback, {once:true}); }
+      // If image hasn't loaded after 2s, show fallback
+      setTimeout(function(){
+        if(img && img.naturalWidth === 0){ showFallback(); }
+      }, 2000);
+    })();
+    </script>
     <div class="topbar-search" id="searchWrap">
       <span class="sico">🔍</span>
       <input type="text" placeholder="Search books…" id="searchInput" oninput="handleSearch()"/>
@@ -723,15 +760,17 @@ if(location.protocol === 'file:') {
 ══════════════════════════════════ -->
 <div class="overlay" id="readerOverlay">
   <div class="reader-bar">
+    <button class="reader-back-btn" onclick="closeReader()" aria-label="Back to library">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back
+    </button>
     <div class="reader-title">
       <h3 id="readerTitle"></h3>
       <p id="readerMeta"></p>
     </div>
     <button class="ribtn" onclick="toggleFavFromReader()" id="favReaderBtn" title="Favourite">🤍</button>
-    <!-- Audio play/pause always visible in header -->
     <button class="ribtn ribtn-audio" id="audioHeaderBtn" onclick="toggleAudio()" title="Play narration">🔊</button>
     <button class="ribtn" onclick="toggleFontPopover()" title="Text size">Aa</button>
-    <button class="ribtn" onclick="closeReader()" aria-label="Close book">✕</button>
   </div>
   <!-- Font size popover: MUST be outside <button> — block elements inside <button> break HTML parsing -->
   <div class="font-popover" id="fontPopover">
@@ -1401,21 +1440,41 @@ function renderReaderPage(){
 }
 function changePage(dir){
   const b=books.find(bk=>bk.id===currentBookId);
-  const spread=document.getElementById('bookSpread');
-  // Phase 1 — pages fold away
-  const outCls = dir>0 ? 'flip-out' : 'flip-out-back';
-  const inCls  = dir>0 ? 'flip-in'  : 'flip-in-back';
-  spread.classList.remove('flip-out','flip-out-back','flip-in','flip-in-back');
-  spread.classList.add(outCls);
+  if(!b) return;
+  const lp=document.getElementById('leftPage');
+  const rp=document.getElementById('rightPage');
+  // The turning page and its pivot edge
+  const turningPage = dir>0 ? rp : lp;
+  const origin      = dir>0 ? 'left center' : 'right center';
+  const outAnim     = dir>0 ? 'rfOut' : 'lbOut';
+  const inOrigin    = dir>0 ? 'right center' : 'left center';
+  const inAnim      = dir>0 ? 'rfIn' : 'lbIn';
+
+  // Add a shadow sweep for tactile feel
+  const shadow = document.createElement('div');
+  shadow.className = 'page-shadow';
+  turningPage.appendChild(shadow);
+
+  // Phase 1 — page folds away (0 → 90°)
+  turningPage.style.transformOrigin = origin;
+  turningPage.style.animation = outAnim+' 0.2s cubic-bezier(0.4,0,1,1) forwards';
+
   setTimeout(()=>{
     // Swap content at the invisible midpoint
-    spread.classList.remove(outCls);
+    turningPage.style.animation = 'none';
+    turningPage.style.transform = '';
+    if(shadow.parentNode) shadow.parentNode.removeChild(shadow);
     currentPage=Math.max(0,Math.min(currentPage+dir*2,b.pages.length-1));
     renderReaderPage();
-    // Phase 2 — new pages arrive from the other side
-    spread.classList.add(inCls);
-    spread.addEventListener('animationend',()=>spread.classList.remove(inCls),{once:true});
-  }, 380);
+    // Phase 2 — new content arrives with slight overshoot
+    turningPage.style.transformOrigin = inOrigin;
+    turningPage.style.animation = inAnim+' 0.28s cubic-bezier(0.15,0.85,0.35,1.05) forwards';
+    turningPage.addEventListener('animationend',()=>{
+      turningPage.style.animation='';
+      turningPage.style.transform='';
+      turningPage.style.transformOrigin='';
+    },{once:true});
+  }, 200);
 }
 
 // ═══════════════════════════════════
@@ -2206,114 +2265,378 @@ const ethiopiaRegions = [
   {id:'tanzania', name:'Tanzania',  local:'Tanzania',     lang:'Wolaytta', emoji:'🇹🇿', color:'#B71C1C', books:3,  completed:0}
 ];
 
-// Geographic positions of countries in the Africa SVG (viewBox 0 0 530 570)
-// x = (lon + 17) * 7.647, y = (37 - lat) * 7.778
-// Geographic positions – formula: x=(lon+18)*7.571  y=(38-lat)*7.703
-// Capitals: Asmara(38.93E,15.33N), Addis(38.75E,9.03N), Mogadishu(45.34E,2.05N),
-//           Nairobi(36.82E,-1.29N), Dodoma(35.74E,-6.16N)
-const mapPositions = {
-  eritrea:  {cx:431, cy:175, r:18},
-  ethiopia: {cx:430, cy:223, r:24},
-  somalia:  {cx:479, cy:277, r:16},
-  kenya:    {cx:414, cy:303, r:20},
-  tanzania: {cx:406, cy:340, r:18}
+
+// ══════════════════════════════════════════════════════════
+// AFRICA MAP — D3 + TopoJSON
+// All 54 African countries, travel discovery mechanic
+// ══════════════════════════════════════════════════════════
+
+// ISO numeric → country metadata
+const africaCountryMeta = {
+  12:  {name:'Algeria',           flag:'🇩🇿', region:'north',   lang:null},
+  24:  {name:'Angola',            flag:'🇦🇴', region:'southern', lang:null},
+  204: {name:'Benin',             flag:'🇧🇯', region:'west',    lang:null},
+  72:  {name:'Botswana',          flag:'🇧🇼', region:'southern', lang:null},
+  854: {name:'Burkina Faso',      flag:'🇧🇫', region:'west',    lang:null},
+  108: {name:'Burundi',           flag:'🇧🇮', region:'east',    lang:null},
+  132: {name:'Cabo Verde',        flag:'🇨🇻', region:'west',    lang:null},
+  120: {name:'Cameroon',          flag:'🇨🇲', region:'central', lang:null},
+  140: {name:'Cent. Afr. Rep.',   flag:'🇨🇫', region:'central', lang:null},
+  148: {name:'Chad',              flag:'🇹🇩', region:'central', lang:null},
+  174: {name:'Comoros',           flag:'🇰🇲', region:'east',    lang:null},
+  178: {name:'Congo',             flag:'🇨🇬', region:'central', lang:null},
+  180: {name:'DR Congo',          flag:'🇨🇩', region:'central', lang:null},
+  262: {name:'Djibouti',          flag:'🇩🇯', region:'east',    lang:'Somali'},
+  818: {name:'Egypt',             flag:'🇪🇬', region:'north',   lang:'Amharic'},
+  226: {name:'Eq. Guinea',        flag:'🇬🇶', region:'central', lang:null},
+  232: {name:'Eritrea',           flag:'🇪🇷', region:'east',    lang:'Tigrinya'},
+  748: {name:'Eswatini',          flag:'🇸🇿', region:'southern', lang:null},
+  231: {name:'Ethiopia',          flag:'🇪🇹', region:'east',    lang:'Amharic'},
+  266: {name:'Gabon',             flag:'🇬🇦', region:'central', lang:null},
+  270: {name:'Gambia',            flag:'🇬🇲', region:'west',    lang:null},
+  288: {name:'Ghana',             flag:'🇬🇭', region:'west',    lang:null},
+  324: {name:'Guinea',            flag:'🇬🇳', region:'west',    lang:null},
+  624: {name:'Guinea-Bissau',     flag:'🇬🇼', region:'west',    lang:null},
+  384: {name:"Côte d'Ivoire",     flag:'🇨🇮', region:'west',    lang:null},
+  404: {name:'Kenya',             flag:'🇰🇪', region:'east',    lang:'Oromiffa'},
+  426: {name:'Lesotho',           flag:'🇱🇸', region:'southern', lang:null},
+  430: {name:'Liberia',           flag:'🇱🇷', region:'west',    lang:null},
+  434: {name:'Libya',             flag:'🇱🇾', region:'north',   lang:null},
+  450: {name:'Madagascar',        flag:'🇲🇬', region:'east',    lang:null},
+  454: {name:'Malawi',            flag:'🇲🇼', region:'east',    lang:null},
+  466: {name:'Mali',              flag:'🇲🇱', region:'west',    lang:null},
+  478: {name:'Mauritania',        flag:'🇲🇷', region:'west',    lang:null},
+  480: {name:'Mauritius',         flag:'🇲🇺', region:'east',    lang:null},
+  504: {name:'Morocco',           flag:'🇲🇦', region:'north',   lang:null},
+  508: {name:'Mozambique',        flag:'🇲🇿', region:'southern', lang:null},
+  516: {name:'Namibia',           flag:'🇳🇦', region:'southern', lang:null},
+  562: {name:'Niger',             flag:'🇳🇪', region:'west',    lang:null},
+  566: {name:'Nigeria',           flag:'🇳🇬', region:'west',    lang:null},
+  646: {name:'Rwanda',            flag:'🇷🇼', region:'east',    lang:null},
+  678: {name:'São Tomé',          flag:'🇸🇹', region:'central', lang:null},
+  686: {name:'Senegal',           flag:'🇸🇳', region:'west',    lang:null},
+  694: {name:'Sierra Leone',      flag:'🇸🇱', region:'west',    lang:null},
+  706: {name:'Somalia',           flag:'🇸🇴', region:'east',    lang:'Somali'},
+  710: {name:'South Africa',      flag:'🇿🇦', region:'southern', lang:null},
+  728: {name:'South Sudan',       flag:'🇸🇸', region:'east',    lang:null},
+  729: {name:'Sudan',             flag:'🇸🇩', region:'north',   lang:null},
+  834: {name:'Tanzania',          flag:'🇹🇿', region:'east',    lang:'Wolaytta'},
+  768: {name:'Togo',              flag:'🇹🇬', region:'west',    lang:null},
+  788: {name:'Tunisia',           flag:'🇹🇳', region:'north',   lang:null},
+  800: {name:'Uganda',            flag:'🇺🇬', region:'east',    lang:'Amharic'},
+  732: {name:'W. Sahara',         flag:'🇪🇭', region:'north',   lang:null},
+  894: {name:'Zambia',            flag:'🇿🇲', region:'southern', lang:null},
+  716: {name:'Zimbabwe',          flag:'🇿🇼', region:'southern', lang:null}
 };
 
-function initMapView() {
-  // Update completion counts from readProgress
-  ethiopiaRegions.forEach(r => {
-    r.completed = books.filter(b => b.lang === r.lang && readProgress[b.id] >= 100).length;
-  });
+const AFRICA_IDS = new Set(Object.keys(africaCountryMeta).map(Number));
 
+// Travel adventure route — connects all regions in a curated journey
+const adventureRoute = [
+  504,788,12,434,818,729,232,231,706,262,
+  800,646,108,834,404,472,454,508,710,748,
+  426,516,72,894,716,180,178,120,266,226,
+  140,148,562,466,478,686,270,624,324,694,
+  430,384,288,768,204,566,854,12
+];
+
+let africaMapInitialized = false;
+let countryFeatureCentroids = {};
+
+// Get reading progress for a language
+function getLangProgress(lang) {
+  if (!lang) return {completed:0, total:0};
+  const booksInLang = books.filter(b => b.lang === lang);
+  const completed = booksInLang.filter(b => (readProgress[b.id]||0) >= 100).length;
+  return {completed, total: booksInLang.length};
+}
+
+function getCountryState(isoNum) {
+  const meta = africaCountryMeta[isoNum];
+  if (!meta || !meta.lang) return 'unvisited';
+  const prog = getLangProgress(meta.lang);
+  if (prog.completed >= prog.total && prog.total > 0) return 'completed';
+  if (prog.completed > 0) return 'visited';
+  return 'has-books';
+}
+
+function initMapView() {
   // Update hero stats
-  const totalRead = ethiopiaRegions.reduce((s, r) => s + r.completed, 0);
-  const countriesVisited = ethiopiaRegions.filter(r => r.completed > 0).length;
+  const totalRead = Object.values(readProgress).filter(v => v >= 100).length;
+  const visitedCountries = Array.from(AFRICA_IDS).filter(id => {
+    const state = getCountryState(id);
+    return state === 'visited' || state === 'completed';
+  }).length;
+
   const elTotal = document.getElementById('exploreTotal');
   const elCountries = document.getElementById('exploreCountries');
   if (elTotal) elTotal.textContent = totalRead;
-  if (elCountries) elCountries.textContent = countriesVisited;
+  if (elCountries) elCountries.textContent = visitedCountries + ' / ' + Array.from(AFRICA_IDS).filter(id => africaCountryMeta[id]?.lang).length;
 
-  // ── Render SVG country markers ──
-  const markersG = document.getElementById('countryMarkers');
-  if (markersG) {
-    markersG.innerHTML = '';
-    const NS = 'http://www.w3.org/2000/svg';
-    ethiopiaRegions.forEach(r => {
-      const p = mapPositions[r.id];
-      if (!p) return;
-      const isStamped = r.completed > 0;
-      const pct = r.books > 0 ? r.completed / r.books : 0;
-      const circ = 2 * Math.PI * (p.r + 5);
-      const dashFilled = pct * circ;
+  // Progress bar
+  const bookCountries = Array.from(AFRICA_IDS).filter(id => africaCountryMeta[id]?.lang).length;
+  const pct = bookCountries > 0 ? (visitedCountries / bookCountries) * 100 : 0;
+  const pbar = document.getElementById('mapProgressBar');
+  if (pbar) pbar.style.width = pct + '%';
 
-      const g = document.createElementNS(NS, 'g');
-      g.style.cursor = 'pointer';
-      g.style.filter = isStamped
-        ? 'drop-shadow(0 0 7px rgba(255,215,50,.75))'
-        : 'drop-shadow(0 2px 5px rgba(0,0,0,.35))';
-      g.setAttribute('role', 'button');
-      g.setAttribute('tabindex', '0');
-      g.setAttribute('aria-label', r.name + ': ' + r.lang + ', ' + r.completed + '/' + r.books + ' books');
-      g.onclick = () => filterByLanguage(r.lang);
-      g.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); filterByLanguage(r.lang); } };
-
-      const mk = (tag, attrs) => { const el = document.createElementNS(NS,tag); Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v)); return el; };
-
-      // Progress ring background
-      g.appendChild(mk('circle', {cx:p.cx,cy:p.cy,r:p.r+5,fill:'none',stroke:'rgba(255,255,255,.28)','stroke-width':'3'}));
-      // Progress ring fill
-      if(pct > 0) g.appendChild(mk('circle', {cx:p.cx,cy:p.cy,r:p.r+5,fill:'none',stroke:r.color,'stroke-width':'3.5','stroke-linecap':'round','stroke-dasharray':dashFilled+' '+circ,transform:'rotate(-90 '+p.cx+' '+p.cy+')'}));
-      // Country circle
-      g.appendChild(mk('circle', {cx:p.cx,cy:p.cy,r:p.r,fill:r.color,stroke:'#fff','stroke-width':'2.2'}));
-      // Flag emoji
-      const ft = document.createElementNS(NS,'text');
-      ft.setAttribute('x',p.cx); ft.setAttribute('y',p.cy+p.r*0.38);
-      ft.setAttribute('text-anchor','middle'); ft.setAttribute('font-size',Math.round(p.r*1.1));
-      ft.setAttribute('font-family','Nunito,sans-serif'); ft.textContent = r.emoji;
-      g.appendChild(ft);
-      // Label shadow
-      const ly = p.cy + p.r + 15;
-      const lsh = mk('text',{x:String(p.cx+0.5),y:String(ly+0.8),'text-anchor':'middle','font-size':'8.5','font-weight':'800','font-family':'Nunito,sans-serif',fill:'rgba(0,0,0,.55)'});
-      lsh.textContent = r.name; g.appendChild(lsh);
-      // Label
-      const lbl = mk('text',{x:String(p.cx),y:String(ly),'text-anchor':'middle','font-size':'8.5','font-weight':'800','font-family':'Nunito,sans-serif',fill:'#fff'});
-      lbl.textContent = r.name; g.appendChild(lbl);
-
-      markersG.appendChild(g);
-    });
+  // Init D3 map once
+  if (!africaMapInitialized) {
+    africaMapInitialized = true;
+    loadAfricaMap();
+  } else {
+    updateMapColors();
   }
 
-  // ── Render passport stamp cards below ──
+  // Render country cards
+  renderCountryCards();
+}
+
+function loadAfricaMap() {
+  const wrap = document.getElementById('africaMapSvgWrap');
+  if (!wrap) return;
+
+  // Check if we can load D3
+  if (typeof d3 === 'undefined' || typeof topojson === 'undefined') {
+    wrap.innerHTML = '<div class="map-offline">⚠️ Map requires internet to load once.<br><small style="opacity:.7">Country cards below still work offline.</small></div>';
+    return;
+  }
+
+  d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+    .then(world => {
+      const container = document.getElementById('africaMapSvgWrap');
+      container.innerHTML = '';
+
+      const W = 530, H = 570;
+      const svg = d3.create('svg')
+        .attr('viewBox', '0 0 ' + W + ' ' + H)
+        .attr('id', 'africaMapSvg')
+        .style('display', 'block')
+        .style('width', '100%');
+
+      // Ocean background
+      const defs = svg.append('defs');
+      const oceanGrad = defs.append('linearGradient').attr('id','oceanGradD3').attr('x1','0%').attr('y1','0%').attr('x2','100%').attr('y2','100%');
+      oceanGrad.append('stop').attr('offset','0%').attr('stop-color','#A8D8F0');
+      oceanGrad.append('stop').attr('offset','60%').attr('stop-color','#72B8E0');
+      oceanGrad.append('stop').attr('offset','100%').attr('stop-color','#4A90C4');
+
+      const glowFilter = defs.append('filter').attr('id','glow');
+      glowFilter.append('feGaussianBlur').attr('stdDeviation','3').attr('result','blur');
+      const feMerge = glowFilter.append('feMerge');
+      feMerge.append('feMergeNode').attr('in','blur');
+      feMerge.append('feMergeNode').attr('in','SourceGraphic');
+
+      svg.append('rect').attr('width', W).attr('height', H).attr('rx', 18).attr('fill','url(#oceanGradD3)');
+
+      // Subtle wave marks
+      const waves = [
+        [0,90,120,90],[0,105,120,105],
+        [410,90,530,90],[410,105,530,105]
+      ];
+      waves.forEach(([x1,y1,x2,y2]) => {
+        svg.append('line').attr('x1',x1).attr('y1',y1).attr('x2',x2).attr('y2',y2)
+          .attr('stroke','rgba(255,255,255,.2)').attr('stroke-width','1');
+      });
+
+      // Ocean labels
+      svg.append('text').attr('x',45).attr('y',320).attr('font-size',7).attr('fill','rgba(0,40,100,.4)')
+        .attr('text-anchor','middle').attr('font-family','Nunito,sans-serif').attr('font-style','italic')
+        .attr('transform','rotate(-90 45 320)').text('Atlantic Ocean');
+      svg.append('text').attr('x',512).attr('y',340).attr('font-size',7).attr('fill','rgba(0,40,100,.4)')
+        .attr('text-anchor','middle').attr('font-family','Nunito,sans-serif').attr('font-style','italic')
+        .attr('transform','rotate(-90 512 340)').text('Indian Ocean');
+      svg.append('text').attr('x',440).attr('y',18).attr('font-size',7).attr('fill','rgba(0,40,100,.45)')
+        .attr('text-anchor','middle').attr('font-family','Nunito,sans-serif').attr('font-style','italic')
+        .text('Red Sea');
+
+      // Projection — centered on Africa
+      const projection = d3.geoMercator()
+        .center([25.5, 1.5])
+        .scale(410)
+        .translate([W / 2, H / 2]);
+
+      const path = d3.geoPath().projection(projection);
+
+      // Filter to African countries
+      const allCountries = topojson.feature(world, world.objects.countries);
+      const africaFeatures = allCountries.features.filter(f => AFRICA_IDS.has(+f.id));
+
+      // Compute centroids
+      africaFeatures.forEach(f => {
+        try {
+          countryFeatureCentroids[+f.id] = path.centroid(f);
+        } catch(e) {}
+      });
+
+      // Draw travel route paths (grey dashed)
+      const routeG = svg.append('g').attr('id','travelPaths');
+      for (let i = 0; i < adventureRoute.length - 1; i++) {
+        const a = adventureRoute[i], b = adventureRoute[i+1];
+        const ca = countryFeatureCentroids[a], cb = countryFeatureCentroids[b];
+        if (!ca || !cb) continue;
+        const stateA = getCountryState(a), stateB = getCountryState(b);
+        const bothVisited = (stateA === 'visited' || stateA === 'completed') &&
+                            (stateB === 'visited' || stateB === 'completed');
+        // Draw a curved arc
+        const mx = (ca[0] + cb[0]) / 2 + (cb[1] - ca[1]) * 0.25;
+        const my = (ca[1] + cb[1]) / 2 - (cb[0] - ca[0]) * 0.25;
+        const arcPath = `M ${ca[0]},${ca[1]} Q ${mx},${my} ${cb[0]},${cb[1]}`;
+        routeG.append('path')
+          .attr('d', arcPath)
+          .attr('class', 'travel-path' + (bothVisited ? ' active' : ''))
+          .attr('data-a', a).attr('data-b', b);
+      }
+
+      // Draw country paths
+      const countriesG = svg.append('g').attr('id','countriesG');
+      africaFeatures.forEach(f => {
+        const id = +f.id;
+        const state = getCountryState(id);
+        const meta = africaCountryMeta[id];
+        const d = path(f);
+        if (!d) return;
+
+        const pathEl = countriesG.append('path')
+          .attr('d', d)
+          .attr('class', 'country-path ' + state)
+          .attr('data-id', id)
+          .attr('data-name', meta ? meta.name : id);
+
+        // Interaction
+        pathEl
+          .on('mouseenter', function(event) {
+            const tooltip = document.getElementById('countryTooltip');
+            if (!tooltip) return;
+            const m = africaCountryMeta[id];
+            if (!m) return;
+            let tip = m.flag + ' ' + m.name;
+            if (m.lang) {
+              const prog = getLangProgress(m.lang);
+              tip += ' · ' + prog.completed + '/' + prog.total + ' books';
+              if (state === 'completed') tip += ' ⭐';
+              else if (state === 'visited') tip += ' 📖';
+              else tip += ' — tap to read!';
+            } else {
+              tip += ' · Coming soon';
+            }
+            tooltip.textContent = tip;
+            tooltip.classList.add('visible');
+            // Position tooltip
+            const rect = document.getElementById('africaMapContainer').getBoundingClientRect();
+            tooltip.style.left = Math.min(event.clientX - rect.left + 10, rect.width - 160) + 'px';
+            tooltip.style.top = (event.clientY - rect.top - 40) + 'px';
+          })
+          .on('mouseleave', function() {
+            const tooltip = document.getElementById('countryTooltip');
+            if (tooltip) tooltip.classList.remove('visible');
+          })
+          .on('click', function() {
+            const m = africaCountryMeta[id];
+            if (m && m.lang) {
+              filterByLanguage(m.lang);
+              // Scroll to library
+              switchView('library');
+            } else {
+              // Show a "coming soon" toast
+              showToast((m ? m.flag + ' ' + m.name : 'This country') + ' — books coming soon! 🌍');
+            }
+          });
+
+        // Add small flag label for book-available countries
+        if (meta && meta.lang) {
+          const c = countryFeatureCentroids[id];
+          if (c) {
+            countriesG.append('text')
+              .attr('x', c[0]).attr('y', c[1] + 3)
+              .attr('class', 'country-label')
+              .attr('font-size', 8)
+              .text(meta.flag);
+          }
+        }
+      });
+
+      // Compass rose
+      const compass = svg.append('g').attr('transform','translate(35,530)');
+      compass.append('circle').attr('r',13).attr('fill','rgba(255,255,255,.18)').attr('stroke','rgba(255,255,255,.45)').attr('stroke-width',1);
+      compass.append('polygon').attr('points','0,-10 1.8,-3.5 0,-0.5 -1.8,-3.5').attr('fill','#1A4A7A');
+      compass.append('polygon').attr('points','0,10 1.8,3.5 0,0.5 -1.8,3.5').attr('fill','#1A4A7A').attr('opacity',.38);
+      compass.append('polygon').attr('points','-10,0 -3.5,1.8 -0.5,0 -3.5,-1.8').attr('fill','#1A4A7A').attr('opacity',.38);
+      compass.append('polygon').attr('points','10,0 3.5,1.8 0.5,0 3.5,-1.8').attr('fill','#1A4A7A').attr('opacity',.38);
+      compass.append('text').attr('y',-12).attr('font-size',6).attr('fill','#1A4A7A').attr('text-anchor','middle').attr('font-family','Nunito').attr('font-weight',800).text('N');
+
+      container.appendChild(svg.node());
+    })
+    .catch(err => {
+      const wrap2 = document.getElementById('africaMapSvgWrap');
+      if (wrap2) {
+        wrap2.innerHTML = '<div class="map-offline">🌍 Map couldn\'t load — check your internet connection.<br><small style="opacity:.7;font-size:11px;margin-top:6px;display:block;">Country cards below still work offline.</small></div>';
+      }
+      console.warn('Africa map load failed:', err);
+    });
+}
+
+function updateMapColors() {
+  // Re-color countries after progress changes
+  document.querySelectorAll('.country-path').forEach(el => {
+    const id = +el.dataset.id;
+    if (!id) return;
+    const state = getCountryState(id);
+    el.className = 'country-path ' + state;
+  });
+  // Re-color travel paths
+  document.querySelectorAll('.travel-path').forEach(el => {
+    const a = +el.dataset.a, b = +el.dataset.b;
+    const sa = getCountryState(a), sb = getCountryState(b);
+    const active = (sa==='visited'||sa==='completed') && (sb==='visited'||sb==='completed');
+    el.classList.toggle('active', active);
+  });
+}
+
+function renderCountryCards() {
   const container = document.getElementById('langCards');
   if (!container) return;
   container.innerHTML = '';
 
-  ethiopiaRegions.forEach(r => {
-    const pct = r.books > 0 ? Math.round((r.completed / r.books) * 100) : 0;
-    const isStamped = r.completed > 0;
-    const isComplete = r.completed >= r.books;
-    const sealText = isComplete ? '★ Done ★' : isStamped ? 'In Progress' : '';
+  // Show cards for countries that have books
+  const bookCountries = Array.from(AFRICA_IDS)
+    .filter(id => africaCountryMeta[id]?.lang)
+    .map(id => ({id, ...africaCountryMeta[id], state: getCountryState(id)}));
+
+  bookCountries.forEach(country => {
+    const prog = getLangProgress(country.lang);
+    const pct = prog.total > 0 ? Math.round((prog.completed / prog.total) * 100) : 0;
+    const isStarted = prog.completed > 0;
+    const isDone = prog.completed >= prog.total && prog.total > 0;
 
     const card = document.createElement('div');
-    card.className = `pstamp${isStamped ? ' stamped' : ''}${isComplete ? ' completed-all' : ''}`;
-    card.style.color = r.color;
-    card.setAttribute('role', 'button');
-    card.setAttribute('tabindex', '0');
-    card.setAttribute('aria-label', r.name + ' – ' + r.lang + ' – ' + r.completed + ' of ' + r.books + ' books read. Tap to explore.');
-    card.onclick = () => filterByLanguage(r.lang);
-    card.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); filterByLanguage(r.lang); } };
+    card.className = `pstamp${isStarted ? ' stamped' : ''}${isDone ? ' completed-all' : ''}`;
+    const colours = {
+      'Amharic':'#2D7030','Oromiffa':'#D88010','Tigrinya':'#1565C0',
+      'Somali':'#7B1FA2','Wolaytta':'#B71C1C'
+    };
+    const col = colours[country.lang] || '#2D7030';
+    card.style.color = col;
+    card.setAttribute('role','button');
+    card.setAttribute('tabindex','0');
+    card.setAttribute('aria-label', country.name + ' – ' + country.lang + ' – ' + prog.completed + ' of ' + prog.total + ' books read');
+    card.onclick = () => { filterByLanguage(country.lang); switchView('library'); };
+    card.onkeydown = e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); card.onclick(); } };
+
+    const sealText = isDone ? '★ Done ★' : isStarted ? 'In Progress' : 'Explore!';
+
     card.innerHTML =
       '<div class="pstamp-inner"></div>' +
-      '<span class="pstamp-flag">' + r.emoji + '</span>' +
-      '<div class="pstamp-country">' + r.name + '</div>' +
-      '<div class="pstamp-local">' + r.local + '</div>' +
-      '<span class="pstamp-lang" style="background:' + r.color + ';">' + r.lang + '</span>' +
-      '<div class="pstamp-bar-wrap"><div class="pstamp-bar" style="width:' + pct + '%;background:' + r.color + ';"></div></div>' +
-      '<div class="pstamp-count">' + r.completed + ' / ' + r.books + ' books</div>' +
-      '<div class="pstamp-seal" style="border-color:' + r.color + ';color:' + r.color + ';">' + sealText + '</div>';
+      '<span class="pstamp-flag">' + country.flag + '</span>' +
+      '<div class="pstamp-country">' + country.name + '</div>' +
+      '<span class="pstamp-lang" style="background:' + col + ';">' + country.lang + '</span>' +
+      '<div class="pstamp-bar-wrap"><div class="pstamp-bar" style="width:' + pct + '%;background:' + col + ';"></div></div>' +
+      '<div class="pstamp-count">' + prog.completed + ' / ' + prog.total + ' books</div>' +
+      '<div class="pstamp-seal" style="border-color:' + col + ';color:' + col + ';">' + sealText + '</div>';
+
     container.appendChild(card);
   });
 }
+
 
 function filterByLanguage(lang) {
   activeLang = lang;
@@ -2528,175 +2851,36 @@ renderMyBooks = function() {
     <!-- Hero banner -->
     <div class="explore-hero">
       <div class="explore-hero-icon">🌍</div>
-      <h2>🌍 East Africa Reading Map</h2>
-      <p>Tap a country to explore books in its language!</p>
+      <h2>🌍 Africa Reading Adventure</h2>
+      <p>Read books to travel across all 54 countries!</p>
       <div class="explore-hero-stats">
         <span>📚 <strong id="exploreTotal">0</strong> books read</span>
-        <span>⭐ <strong id="exploreCountries">0</strong>&thinsp;/&thinsp;5 countries</span>
+        <span>🗺️ <strong id="exploreCountries">0</strong>&thinsp;/&thinsp;54 countries</span>
       </div>
     </div>
 
-    <!-- Africa SVG Map -->
-    <div class="africa-map-wrap">
-      <svg viewBox="0 0 530 570" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="oceanG" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#A8D8F0"/>
-            <stop offset="60%" stop-color="#72B8E0"/>
-            <stop offset="100%" stop-color="#4A90C4"/>
-          </linearGradient>
-          <radialGradient id="landG" cx="38%" cy="32%" r="68%">
-            <stop offset="0%" stop-color="#E8C97A"/>
-            <stop offset="55%" stop-color="#C8A050"/>
-            <stop offset="100%" stop-color="#9A7030"/>
-          </radialGradient>
-          <radialGradient id="eastG" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#D4B060"/>
-            <stop offset="100%" stop-color="#B89040"/>
-          </radialGradient>
-          <filter id="landSh" x="-6%" y="-6%" width="118%" height="118%">
-            <feDropShadow dx="2" dy="4" stdDeviation="6" flood-color="rgba(0,0,0,.32)"/>
-          </filter>
-          <filter id="markerGlow">
-            <feGaussianBlur stdDeviation="3" result="blur"/>
-            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-        </defs>
-
-        <!-- Ocean background -->
-        <rect width="530" height="570" rx="18" fill="url(#oceanG)"/>
-
-        <!-- Subtle wave lines -->
-        <path d="M 0,95 Q 30,91 60,95 Q 90,99 120,95" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.2" stroke-linecap="round"/>
-        <path d="M 0,110 Q 30,106 60,110 Q 90,114 120,110" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1.2" stroke-linecap="round"/>
-        <path d="M 0,360 Q 30,356 60,360 Q 90,364 120,360" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1.2" stroke-linecap="round"/>
-        <path d="M 0,375 Q 30,371 60,375 Q 90,379 120,375" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1.2" stroke-linecap="round"/>
-
-        <!-- Ocean labels -->
-        <text x="52" y="310" font-size="8" fill="rgba(0,40,100,.4)" text-anchor="middle" font-family="Nunito,sans-serif" font-style="italic" transform="rotate(-90 52 310)">Atlantic Ocean</text>
-        <text x="518" y="345" font-size="8" fill="rgba(0,40,100,.4)" text-anchor="middle" font-family="Nunito,sans-serif" font-style="italic" transform="rotate(-90 518 345)">Indian Ocean</text>
-        <text x="438" y="18" font-size="7.5" fill="rgba(0,40,100,.45)" text-anchor="middle" font-family="Nunito,sans-serif" font-style="italic">Red Sea</text>
-        <text x="495" y="145" font-size="6.5" fill="rgba(0,40,100,.35)" text-anchor="middle" font-family="Nunito,sans-serif" font-style="italic">Gulf of Aden</text>
-
-        <!-- ═══ AFRICA CONTINENT (accurate simplified outline) ═══
-             Clockwise from NW Morocco.
-             Formula: x=(lon+18)*7.571   y=(38-lat)*7.703
-             Key reference points:
-               Morocco NW   (-6E,36N)  → 91,15
-               Tunisia      (11E,37N)  → 220,8
-               Libya coast  (13E,33N)  → 235,38
-               Libya/Egypt  (25E,31N)  → 326,54
-               Egypt NE     (33E,30N)  → 386,62
-               Red Sea S    (37E,22N)  → 416,123
-               Djibouti     (43E,11N)  → 462,208
-               Horn tip     (51.5E,12N)→ 526,200
-               Somalia S    (51E,10N)  → 522,215
-               Mogadishu    (45E,2N)   → 478,277
-               Tanzania E   (40E,-10S) → 440,370
-               Mozambique   (35E,-17S) → 402,424
-               Beira        (34E,-20S) → 394,447
-               Maputo       (33E,-26S) → 386,493
-               SA east      (27E,-33S) → 341,547
-               Cape Point   (18.5E,-34S)→ 277,554
-               SA west      (17E,-32S) → 265,539
-               Namibia      (15E,-26.5S)→ 250,503
-               Angola       (12E,-17S) → 227,424
-               Cabinda      (12E,-5S)  → 227,331
-               Cameroon     (9E,4N)    → 204,262
-               Ghana        (0E,5.5N)  → 136,250
-               Ivory Coast  (-5E,5N)   → 98,254
-               Liberia      (-11.5E,4.5N)→ 49,258
-               Sierra Leone (-13.5E,8N)→ 34,231
-               Guinea       (-15E,10.5N)→ 23,212
-               Senegal      (-17E,14N) → 8,185
-               Mauritania   (-17E,21N) → 8,138
-               W.Sahara N   (-13.5E,28N)→ 34,77
-               Morocco SW   (-9E,32N)  → 68,46
-        ═════════════════════════════════════════════════════════ -->
-        <path class="africa-land" filter="url(#landSh)"
-          d="M 91,15
-             Q 155,3 220,8
-             Q 278,22 326,54
-             L 370,54
-             Q 386,54 386,62
-             Q 400,88 416,123
-             Q 438,165 462,208
-             L 526,200 L 522,215
-             Q 500,248 478,277
-             Q 460,325 440,370
-             Q 426,398 402,424
-             Q 394,436 386,493
-             Q 365,524 341,547
-             Q 312,563 277,554
-             Q 264,554 249,503
-             Q 237,477 227,462
-             L 227,424
-             L 227,331
-             Q 215,296 204,277
-             Q 185,260 163,244
-             Q 138,248 98,254
-             Q 72,257 49,258
-             Q 38,245 34,231
-             Q 25,219 23,212
-             Q 12,196 8,185
-             Q 2,178 4,178
-             Q 5,158 8,138
-             Q 19,105 34,77
-             Q 52,54 68,46
-             Q 80,25 91,15 Z"
-          fill="url(#landG)" stroke="rgba(255,255,255,.45)" stroke-width="1.5"/>
-
-        <!-- Madagascar (small island for visual completeness) -->
-        <path d="M 488,368 Q 508,372 516,395 Q 520,420 510,450 Q 500,468 488,460 Q 476,450 474,425 Q 472,400 480,375 Z"
-          fill="#C8A850" stroke="rgba(255,255,255,.4)" stroke-width="1" opacity=".85"/>
-        <text x="502" y="415" font-size="5.5" fill="rgba(0,0,0,.45)" text-anchor="middle" font-family="Nunito,sans-serif">MG</text>
-
-        <!-- East Africa highlight zone -->
-        <path d="M 400,138 Q 440,128 470,158
-                 Q 455,180 462,208 L 522,215
-                 Q 500,248 478,277
-                 Q 460,325 440,370
-                 Q 430,395 415,415
-                 Q 400,375 397,340
-                 Q 398,305 412,283
-                 Q 425,258 428,223
-                 Q 430,188 418,165
-                 Q 408,148 400,138 Z"
-          fill="rgba(255,210,60,.08)" stroke="rgba(255,210,60,.25)" stroke-width="1.5" stroke-dasharray="6,4"/>
-
-        <!-- Connector path linking countries -->
-        <polyline points="431,175 430,223 479,277 414,303 406,340"
-          fill="none" stroke="rgba(255,255,255,.45)" stroke-width="1.8"
-          stroke-dasharray="4,4" stroke-linecap="round"/>
-
-        <!-- Country markers (filled by JS) -->
-        <g id="countryMarkers"></g>
-
-        <!-- Compass rose (bottom-left) -->
-        <g transform="translate(38,530)">
-          <circle cx="0" cy="0" r="15" fill="rgba(255,255,255,.18)" stroke="rgba(255,255,255,.45)" stroke-width="1"/>
-          <polygon points="0,-11 2,-4 0,-1 -2,-4" fill="#1A4A7A"/>
-          <polygon points="0,11 2,4 0,1 -2,4" fill="#1A4A7A" opacity=".38"/>
-          <polygon points="-11,0 -4,2 -1,0 -4,-2" fill="#1A4A7A" opacity=".38"/>
-          <polygon points="11,0 4,2 1,0 4,-2" fill="#1A4A7A" opacity=".38"/>
-          <circle cx="0" cy="0" r="2" fill="#1A4A7A"/>
-          <text x="0" y="-14" font-size="7" fill="#1A4A7A" text-anchor="middle" font-family="Nunito" font-weight="800">N</text>
-        </g>
-
-        <!-- Scale bar -->
-        <g transform="translate(400,548)">
-          <line x1="0" y1="0" x2="60" y2="0" stroke="rgba(255,255,255,.6)" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="0" y1="-3" x2="0" y2="3" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
-          <line x1="60" y1="-3" x2="60" y2="3" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
-          <text x="30" y="-5" font-size="6" fill="rgba(255,255,255,.7)" text-anchor="middle" font-family="Nunito">1000 km</text>
-        </g>
-      </svg>
+    <!-- D3 Africa Map -->
+    <div id="africaMapContainer" style="margin-bottom:8px;">
+      <div id="mapProgressTrack"><div id="mapProgressBar" style="width:0%"></div></div>
+      <div id="africaMapSvgWrap">
+        <div class="map-loading" id="mapLoadingState">
+          <div class="map-loading-spinner"></div>
+          <span style="font-size:13px;font-weight:700;">Loading Africa map…</span>
+        </div>
+      </div>
+      <div class="country-tooltip" id="countryTooltip"></div>
+    </div>
+    <!-- Map legend -->
+    <div class="map-legend" style="margin-bottom:16px;border-radius:0 0 20px 20px;border:1px solid var(--border);border-top:none;">
+      <div class="legend-item"><div class="legend-dot" style="background:#D4B878;opacity:.75"></div>Not yet visited</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#5A9E5A"></div>Books available</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#2D7030"></div>Reading in progress</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#F5C020"></div>Adventure complete!</div>
     </div>
 
-    <!-- Country stamp cards (interactive, filled by JS) -->
+    <!-- Country cards (filtered dynamically) -->
     <div class="passport-grid" id="langCards"></div>
-
-    <p class="africa-tip">Tap a country on the map or a card below to explore its books 📖</p>
+    <p class="africa-tip">Tap any green country on the map to explore its books 📖</p>
 
   </div>
 </div>
