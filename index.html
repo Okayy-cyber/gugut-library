@@ -1491,40 +1491,65 @@ function renderReaderPage(){
 function changePage(dir){
   const b=books.find(bk=>bk.id===currentBookId);
   if(!b) return;
-  const lp=document.getElementById('leftPage');
-  const rp=document.getElementById('rightPage');
-  // The turning page and its pivot edge
-  const turningPage = dir>0 ? rp : lp;
-  const origin      = dir>0 ? 'left center' : 'right center';
-  const outAnim     = dir>0 ? 'rfOut' : 'lbOut';
-  const inOrigin    = dir>0 ? 'right center' : 'left center';
-  const inAnim      = dir>0 ? 'rfIn' : 'lbIn';
+  if(dir>0 && currentPage+2>b.pages.length-1) return;
+  if(dir<0 && currentPage<=0) return;
 
-  // Add a shadow sweep for tactile feel
-  const shadow = document.createElement('div');
-  shadow.className = 'page-shadow';
-  turningPage.appendChild(shadow);
+  const turningPage = dir>0
+    ? document.getElementById('rightPage')
+    : document.getElementById('leftPage');
+  const rect = turningPage.getBoundingClientRect();
 
-  // Phase 1 — page folds away (0 → 90°)
-  turningPage.style.transformOrigin = origin;
-  turningPage.style.animation = outAnim+' 0.2s cubic-bezier(0.4,0,1,1) forwards';
+  // ── Fixed-position overlay escapes all overflow:auto ancestors ──
+  // This guarantees perspective()/rotateY() is fully visible in Chrome.
+  const flip = document.createElement('div');
+  flip.style.cssText =
+    'position:fixed;'+
+    'top:'+rect.top+'px;left:'+rect.left+'px;'+
+    'width:'+rect.width+'px;height:'+rect.height+'px;'+
+    'background:'+(dir>0
+      ? 'linear-gradient(160deg,#f9f7f3,#f4f2ee)'
+      : 'linear-gradient(160deg,#fefefe,#f8f6f2)')+';'+
+    'transform-origin:'+(dir>0?'left center':'right center')+';'+
+    'border-radius:'+(dir>0?'0 14px 14px 0':'14px 0 0 14px')+';'+
+    'box-shadow:'+(dir>0?'-8px 0 28px rgba(0,0,0,.28)':'8px 0 28px rgba(0,0,0,.28)')+';'+
+    'z-index:9999;pointer-events:none;';
+  document.body.appendChild(flip);
+
+  // Hide the real page behind the overlay
+  turningPage.style.visibility = 'hidden';
+
+  // Phase 1 — fold OUT: page collapses to an edge (300ms)
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    flip.style.transition = 'transform .3s cubic-bezier(.4,0,1,1)';
+    flip.style.transform  = 'perspective(900px) rotateY('+(dir>0?-90:90)+'deg)';
+  }));
 
   setTimeout(()=>{
-    // Swap content at the invisible midpoint
-    turningPage.style.animation = 'none';
-    turningPage.style.transform = '';
-    if(shadow.parentNode) shadow.parentNode.removeChild(shadow);
-    currentPage=Math.max(0,Math.min(currentPage+dir*2,b.pages.length-1));
+    // ── midpoint: swap content ──
+    currentPage = Math.max(0, Math.min(currentPage+dir*2, b.pages.length-1));
     renderReaderPage();
-    // Phase 2 — new content arrives with slight overshoot
-    turningPage.style.transformOrigin = inOrigin;
-    turningPage.style.animation = inAnim+' 0.28s cubic-bezier(0.15,0.85,0.35,1.05) forwards';
-    turningPage.addEventListener('animationend',()=>{
-      turningPage.style.animation='';
-      turningPage.style.transform='';
-      turningPage.style.transformOrigin='';
-    },{once:true});
-  }, 200);
+
+    // Switch overlay to new-page look and fold IN from opposite side
+    flip.style.background = dir>0
+      ? 'linear-gradient(160deg,#fefefe,#f8f6f2)'
+      : 'linear-gradient(160deg,#f9f7f3,#f4f2ee)';
+    flip.style.transformOrigin = dir>0 ? 'right center' : 'left center';
+    flip.style.boxShadow = dir>0
+      ? '8px 0 28px rgba(0,0,0,.28)' : '-8px 0 28px rgba(0,0,0,.28)';
+    flip.style.transition = 'none';
+    flip.style.transform  = 'perspective(900px) rotateY('+(dir>0?90:-90)+'deg)';
+
+    // Phase 2 — fold IN with slight overshoot (320ms)
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      flip.style.transition = 'transform .32s cubic-bezier(.15,.85,.35,1.05)';
+      flip.style.transform  = 'perspective(900px) rotateY(0deg)';
+    }));
+
+    setTimeout(()=>{
+      turningPage.style.visibility = '';
+      if(flip.parentNode) flip.parentNode.removeChild(flip);
+    }, 350);
+  }, 310);
 }
 
 // ═══════════════════════════════════
