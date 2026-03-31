@@ -47,7 +47,7 @@ button:focus-visible{outline:2.5px solid var(--amber);outline-offset:2px;}
 
 /* ── LAYOUT ── */
 .app{display:flex;flex-direction:column;min-height:100vh;}
-.view{display:none;flex:1;flex-direction:column;}
+.view{display:none;flex:1;flex-direction:column;overflow:hidden;}
 .view.active{display:flex;}
 
 /* ── TOPBAR ── */
@@ -222,22 +222,21 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 .font-xl .page-text{font-size:24px!important;}
 
 /* ── BOOK SPREAD ── */
-.book-flip-wrap{perspective:1500px;perspective-origin:50% 42%;width:100%;max-width:700px;margin:0 auto;}
-.book-spread{display:flex;gap:0;width:100%;border-radius:14px;overflow:visible;box-shadow:0 14px 52px rgba(0,0,0,.6);transform-style:preserve-3d;will-change:transform;transform-origin:center center;}
+.book-flip-wrap{width:100%;max-width:700px;margin:0 auto;}
+.book-spread{display:flex;gap:0;width:100%;border-radius:14px;overflow:hidden;box-shadow:0 14px 52px rgba(0,0,0,.6);}
 .page{overflow:hidden;border-radius:0;}
 .page:first-child{border-radius:14px 0 0 14px;}
 .page.right-p{border-radius:0 14px 14px 0;}
 .book-spine{width:7px;background:linear-gradient(to right,rgba(0,0,0,.22),rgba(0,0,0,.08) 45%,rgba(255,255,255,.12) 55%,transparent);flex-shrink:0;}
 
-/* ── PAGE FLIP — realistic single-page door-fold ── */
-/* perspective lives on .book-flip-wrap; pages fold about their inner edge */
-.page{backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-origin:center center;transition:none;}
-/* Forward flip: right page folds toward reader (left-edge pivot) */
-@keyframes rfOut{0%{transform:rotateY(0deg);}100%{transform:rotateY(-90deg);}}
-@keyframes rfIn {0%{transform:rotateY(90deg);}55%{transform:rotateY(-4deg);}100%{transform:rotateY(0deg);}}
-/* Backward flip: left page folds toward reader (right-edge pivot) */
-@keyframes lbOut{0%{transform:rotateY(0deg);}100%{transform:rotateY(90deg);}}
-@keyframes lbIn {0%{transform:rotateY(-90deg);}55%{transform:rotateY(4deg);}100%{transform:rotateY(0deg);}}
+/* ── PAGE FLIP — perspective() inline so overflow:hidden doesn't kill 3D ── */
+.page{transform-origin:center center;transition:none;}
+/* Forward flip: right page folds left (perspective baked into keyframe) */
+@keyframes rfOut{0%{transform:perspective(900px) rotateY(0deg);}100%{transform:perspective(900px) rotateY(-90deg);}}
+@keyframes rfIn {0%{transform:perspective(900px) rotateY(90deg);}60%{transform:perspective(900px) rotateY(-5deg);}100%{transform:perspective(900px) rotateY(0deg);}}
+/* Backward flip: left page folds right */
+@keyframes lbOut{0%{transform:perspective(900px) rotateY(0deg);}100%{transform:perspective(900px) rotateY(90deg);}}
+@keyframes lbIn {0%{transform:perspective(900px) rotateY(-90deg);}60%{transform:perspective(900px) rotateY(5deg);}100%{transform:perspective(900px) rotateY(0deg);}}
 /* Shadow that sweeps across the page during flip */
 @keyframes shadowSweep{0%{opacity:0;}40%{opacity:.4;}100%{opacity:0;}}
 .page-shadow{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.35),transparent);pointer-events:none;border-radius:inherit;animation:shadowSweep .38s ease-in-out forwards;}
@@ -387,8 +386,13 @@ body.night .modal-sheet h3{color:var(--green-light);}
 .africa-map-wrap{border-radius:20px;overflow:hidden;margin-bottom:20px;box-shadow:0 6px 28px rgba(0,60,140,.28),0 1px 0 rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.1);}
 body.night .africa-map-wrap{box-shadow:0 6px 28px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.08);}
 /* ══ AFRICA MAP (D3) ══ */
-#africaMapContainer{width:100%;border-radius:20px;overflow:hidden;background:linear-gradient(160deg,#A8D8F0 0%,#72B8E0 60%,#4A90C4 100%);box-shadow:0 6px 28px rgba(0,60,140,.28);border:1px solid rgba(255,255,255,.12);position:relative;height:clamp(320px,62vh,520px);display:flex;flex-direction:column;}
-#africaMapSvgWrap{flex:1;overflow:hidden;position:relative;}
+/* Explore view: two-panel layout */
+#view-map{overflow:hidden;}
+#exploreTop{display:flex;flex-direction:column;flex:1;min-height:0;padding:10px 16px 0;gap:8px;overflow:hidden;}
+#exploreBottom{flex-shrink:0;overflow-y:auto;max-height:42vh;border-top:1px solid var(--border);}
+/* Map container fills remaining top space */
+#africaMapContainer{flex:1;min-height:0;width:100%;border-radius:20px;overflow:hidden;background:linear-gradient(160deg,#A8D8F0 0%,#72B8E0 60%,#4A90C4 100%);box-shadow:0 6px 28px rgba(0,60,140,.28);border:1px solid rgba(255,255,255,.12);position:relative;display:flex;flex-direction:column;}
+#africaMapSvgWrap{flex:1;overflow:hidden;position:relative;min-height:0;}
 #africaMapContainer svg{display:block;width:100%;height:100%;}
 .country-path{fill:#D4B878;stroke:#fff;stroke-width:.6;cursor:pointer;transition:fill .25s,opacity .2s;opacity:.75;}
 .country-path.has-books{fill:#5A9E5A;stroke:rgba(255,255,255,.9);stroke-width:.9;opacity:.95;cursor:pointer;}
@@ -918,7 +922,7 @@ if(location.protocol === 'file:') {
 .pin-btn:active{background:var(--green);color:#fff;}
 
 /* ── EXPLORE / PASSPORT STAMPS ── */
-.explore-hero{background:linear-gradient(135deg,#0A2218 0%,#1a4025 45%,#2D7030 85%,#1a4025 100%);border-radius:16px;color:#fff;padding:14px 20px 12px;margin-bottom:12px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px;}
+.explore-hero{background:linear-gradient(135deg,#0A2218 0%,#1a4025 45%,#2D7030 85%,#1a4025 100%);border-radius:16px;color:#fff;padding:12px 18px 10px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:12px;flex-shrink:0;}
 .explore-hero-icon{font-size:28px;flex-shrink:0;}
 .explore-hero-text{flex:1;text-align:left;}
 .explore-hero h2{font-size:16px;font-weight:900;margin:0 0 2px;}
@@ -2860,9 +2864,9 @@ renderMyBooks = function() {
 
 <!-- EXPLORE VIEW -->
 <div class="view" id="view-map">
-  <div class="scroll" style="padding-top:12px;">
 
-    <!-- Hero banner — compact so map is visible without scrolling -->
+  <!-- TOP: hero + map fill the available viewport height -->
+  <div id="exploreTop">
     <div class="explore-hero">
       <div class="explore-hero-icon">🌍</div>
       <div class="explore-hero-text">
@@ -2876,7 +2880,7 @@ renderMyBooks = function() {
     </div>
 
     <!-- D3 Africa Map -->
-    <div id="africaMapContainer" style="margin-bottom:8px;">
+    <div id="africaMapContainer">
       <div id="mapProgressTrack"><div id="mapProgressBar" style="width:0%"></div></div>
       <div id="africaMapSvgWrap">
         <div class="map-loading" id="mapLoadingState">
@@ -2886,19 +2890,20 @@ renderMyBooks = function() {
       </div>
       <div class="country-tooltip" id="countryTooltip"></div>
     </div>
-    <!-- Map legend -->
-    <div class="map-legend" style="margin-bottom:16px;border-radius:0 0 20px 20px;border:1px solid var(--border);border-top:none;">
+  </div>
+
+  <!-- BOTTOM: legend + country cards, independently scrollable -->
+  <div id="exploreBottom">
+    <div class="map-legend">
       <div class="legend-item"><div class="legend-dot" style="background:#D4B878;opacity:.75"></div>Not yet visited</div>
       <div class="legend-item"><div class="legend-dot" style="background:#5A9E5A"></div>Books available</div>
       <div class="legend-item"><div class="legend-dot" style="background:#2D7030"></div>Reading in progress</div>
       <div class="legend-item"><div class="legend-dot" style="background:#F5C020"></div>Adventure complete!</div>
     </div>
-
-    <!-- Country cards (filtered dynamically) -->
-    <div class="passport-grid" id="langCards"></div>
-    <p class="africa-tip">Tap any green country on the map to explore its books 📖</p>
-
+    <div class="passport-grid" id="langCards" style="padding:12px 16px 80px;"></div>
+    <p class="africa-tip" style="padding:0 16px 16px;">Tap any green country on the map to explore its books 📖</p>
   </div>
+
 </div>
 
 
