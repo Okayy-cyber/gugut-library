@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#142B1A">
 <meta name="description" content="Gugut Montessori — multilingual children's books in Amharic, Oromiffa, Tigrinya, Somali &amp; Wolaytta">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+Ethiopic:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
@@ -145,7 +145,29 @@ body.night .section-title{color:var(--green-light);}
 .btitle{font-size:13px;font-weight:800;line-height:1.3;margin-bottom:4px;}
 .bmeta{display:flex;gap:5px;flex-wrap:wrap;}
 .tag{font-size:10px;padding:2px 7px;border-radius:24px;font-weight:600;}
-.tag-age{background:var(--green-pale);color:var(--green-dark);}
+.tag-age{font-size:10px;padding:2px 8px;border-radius:24px;font-weight:700;}
+.tag-age.level-0-3{background:#FFF0E6;color:#B84A00;}
+.tag-age.level-3-6{background:var(--green-pale);color:var(--green-dark);}
+.tag-age.level-6-9{background:#EEF2FF;color:#3730A3;}
+body.night .tag-age.level-0-3{background:#3D2010;color:#FFB085;}
+body.night .tag-age.level-3-6{background:#1a2e1a;color:#81C784;}
+body.night .tag-age.level-6-9{background:#1e1b4b;color:#A5B4FC;}
+/* Level filter pills — distinct colour tints per band */
+.pill.level-pill{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;}
+.pill.level-pill .lp-name{font-weight:800;}
+.pill.level-pill .lp-age{font-size:10px;font-weight:600;opacity:.75;}
+.pill.lv0:not(.active){border-color:#FFB347;color:#B84A00;background:#FFF7F0;}
+.pill.lv0:hover{border-color:#FFB347;background:#FFE8CC;color:#B84A00;}
+.pill.lv0.active{background:#E07000;border-color:#E07000;color:#fff;box-shadow:0 2px 10px rgba(224,112,0,.35);}
+.pill.lv1:not(.active){border-color:#6BBF6B;color:var(--green);background:var(--green-pale);}
+.pill.lv1:hover{border-color:var(--green-mid);background:#c8e6c8;color:var(--green-dark);}
+.pill.lv1.active{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 2px 10px rgba(45,112,48,.35);}
+.pill.lv2:not(.active){border-color:#818CF8;color:#3730A3;background:#EEF2FF;}
+.pill.lv2:hover{border-color:#6366F1;background:#E0E7FF;color:#312E81;}
+.pill.lv2.active{background:#4F46E5;border-color:#4F46E5;color:#fff;box-shadow:0 2px 10px rgba(79,70,229,.35);}
+body.night .pill.lv0:not(.active){background:#2a1800;border-color:#B86800;color:#FFB347;}
+body.night .pill.lv1:not(.active){background:#0f2010;border-color:#3D9040;color:#81C784;}
+body.night .pill.lv2:not(.active){background:#1a1640;border-color:#6366F1;color:#A5B4FC;}
 .tag-lang{background:var(--sand);color:var(--brown);}
 body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 
@@ -292,11 +314,33 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
   border-top:2px solid #e8e0d0;
   padding:10px 18px 12px;font-family:Georgia,serif;
   font-size:var(--ill-font-sz,16px);
-  line-height:1.65;color:#1a1a1a;text-align:center;pointer-events:none;
-  z-index:20;display:none;box-sizing:border-box;
+  line-height:1.45;color:#1a1a1a;text-align:center;pointer-events:none;
+  z-index:20;display:none;box-sizing:border-box;overflow:hidden;box-shadow:inset 16px 0 16px -8px rgba(0,0,0,0.11);
   border-radius:0 0 6px 6px;}
-.tts-word{color:transparent;padding:1px 2px;border-radius:3px;transition:background .1s;}
-.tts-word.lit{background:rgba(245,192,32,.55);color:var(--green-dark);font-weight:700;}
+.tts-word{color:inherit;padding:1px 2px;border-radius:3px;transition:background .15s,color .15s;}
+.tts-word.lit{background:rgba(245,192,32,.7);color:var(--green-dark);font-weight:700;border-radius:3px;box-shadow:0 1px 6px rgba(245,192,32,.45);}
+
+/* ── Illustrated book single-page 3D flip ── */
+@keyframes illPgOut {0%{transform:perspective(1400px) rotateY(0deg);opacity:1}100%{transform:perspective(1400px) rotateY(-88deg);opacity:.5}}
+@keyframes illPgIn  {0%{transform:perspective(1400px) rotateY(88deg);opacity:.5}70%{transform:perspective(1400px) rotateY(-3deg)}100%{transform:perspective(1400px) rotateY(0deg);opacity:1}}
+@keyframes illPgOutR{0%{transform:perspective(1400px) rotateY(0deg);opacity:1}100%{transform:perspective(1400px) rotateY(88deg);opacity:.5}}
+@keyframes illPgInR {0%{transform:perspective(1400px) rotateY(-88deg);opacity:.5}70%{transform:perspective(1400px) rotateY(3deg)}100%{transform:perspective(1400px) rotateY(0deg);opacity:1}}
+.ill-pg{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;
+  user-select:none;-webkit-user-drag:none;backface-visibility:hidden;transform-origin:center center;}
+.ill-pg-out  {animation:illPgOut  0.22s ease-in  forwards;pointer-events:none;}
+.ill-pg-in   {animation:illPgIn   0.26s ease-out forwards;}
+.ill-pg-outr {animation:illPgOutR 0.22s ease-in  forwards;pointer-events:none;}
+.ill-pg-inr  {animation:illPgInR  0.26s ease-out forwards;}
+/* Shadow sweep across the page during flip */
+.ill-pg-shadow{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;
+  background:linear-gradient(90deg,rgba(0,0,0,0.22),transparent 60%);border-radius:inherit;
+  animation:shadowSweep 0.48s ease-in-out forwards;z-index:5;}
+/* Progressive-load progress bar at bottom of viewer */
+#illLoadBar{position:absolute;bottom:0;left:0;height:3px;z-index:10;pointer-events:none;
+  background:linear-gradient(90deg,#4caf50,#f5c020);border-radius:0 0 0 10px;
+  transition:width 0.4s ease,opacity 0.6s ease;}
+/* StPageFlip canvas styling for illustrated books (Phase 3 handoff) */
+#pfBook > div > canvas{border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,0.32);}
 
 /* Audio controls */
 .audio-bar{background:#111;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
@@ -555,19 +599,20 @@ if(location.protocol === 'file:') {
 <div class="view active" id="view-library">
   <div class="filters">
     <div class="filters-inner">
-      <span class="flabel">Lang</span>
-      <button class="pill active" data-lang="all" onclick="setLang(this,'all')">All</button>
-      <button class="pill" data-lang="Amharic" onclick="setLang(this,'Amharic')">አማርኛ</button>
-      <button class="pill" data-lang="Oromiffa" onclick="setLang(this,'Oromiffa')">Oromiffa</button>
-      <button class="pill" data-lang="Tigrinya" onclick="setLang(this,'Tigrinya')">ትግርኛ</button>
-      <button class="pill" data-lang="Somali" onclick="setLang(this,'Somali')">Soomaali</button>
-      <button class="pill" data-lang="Wolaytta" onclick="setLang(this,'Wolaytta')">Wolaytta</button>
+      <span class="flabel">Read in</span>
+      <button class="pill active" data-lang="all" onclick="setLang(this,'all')" title="Show all books">All</button>
+      <button class="pill" data-lang="English" onclick="setLang(this,'English')" title="Read all books in English">English</button>
+      <button class="pill" data-lang="Amharic" onclick="setLang(this,'Amharic')" title="Read all books in Amharic · ሁሉንም መጻሕፍት በአማርኛ አንብብ">አማርኛ</button>
+      <button class="pill" data-lang="Oromiffa" onclick="setLang(this,'Oromiffa')" title="Read all books in Oromiffa">Oromiffa</button>
+      <button class="pill" data-lang="Tigrinya" onclick="setLang(this,'Tigrinya')" title="Read all books in Tigrinya · ሁሎም መጻሕፍቲ ብትግርኛ ኣንብብ">ትግርኛ</button>
+      <button class="pill" data-lang="Somali" onclick="setLang(this,'Somali')" title="Read all books in Somali">Soomaali</button>
+      <button class="pill" data-lang="Wolaytta" onclick="setLang(this,'Wolaytta')" title="Read all books in Wolaytta">Wolaytta</button>
       <div class="fdiv"></div>
       <span class="flabel">Level</span>
       <button class="pill active" data-age="all" onclick="setAge(this,'all')">All</button>
-      <button class="pill" data-age="0-3" onclick="setAge(this,'0-3')" title="Ages 0–3 · Seedlings">🌱 0–3</button>
-      <button class="pill" data-age="3-6" onclick="setAge(this,'3-6')" title="Ages 3–6 · Early Readers">🌿 3–6</button>
-      <button class="pill" data-age="6-9" onclick="setAge(this,'6-9')" title="Ages 6–9 · Growing Readers">📚 6–9</button>
+      <button class="pill level-pill lv0" data-age="0-3" onclick="setAge(this,'0-3')" title="Ages 0–3 · Short sentences &amp; big pictures, great for bedtime lap reading">🐣 <span class="lp-name">Tiny Tales</span> <span class="lp-age">0–3</span></button>
+      <button class="pill level-pill lv1" data-age="3-6" onclick="setAge(this,'3-6')" title="Ages 3–6 · Simple stories with familiar themes, perfect for growing readers">🌱 <span class="lp-name">Story Time</span> <span class="lp-age">3–6</span></button>
+      <button class="pill level-pill lv2" data-age="6-9" onclick="setAge(this,'6-9')" title="Ages 6–9 · Richer vocabulary and longer tales, for confident young readers">🦋 <span class="lp-name">Bright Readers</span> <span class="lp-age">6–9</span></button>
     </div>
   </div>
   <div class="scroll" id="libraryScroll">
@@ -576,7 +621,7 @@ if(location.protocol === 'file:') {
       <div class="eico">🔍</div>
       <h3 id="emptyTitle">No books found</h3>
       <p id="emptyMsg">Try a different filter or search term.</p>
-      <button onclick="activeLang='all';activeAge='all';searchQ='';document.getElementById('searchInput').value='';renderLibrary();" style="margin-top:12px;background:var(--green);color:#fff;border:none;border-radius:20px;padding:8px 20px;font-weight:700;cursor:pointer;font-size:13px;">Clear filters</button>
+      <button onclick="activeLang='all';activeAge='all';searchQ='';readerDisplayLang='text';document.getElementById('searchInput').value='';document.querySelectorAll('[data-lang]').forEach(b=>b.classList.remove('active'));document.querySelector('[data-lang=all]').classList.add('active');document.querySelectorAll('[data-age]').forEach(b=>b.classList.remove('active'));document.querySelector('[data-age=all]').classList.add('active');renderLibrary();" style="margin-top:12px;background:var(--green);color:#fff;border:none;border-radius:20px;padding:8px 20px;font-weight:700;cursor:pointer;font-size:13px;">Clear filters</button>
     </div>
   </div>
 </div>
@@ -856,6 +901,7 @@ if(location.protocol === 'file:') {
     </div>
     <button class="ribtn" onclick="toggleFavFromReader()" id="favReaderBtn" title="Favourite">🤍</button>
     <button class="ribtn ribtn-audio" id="audioHeaderBtn" onclick="toggleAudio()" title="Play narration">🔊</button>
+    <button class="ribtn ribtn-lang" id="langToggleBtn" onclick="toggleReaderLang()" title="Switch language" style="display:none;font-size:11px;font-weight:800;letter-spacing:.5px;min-width:36px;">EN</button>
     <button class="ribtn" onclick="toggleFontPopover()" title="Text size">Aa</button>
   </div>
   <!-- Font size popover: MUST be outside <button> — block elements inside <button> break HTML parsing -->
@@ -1130,56 +1176,56 @@ const books = [
       {img:"pages/why-sun-moon/page20.jpg",text:"And whenever children hear the tale, they remember that true wisdom also measures space, limits, and the power of what one invites inside.",local:""}
     ]},
 
-  {id:14,title:"Colors at the Market",local:"በገበያ ያሉ ቀለሞች",lang:"Amharic",age:"3-6",cc:"c3",emo:"🌈",desc:"Mika and a grown-up explore all the beautiful colors at a lively Ethiopian market.",status:"published",reads:0,
+  {id:14,title:"Colors at the Market",local:"በገበያ ያሉ ቀለሞች",lang:"Amharic",age:"0-3",cc:"c3",emo:"🌈",desc:"Mika and a grown-up explore all the beautiful colors at a lively Ethiopian market.",status:"published",reads:0,
     cover:"pages/colors-at-market/cover.jpg",
     pages:[
       {img:"pages/colors-at-market/cover.jpg",text:"",local:"",isCover:true},
-      {img:"pages/colors-at-market/page01.jpg",text:"Mika arrives at the market with a trusted grown-up.",local:""},
-      {img:"pages/colors-at-market/page02.jpg",text:"All around, the market glows with color.",local:""},
-      {img:"pages/colors-at-market/page03.jpg",text:"Mika looks closely at red tomatoes.",local:""},
-      {img:"pages/colors-at-market/page04.jpg",text:"Next come green peppers and leafy vegetables.",local:""},
-      {img:"pages/colors-at-market/page05.jpg",text:"Yellow fruit shines in the warm light.",local:""},
-      {img:"pages/colors-at-market/page06.jpg",text:"Orange vegetables add another color to the day.",local:""},
-      {img:"pages/colors-at-market/page07.jpg",text:"Brown baskets and earthy tones feel warm and steady.",local:""},
-      {img:"pages/colors-at-market/page08.jpg",text:"A pale white cloth catches Mika's eye.",local:""},
-      {img:"pages/colors-at-market/page09.jpg",text:"Mika begins to point to the colors with delight.",local:""},
-      {img:"pages/colors-at-market/page10.jpg",text:"The grown-up gently notices the colors with Mika.",local:""},
-      {img:"pages/colors-at-market/page11.jpg",text:"Mika compares two or three colors side by side.",local:""},
-      {img:"pages/colors-at-market/page12.jpg",text:"Purple onions add a new rich color to the market.",local:""},
-      {img:"pages/colors-at-market/page13.jpg",text:"One colorful item rests in Mika's hands.",local:""},
-      {img:"pages/colors-at-market/page14.jpg",text:"The grown-up helps Mika notice color in more and more places.",local:""},
-      {img:"pages/colors-at-market/page15.jpg",text:"Now Mika begins to recognize familiar colors in new things.",local:""},
-      {img:"pages/colors-at-market/page16.jpg",text:"The market feels full of beauty and quiet order.",local:""},
-      {img:"pages/colors-at-market/page17.jpg",text:"Mika and the grown-up begin their walk away.",local:""},
-      {img:"pages/colors-at-market/page18.jpg",text:"The colors stay bright in Mika's memory.",local:""},
-      {img:"pages/colors-at-market/page19.jpg",text:"Even away from the stalls, Mika still remembers them.",local:""},
-      {img:"pages/colors-at-market/page20.jpg",text:"Mika smiles softly. One real market held so many colors.",local:""}
+      {img:"pages/colors-at-market/page01.jpg",text:"Mika arrives at the market with a trusted grown-up.",local:"ሚካ ከሚያምን አዋቂ ጋር ወደ ገበያ ደረሰ።"},
+      {img:"pages/colors-at-market/page02.jpg",text:"All around, the market glows with color.",local:"ዙሪያዋ ሁሉ ገበያው በቀለሞች ፈካ።"},
+      {img:"pages/colors-at-market/page03.jpg",text:"Mika looks closely at red tomatoes.",local:"ሚካ ቀይ ቲማቲሞቹን በቀረብ ቀረብ አየ።"},
+      {img:"pages/colors-at-market/page04.jpg",text:"Next come green peppers and leafy vegetables.",local:"ቀጥሎ አረንጓዴ ፍሬዎችና ቅጠላ አትክልቶች ታዩ።"},
+      {img:"pages/colors-at-market/page05.jpg",text:"Yellow fruit shines in the warm light.",local:"ቢጫ ፍሬ በሞቀ ብርሃን ውስጥ ብሩህ ሆነ።"},
+      {img:"pages/colors-at-market/page06.jpg",text:"Orange vegetables add another color to the day.",local:"ብርቱካናማ አትክልቶች ለቀኑ ሌላ ቀለም ጨመሩ።"},
+      {img:"pages/colors-at-market/page07.jpg",text:"Brown baskets and earthy tones feel warm and steady.",local:"ቡናማ ቅርጫቶችና የምድር ቀለሞች ሞቅ ያለ ስሜት ሰጡ።"},
+      {img:"pages/colors-at-market/page08.jpg",text:"A pale white cloth catches Mika's eye.",local:"ፈዛዛ ነጭ ጨርቅ የሚካን ዓይን ስቦ ያዘ።"},
+      {img:"pages/colors-at-market/page09.jpg",text:"Mika begins to point to the colors with delight.",local:"ሚካ ቀለሞቹን በደስታ ጠቆሞ ጀመረ።"},
+      {img:"pages/colors-at-market/page10.jpg",text:"The grown-up gently notices the colors with Mika.",local:"አዋቂው ሚካ ጋር ቀስ ብሎ ቀለሞቹን ታዘበ።"},
+      {img:"pages/colors-at-market/page11.jpg",text:"Mika compares two or three colors side by side.",local:"ሚካ ሁለትና ሦስት ቀለሞችን ጎን ለጎን አወዳደረ።"},
+      {img:"pages/colors-at-market/page12.jpg",text:"Purple onions add a new rich color to the market.",local:"ወደዳ ሽንኩርቶዎች ሌላ ዘርፈ-ብዙ ቀለም ለገበያው ሰጡ።"},
+      {img:"pages/colors-at-market/page13.jpg",text:"One colorful item rests in Mika's hands.",local:"አንድ ቀለም ያለው ዕቃ በሚካ እጆቿ ተቀምጦ ነበር።"},
+      {img:"pages/colors-at-market/page14.jpg",text:"The grown-up helps Mika notice color in more and more places.",local:"አዋቂው ሚካ ቀለምን ከብዙ ቦታ እንድትለይ ረዳ።"},
+      {img:"pages/colors-at-market/page15.jpg",text:"Now Mika begins to recognize familiar colors in new things.",local:"ሚካ አሁን አዲስ ዕቃዎች ላይ ቀለሞቹን ማወቅ ጀምሯ።"},
+      {img:"pages/colors-at-market/page16.jpg",text:"The market feels full of beauty and quiet order.",local:"ገበያው ውበትና ጸጥ ያለ ሥርዓት ሞልቶ ነበር።"},
+      {img:"pages/colors-at-market/page17.jpg",text:"Mika and the grown-up begin their walk away.",local:"ሚካና አዋቂው ተጉዘው ሊሄዱ ጀምሩ።"},
+      {img:"pages/colors-at-market/page18.jpg",text:"The colors stay bright in Mika's memory.",local:"ቀለሞቹ በሚካ ትዝታ ውስጥ ብሩህ ሆነው ቀሩ።"},
+      {img:"pages/colors-at-market/page19.jpg",text:"Even away from the stalls, Mika still remembers them.",local:"ከሱቆቹ ርቃ ብትሆን እንኳ ሚካ አሁንም ታስታውሳቸዋለች።"},
+      {img:"pages/colors-at-market/page20.jpg",text:"Mika smiles softly. One real market held so many colors.",local:"ሚካ ፈገግ አለ። አንዲት ገበያ ብዙ ቀለሞችን ይዛ ነበር።"}
     ]},
 
-  {id:15,title:"Hana Washes Her Hands",local:"ሃና እጆቿን ትታጠባለች",lang:"Amharic",age:"3-6",cc:"c1",emo:"🤲",desc:"Hana plays until her hands grow dusty, then carefully washes them all by herself.",status:"published",reads:0,
+  {id:15,title:"Hana Washes Her Hands",local:"ሃና እጆቿን ትታጠባለች",lang:"Amharic",age:"0-3",cc:"c1",emo:"🤲",desc:"Hana plays until her hands grow dusty, then carefully washes them all by herself.",status:"published",reads:0,
     cover:"pages/hana-washes-hands-ill/cover.jpg",
     pages:[
       {img:"pages/hana-washes-hands-ill/cover.jpg",text:"",local:"",isCover:true},
-      {img:"pages/hana-washes-hands-ill/page01.jpg",text:"Hana plays quietly in the compound in the soft morning light.",local:""},
-      {img:"pages/hana-washes-hands-ill/page02.jpg",text:"She keeps playing until her little hands grow dusty.",local:""},
-      {img:"pages/hana-washes-hands-ill/page03.jpg",text:"Soon Hana notices that mealtime is near.",local:""},
-      {img:"pages/hana-washes-hands-ill/page04.jpg",text:"She looks toward the washing place and knows what to do.",local:""},
-      {img:"pages/hana-washes-hands-ill/page05.jpg",text:"Hana walks calmly toward the sink and faucet.",local:""},
-      {img:"pages/hana-washes-hands-ill/page06.jpg",text:"At the washing area, the soap and towel wait nearby.",local:""},
-      {img:"pages/hana-washes-hands-ill/page07.jpg",text:"Hana reaches for the faucet with careful hands.",local:""},
-      {img:"pages/hana-washes-hands-ill/page08.jpg",text:"Cool water begins to run, and Hana wets her hands.",local:""},
-      {img:"pages/hana-washes-hands-ill/page09.jpg",text:"She takes the soap and holds it with focus.",local:""},
-      {img:"pages/hana-washes-hands-ill/page10.jpg",text:"Hana rubs the soap on her hands and smiles at the bubbles.",local:""},
-      {img:"pages/hana-washes-hands-ill/page11.jpg",text:"She scrubs her palms carefully, one against the other.",local:""},
-      {img:"pages/hana-washes-hands-ill/page12.jpg",text:"Then Hana cleans the backs of her hands.",local:""},
-      {img:"pages/hana-washes-hands-ill/page13.jpg",text:"She rubs between her fingers, slowly and well.",local:""},
-      {img:"pages/hana-washes-hands-ill/page14.jpg",text:"Hana cleans her thumbs and fingertips step by step.",local:""},
-      {img:"pages/hana-washes-hands-ill/page15.jpg",text:"She rinses her hands under the clean running water.",local:""},
-      {img:"pages/hana-washes-hands-ill/page16.jpg",text:"Hana keeps rinsing until the soap is all gone.",local:""},
-      {img:"pages/hana-washes-hands-ill/page17.jpg",text:"She turns off the faucet and reaches for the towel.",local:""},
-      {img:"pages/hana-washes-hands-ill/page18.jpg",text:"Hana dries her hands neatly, first one, then the other.",local:""},
-      {img:"pages/hana-washes-hands-ill/page19.jpg",text:"She looks at her clean hands with quiet satisfaction.",local:""},
-      {img:"pages/hana-washes-hands-ill/page20.jpg",text:"At mealtime, Hana sits proudly. She washed her hands all by herself.",local:""}
+      {img:"pages/hana-washes-hands-ill/page01.jpg",text:"Hana plays quietly in the compound in the soft morning light.",local:"ሃና በለሆሳስ ጠዋት ብርሃን ውስጥ ግቢው ውስጥ ጸጥ ብላ ትጫወታለች።"},
+      {img:"pages/hana-washes-hands-ill/page02.jpg",text:"She keeps playing until her little hands grow dusty.",local:"ትንሽ እጆቿ ዱቄታማ እስኪሆኑ ድረስ ትጫወት ቀጠለች።"},
+      {img:"pages/hana-washes-hands-ill/page03.jpg",text:"Soon Hana notices that mealtime is near.",local:"ሃና ብዙም ሳይቆይ የምሳ ጊዜ ቅርብ እንደሆነ ተገነዘበች።"},
+      {img:"pages/hana-washes-hands-ill/page04.jpg",text:"She looks toward the washing place and knows what to do.",local:"ወደ ማጠቢያ ቦታ ተመለከተቺ ምን ማድረግ እንዳለባት ያወቀቺ ነው።"},
+      {img:"pages/hana-washes-hands-ill/page05.jpg",text:"Hana walks calmly toward the sink and faucet.",local:"ሃና ወደ ቧምቧና ቅዳዳ ቀጥ ብላ ሄደቺ።"},
+      {img:"pages/hana-washes-hands-ill/page06.jpg",text:"At the washing area, the soap and towel wait nearby.",local:"በማጠቢያ ቦታ ሳሙናና ፎጣ ቅርብ ሆነው ጠበቋቸው።"},
+      {img:"pages/hana-washes-hands-ill/page07.jpg",text:"Hana reaches for the faucet with careful hands.",local:"ሃና ቧምቧውን ጥንቃቄ ባለው እጆቿ ዞረቺ።"},
+      {img:"pages/hana-washes-hands-ill/page08.jpg",text:"Cool water begins to run, and Hana wets her hands.",local:"ቀዝቃዛ ውሃ ሊፈሰስ ጀምሮ ሃና እጆቿን አጠቡ።"},
+      {img:"pages/hana-washes-hands-ill/page09.jpg",text:"She takes the soap and holds it with focus.",local:"ሳሙናውን ወሰደቺ ትኩረት ይዛ ያዘቺ።"},
+      {img:"pages/hana-washes-hands-ill/page10.jpg",text:"Hana rubs the soap on her hands and smiles at the bubbles.",local:"ሃና ሳሙናውን በእጆቿ አሻሻ ፍሰቱን አይታ ፈገግ አለቺ።"},
+      {img:"pages/hana-washes-hands-ill/page11.jpg",text:"She scrubs her palms carefully, one against the other.",local:"መዳፎቿን ጥንቃቄ ብላ አንዱን ከሌላው ጋር አሻሸቺ።"},
+      {img:"pages/hana-washes-hands-ill/page12.jpg",text:"Then Hana cleans the backs of her hands.",local:"ከዚያ ሃና የእጆቿን ጀርባ አጸዳቺ።"},
+      {img:"pages/hana-washes-hands-ill/page13.jpg",text:"She rubs between her fingers, slowly and well.",local:"ጣቶቿ መካከል ቀስ ብላ ደጋግማ ጠርቸቺ።"},
+      {img:"pages/hana-washes-hands-ill/page14.jpg",text:"Hana cleans her thumbs and fingertips step by step.",local:"ሃና አውራ ጣቶቿንና ጣት ጫፎቿን ደረጃ ደረጃ አጠቡ።"},
+      {img:"pages/hana-washes-hands-ill/page15.jpg",text:"She rinses her hands under the clean running water.",local:"ንጹህ ፈሰሰ ውሃ ስር እጆቿን አጸዳቺ።"},
+      {img:"pages/hana-washes-hands-ill/page16.jpg",text:"Hana keeps rinsing until the soap is all gone.",local:"ሳሙናው ሙሉ ሲወጣ ሃና ማጠቡን ቀጠለቺ።"},
+      {img:"pages/hana-washes-hands-ill/page17.jpg",text:"She turns off the faucet and reaches for the towel.",local:"ቧምቧውን አጠፋቺ ፎጣን ወሰደቺ።"},
+      {img:"pages/hana-washes-hands-ill/page18.jpg",text:"Hana dries her hands neatly, first one, then the other.",local:"ሃና እጆቿን አንዱን ቀጥሎ ሌሎቹን ጥሩ ብላ አደረቀቺ።"},
+      {img:"pages/hana-washes-hands-ill/page19.jpg",text:"She looks at her clean hands with quiet satisfaction.",local:"ንጹህ እጆቿን ተመለከተቺ ዝምታ ውስጥ ረካቺ።"},
+      {img:"pages/hana-washes-hands-ill/page20.jpg",text:"At mealtime, Hana sits proudly. She washed her hands all by herself.",local:"ምሳ ጊዜ ሃና ኩራት ብላ ቁጭ አለቺ። ብቻዋን እጆቿን አጠበቺ።"}
     ]},
 
   {id:16,title:"The Lion and the Hare (Illustrated)",local:"አንበሳ እና ጥንቸሏ",lang:"Amharic",age:"6-9",cc:"c2",emo:"🐇",desc:"A clever hare outsmarts a fearsome lion using only her wits and a deep, still well.",status:"published",reads:0,
@@ -1234,30 +1280,30 @@ const books = [
       {img:"pages/mouse-and-lion-ill/page20.jpg",text:"Under the acacia tree, the lion thanked his tiny friend.",local:""}
     ]},
 
-  {id:18,title:"Saba Sweeps the Courtyard",local:"ሳባ ግቢውን ታፀዳለች",lang:"Amharic",age:"3-6",cc:"c5",emo:"🧹",desc:"Saba notices dry leaves and dust, picks up a broom, and cares for her home with quiet pride.",status:"published",reads:0,
+  {id:18,title:"Saba Sweeps the Courtyard",local:"ሳባ ግቢውን ታፀዳለች",lang:"Amharic",age:"0-3",cc:"c5",emo:"🧹",desc:"Saba notices dry leaves and dust, picks up a broom, and cares for her home with quiet pride.",status:"published",reads:0,
     cover:"pages/saba-sweeps/cover.jpg",
     pages:[
       {img:"pages/saba-sweeps/cover.jpg",text:"",local:"",isCover:true},
-      {img:"pages/saba-sweeps/page01.jpg",text:"Saba notices dry leaves and dust in the courtyard.",local:""},
-      {img:"pages/saba-sweeps/page02.jpg",text:"She looks carefully and decides to help.",local:""},
-      {img:"pages/saba-sweeps/page03.jpg",text:"Saba picks up the small broom.",local:""},
-      {img:"pages/saba-sweeps/page04.jpg",text:"She begins sweeping in small careful strokes.",local:""},
-      {img:"pages/saba-sweeps/page05.jpg",text:"Leaves and dust gather into a little pile.",local:""},
-      {img:"pages/saba-sweeps/page06.jpg",text:"Saba keeps sweeping with steady rhythm.",local:""},
-      {img:"pages/saba-sweeps/page07.jpg",text:"She moves across the courtyard, working carefully.",local:""},
-      {img:"pages/saba-sweeps/page08.jpg",text:"The courtyard begins to look cleaner and calmer.",local:""},
-      {img:"pages/saba-sweeps/page09.jpg",text:"Saba sweeps the last small bits into place.",local:""},
-      {img:"pages/saba-sweeps/page10.jpg",text:"She pauses and looks at her work with quiet satisfaction.",local:""},
-      {img:"pages/saba-sweeps/page11.jpg",text:"Saba checks if any leaves or dust are still left behind.",local:""},
-      {img:"pages/saba-sweeps/page12.jpg",text:"She sweeps one small area again with care.",local:""},
-      {img:"pages/saba-sweeps/page13.jpg",text:"Saba gathers the last bits neatly together.",local:""},
-      {img:"pages/saba-sweeps/page14.jpg",text:"She makes one final pass across the courtyard.",local:""},
-      {img:"pages/saba-sweeps/page15.jpg",text:"Now the courtyard feels open, clean, and peaceful.",local:""},
-      {img:"pages/saba-sweeps/page16.jpg",text:"A warm grown-up notices Saba's helpful work.",local:""},
-      {img:"pages/saba-sweeps/page17.jpg",text:"Saba puts the broom back in its proper place.",local:""},
-      {img:"pages/saba-sweeps/page18.jpg",text:"She stands in the neat courtyard and looks around calmly.",local:""},
-      {img:"pages/saba-sweeps/page19.jpg",text:"The tidy courtyard rests in the warm light.",local:""},
-      {img:"pages/saba-sweeps/page20.jpg",text:"Saba smiles softly. She helped care for her home.",local:""}
+      {img:"pages/saba-sweeps/page01.jpg",text:"Saba notices dry leaves and dust in the courtyard.",local:"ሳባ ደረቅ ቅጠሎችና አቧራ ግቢ ውስጥ እንዳሉ አስተዋለቺ።"},
+      {img:"pages/saba-sweeps/page02.jpg",text:"She looks carefully and decides to help.",local:"ጥንቃቄ ብላ ተመለከተቺ ለመርዳት ወሰነቺ።"},
+      {img:"pages/saba-sweeps/page03.jpg",text:"Saba picks up the small broom.",local:"ሳባ ትንሽ መጥረጊያ አነሳቺ።"},
+      {img:"pages/saba-sweeps/page04.jpg",text:"She begins sweeping in small careful strokes.",local:"ትናንሽ ጥንቃቄ ያለ ምቱ ጠርዳ ጀምራቺ።"},
+      {img:"pages/saba-sweeps/page05.jpg",text:"Leaves and dust gather into a little pile.",local:"ቅጠሎችና አቧራ ወደ ትንሽ ጉብ ሆኑ።"},
+      {img:"pages/saba-sweeps/page06.jpg",text:"Saba keeps sweeping with steady rhythm.",local:"ሳባ ቀጥ ያለ ቅብብሎሽ ጠርዳ ቀጠለቺ።"},
+      {img:"pages/saba-sweeps/page07.jpg",text:"She moves across the courtyard, working carefully.",local:"ጥንቃቄ ብላ ግቢውን አቋርጣ ሠራቺ።"},
+      {img:"pages/saba-sweeps/page08.jpg",text:"The courtyard begins to look cleaner and calmer.",local:"ግቢው ንጹህና ሰላማዊ ሆኖ ጀምሩ።"},
+      {img:"pages/saba-sweeps/page09.jpg",text:"Saba sweeps the last small bits into place.",local:"ሳባ ትናንሽ ቀሪ ቁርጥራጮቹን ጠረደቺ።"},
+      {img:"pages/saba-sweeps/page10.jpg",text:"She pauses and looks at her work with quiet satisfaction.",local:"ቆማ ሥራዋን ዝምታ ውስጥ ረካቺ።"},
+      {img:"pages/saba-sweeps/page11.jpg",text:"Saba checks if any leaves or dust are still left behind.",local:"ሳባ ቅጠሎችና አቧራ ቀርቶ እንዳለ ፈተሸቺ።"},
+      {img:"pages/saba-sweeps/page12.jpg",text:"She sweeps one small area again with care.",local:"ሌላ ትንሽ ቦታ ደግማ ጥንቃቄ ብላ ጠረደቺ።"},
+      {img:"pages/saba-sweeps/page13.jpg",text:"Saba gathers the last bits neatly together.",local:"ሳባ የቀሩ ቁርጥራጮቹን ጥሩ ብላ ሰበሰበቺ።"},
+      {img:"pages/saba-sweeps/page14.jpg",text:"She makes one final pass across the courtyard.",local:"ግቢውን አቋርጣ የመጨረሻ ዙር ሠራቺ።"},
+      {img:"pages/saba-sweeps/page15.jpg",text:"Now the courtyard feels open, clean, and peaceful.",local:"አሁን ግቢው ክፍት፤ ንጹህ፤ ሰላማዊ ሆነ።"},
+      {img:"pages/saba-sweeps/page16.jpg",text:"A warm grown-up notices Saba's helpful work.",local:"ሞቅ ያለ አዋቂ የሳባን ጥሩ ሥራ ተዘበ።"},
+      {img:"pages/saba-sweeps/page17.jpg",text:"Saba puts the broom back in its proper place.",local:"ሳባ መጥረጊያዋን ወደ ቦታው መለሰቺ።"},
+      {img:"pages/saba-sweeps/page18.jpg",text:"She stands in the neat courtyard and looks around calmly.",local:"ቀጥ ብላ ቆማ ንጹህ ግቢውን ጸጥ ብላ ዞረቺ።"},
+      {img:"pages/saba-sweeps/page19.jpg",text:"The tidy courtyard rests in the warm light.",local:"ቁጢጥ ያለ ግቢ ሞቀ ብርሃን ውስጥ ቆሞ ነበር።"},
+      {img:"pages/saba-sweeps/page20.jpg",text:"Saba smiles softly. She helped care for her home.",local:"ሳባ ፈገግ አለቺ። ቤቷን ለመጠበቅ ረዳቺ።"}
     ]},
 
   {id:19,title:"The Crocodile and the Monkey",local:"አዞው እና ዝንጀሮው",lang:"Amharic",age:"6-9",cc:"c6",emo:"🐊",desc:"Milo the monkey and Koro the crocodile are the best of friends — until a dangerous plan tests their trust.",status:"published",reads:0,
@@ -1416,30 +1462,30 @@ const books = [
       {img:"pages/peasant-jar-gold/page20.jpg",text:"Long after the coins were spent, people still told the story to remind their children that integrity can uncover treasures richer than gold itself.",local:""}
     ]},
 
-  {id:25,title:"The Two Goats on the Bridge",local:"ሁለቱ ፍየሎች በድልድዩ ላይ",lang:"Amharic",age:"3-6",cc:"c4",emo:"🐐",desc:"Two stubborn goats meet in the middle of a narrow bridge — and both fall in before learning to share.",status:"published",reads:0,
+  {id:25,title:"The Two Goats on the Bridge",local:"ሁለቱ ፍየሎች በድልድዩ ላይ",lang:"Amharic",age:"0-3",cc:"c4",emo:"🐐",desc:"Two stubborn goats meet in the middle of a narrow bridge — and both fall in before learning to share.",status:"published",reads:0,
     cover:"pages/two-goats-bridge/cover.jpg",
     pages:[
       {img:"pages/two-goats-bridge/cover.jpg",text:"",local:"",isCover:true},
-      {img:"pages/two-goats-bridge/page01.jpg",text:"On a green hill, a cream goat walked toward a bridge.",local:""},
-      {img:"pages/two-goats-bridge/page02.jpg",text:"From the other side, a brown goat walked too.",local:""},
-      {img:"pages/two-goats-bridge/page03.jpg",text:"The bridge was narrow over a bubbling stream.",local:""},
-      {img:"pages/two-goats-bridge/page04.jpg",text:"Step by step, they both came closer.",local:""},
-      {img:"pages/two-goats-bridge/page05.jpg",text:"Soon they met in the middle.",local:""},
-      {img:"pages/two-goats-bridge/page06.jpg",text:"There was not enough room to pass.",local:""},
-      {img:"pages/two-goats-bridge/page07.jpg",text:"Please move back, said the cream goat.",local:""},
-      {img:"pages/two-goats-bridge/page08.jpg",text:"No, you move back, said the brown goat.",local:""},
-      {img:"pages/two-goats-bridge/page09.jpg",text:"Both goats stood stiff and stubborn.",local:""},
-      {img:"pages/two-goats-bridge/page10.jpg",text:"They stamped their hooves on the wooden boards.",local:""},
-      {img:"pages/two-goats-bridge/page11.jpg",text:"Then they pushed head to head.",local:""},
-      {img:"pages/two-goats-bridge/page12.jpg",text:"The bridge shook under their feet.",local:""},
-      {img:"pages/two-goats-bridge/page13.jpg",text:"Splash! Both goats slipped into the shallow water.",local:""},
-      {img:"pages/two-goats-bridge/page14.jpg",text:"They stood up, wet and surprised.",local:""},
-      {img:"pages/two-goats-bridge/page15.jpg",text:"For a moment, they said nothing at all.",local:""},
-      {img:"pages/two-goats-bridge/page16.jpg",text:"Then both goats began to feel a little silly.",local:""},
-      {img:"pages/two-goats-bridge/page17.jpg",text:"The cream goat bent low and made room.",local:""},
-      {img:"pages/two-goats-bridge/page18.jpg",text:"The brown goat stepped gently across.",local:""},
-      {img:"pages/two-goats-bridge/page19.jpg",text:"Then the cream goat crossed safely too.",local:""},
-      {img:"pages/two-goats-bridge/page20.jpg",text:"After that, both goats remembered to share the bridge.",local:""}
+      {img:"pages/two-goats-bridge/page01.jpg",text:"On a green hill, a cream goat walked toward a bridge.",local:"በአረንጓዴ ኮረብታ ላይ ክሬም ቀለም ፍየሏ ወደ ድልድዩ ሄደቺ።"},
+      {img:"pages/two-goats-bridge/page02.jpg",text:"From the other side, a brown goat walked too.",local:"ከሌላ ጠርዝ ቡናማ ፍየሏ ሄደቺ።"},
+      {img:"pages/two-goats-bridge/page03.jpg",text:"The bridge was narrow over a bubbling stream.",local:"ድልድዩ ጥርጥር ድምፅ ባለ ወንዝ ላይ ጠባብ ነበር።"},
+      {img:"pages/two-goats-bridge/page04.jpg",text:"Step by step, they both came closer.",local:"እርምጃ በእርምጃ ሁለቱም ቅርብ ቅርብ ሄዱ።"},
+      {img:"pages/two-goats-bridge/page05.jpg",text:"Soon they met in the middle.",local:"ብዙም ሳይቆዩ መሃሉ ላይ ተገናኙ።"},
+      {img:"pages/two-goats-bridge/page06.jpg",text:"There was not enough room to pass.",local:"ለማለፍ ቦታ አልነበረም።"},
+      {img:"pages/two-goats-bridge/page07.jpg",text:"Please move back, said the cream goat.",local:"ተመለሺ ባለቺ ክሬም ፍየሏ።"},
+      {img:"pages/two-goats-bridge/page08.jpg",text:"No, you move back, said the brown goat.",local:"አይ አንቺ ተመለሺ አለቺ ቡናማ ፍየሏ።"},
+      {img:"pages/two-goats-bridge/page09.jpg",text:"Both goats stood stiff and stubborn.",local:"ሁለቱ ፍየሎቹ ቀጥ ብለው ግትር ሆኑ።"},
+      {img:"pages/two-goats-bridge/page10.jpg",text:"They stamped their hooves on the wooden boards.",local:"ሰሌዳዎቹ ላይ ሰኮናቸውን አጮጩ።"},
+      {img:"pages/two-goats-bridge/page11.jpg",text:"Then they pushed head to head.",local:"ከዚያ ጭንቅላት ወደ ጭንቅላት ተጫኑ።"},
+      {img:"pages/two-goats-bridge/page12.jpg",text:"The bridge shook under their feet.",local:"ድልድዩ ስር ተንቀጠቀጠ።"},
+      {img:"pages/two-goats-bridge/page13.jpg",text:"Splash! Both goats slipped into the shallow water.",local:"ጭፍ! ሁለቱ ፍየሎቹ ጥልቀት ወደሌለው ውሃ ወደቁ።"},
+      {img:"pages/two-goats-bridge/page14.jpg",text:"They stood up, wet and surprised.",local:"ተነሱ፤ ርጥ ብለው ተደነቁ።"},
+      {img:"pages/two-goats-bridge/page15.jpg",text:"For a moment, they said nothing at all.",local:"ለጥቂት ጊዜ ምንም አላሉም።"},
+      {img:"pages/two-goats-bridge/page16.jpg",text:"Then both goats began to feel a little silly.",local:"ከዚያ ሁለቱ ፍየሎቹ ትንሽ ሞኝ ሆነው ተሰማቸው።"},
+      {img:"pages/two-goats-bridge/page17.jpg",text:"The cream goat bent low and made room.",local:"ክሬም ፍየሏ ዝቅ ብላ ቦታ ሰጠቺ።"},
+      {img:"pages/two-goats-bridge/page18.jpg",text:"The brown goat stepped gently across.",local:"ቡናማ ፍየሏ ቀስ ብላ አለፈቺ።"},
+      {img:"pages/two-goats-bridge/page19.jpg",text:"Then the cream goat crossed safely too.",local:"ከዚያ ክሬም ፍየሏ ደህና ሆና አለፈቺ።"},
+      {img:"pages/two-goats-bridge/page20.jpg",text:"After that, both goats remembered to share the bridge.",local:"ከዚያ ሁለቱ ፍየሎቹ ድልድዩን መካፈሉን አስታወሱ።"}
     ]},
 ];
 
@@ -1448,6 +1494,7 @@ const books = [
 // ═══════════════════════════════════
 let activeLang='all', activeAge='all', searchQ='';
 let currentBookId=0, currentPage=0;
+let readerDisplayLang='text'; // 'text'=English | 'local'=native language
 // ── Persistent state via localStorage ──
 const _LS_KEY='gugut_v1';
 function _loadLS(){ try{ return JSON.parse(localStorage.getItem(_LS_KEY)||'{}'); }catch(e){ return {}; } }
@@ -1479,6 +1526,39 @@ let fontsizes=['sm','md','lg','xl'];
 let fontLabels={sm:'Small',md:'Medium',lg:'Large',xl:'Extra Large'};
 // TTS state
 let ttsUtterance=null, ttsPlaying=false, ttsTimer=null, ttsProgress=0;
+let _ttsWordSpans=[], _ttsWordIdx=0; // word span cache
+let _ttsHighlightInterval=null;      // timer-based highlight engine
+
+// ── Timer-driven word highlight (variable-duration per word) ─────────────────
+// Web Speech API's onboundary is unreliable in many browsers/voices.
+// This setTimeout chain fires at per-word estimated durations (proportional to
+// word length) and advances the highlight independently. onboundary corrects
+// drift whenever it fires by restarting the chain from the exact position.
+//
+// startIdx: word index to begin from (0 = beginning, used for onboundary sync)
+function _startWordHighlightTimer(rate, startIdx){
+  if(_ttsHighlightInterval){ clearTimeout(_ttsHighlightInterval); _ttsHighlightInterval=null; }
+  if(!_ttsWordSpans.length) return;
+  // Target: timer runs ~5% faster than speech so it stays ahead, never behind.
+  // Google Chrome voices speak ~800 chars/min at rate=1. Use 850 so timer leads
+  // by ~6% — onboundary events correct any drift whenever they fire.
+  // msPerChar = 60000 / (850 × rate)  →  ~71ms/char at rate=1
+  const msPerChar = 60000 / (850 * (rate||1));
+  const MIN_MS = 80, MAX_MS = 800;
+  _ttsWordIdx = (startIdx !== undefined) ? startIdx : 0;
+  function _step(){
+    if(_ttsWordIdx >= _ttsWordSpans.length){ _ttsHighlightInterval=null; return; }
+    _ttsWordSpans.forEach(s=>s.classList.remove('lit'));
+    const sp = _ttsWordSpans[_ttsWordIdx];
+    if(sp){ sp.classList.add('lit'); sp.scrollIntoView({block:'nearest',behavior:'smooth'}); }
+    // Duration proportional to word length (no +1 padding — timer already runs fast)
+    const charLen = sp ? Math.max(2, sp.textContent.trim().length) : 4;
+    const delay = Math.max(MIN_MS, Math.min(MAX_MS, Math.round(msPerChar * charLen)));
+    _ttsWordIdx++;
+    _ttsHighlightInterval = setTimeout(_step, delay);
+  }
+  _step();
+}
 let audioInterval=null;
 // Auto-read (read-aloud whole book) state
 let autoReadMode=false;
@@ -1486,7 +1566,23 @@ let _currentPdfPageText=null; // populated by _startPdfPageRead()
 // Pre-recorded audio element
 let _audioEl=null, _audioFlipInterval=null;
 // Language → BCP-47 TTS code
-const LANG_TTS={'Amharic':'am-ET','Tigrinya':'ti-ET','Oromiffa':'om','Somali':'so-SO','Wolaytta':'en-US'};
+const LANG_TTS={'English':'en-US','Amharic':'am-ET','Tigrinya':'ti-ET','Oromiffa':'om','Somali':'so-SO','Wolaytta':'wal'};
+// Short key used in page.translations objects
+const LANG_KEY={'English':'en','Amharic':'am','Tigrinya':'ti','Oromiffa':'om','Somali':'so','Wolaytta':'wal','all':'en'};
+
+// Return the right text for a page given the current reading language
+function _getPageText(pg, lang){
+  if(!pg) return '';
+  const key = LANG_KEY[lang] || 'en';
+  if(key === 'en') return (pg.text||'').trim();
+  // Check translations object
+  if(pg.translations && pg.translations[key] && pg.translations[key].trim())
+    return pg.translations[key].trim();
+  // Backward compat: local = Amharic
+  if(key === 'am' && pg.local && pg.local.trim()) return pg.local.trim();
+  // Graceful fallback to English
+  return (pg.text||'').trim();
+}
 
 // ═══════════════════════════════════
 // VIEW SWITCHING
@@ -1508,10 +1604,11 @@ function switchView(v){
 // ═══════════════════════════════════
 function filtered(){
   return books.filter(b=>{
-    const lo=activeLang==='all'||b.lang===activeLang;
+    // Language tabs = "Read in" selectors — all books are available in all languages.
+    // We do NOT filter by b.lang so every tab shows every book.
     const ao=activeAge==='all'||b.age===activeAge;
     const so=!searchQ||b.title.toLowerCase().includes(searchQ)||b.local.toLowerCase().includes(searchQ)||b.lang.toLowerCase().includes(searchQ);
-    return lo&&ao&&so;
+    return ao&&so;
   });
 }
 
@@ -1523,13 +1620,33 @@ function renderLibrary(){
     container.innerHTML='';empty.style.display='';
     const te=document.getElementById('emptyTitle'),me=document.getElementById('emptyMsg');
     if(te) te.textContent=searchQ?'No results for "'+searchQ+'"':'No books found';
-    if(me) me.textContent=(activeLang!=='all')?'No '+activeLang+' books match your filters.':'Try a different filter or search term.';
+    if(me) me.textContent='Try a different age filter or search term.';
     return;
   }
   empty.style.display='none';
 
   const showHero=activeLang==='all'&&activeAge==='all'&&!searchQ;
   let html='';
+
+  // Language-mode banner — shown whenever a specific reading language is selected
+  const LANG_LABEL={
+    English:{flag:'🇬🇧', note:'Reading in English'},
+    Amharic:{flag:'🇪🇹', note:'ሁሉም መጻሕፍት — በአማርኛ ያንብቡ · Reading in Amharic'},
+    Oromiffa:{flag:'🇪🇹', note:'Kitaabota hunda — Afaan Oromoon dubbisi · Reading in Oromiffa'},
+    Tigrinya:{flag:'🇪🇹', note:'ሁሎም መጻሕፍቲ — ብትግርኛ ኣንብቡ · Reading in Tigrinya'},
+    Somali:{flag:'🇸🇴', note:'Dhammaan buugaagta — Af Soomaali ku akhri · Reading in Somali'},
+    Wolaytta:{flag:'🇪🇹', note:'Buqqissa mariyaappe - Wolayttattan nabbaba · Reading in Wolaytta'},
+  };
+  if(activeLang!=='all' && LANG_LABEL[activeLang]){
+    const ll=LANG_LABEL[activeLang];
+    html+=`<div style="background:var(--green-pale);border:1.5px solid var(--green-light);border-radius:12px;padding:10px 16px;margin-bottom:18px;display:flex;align-items:center;gap:10px;">
+      <span style="font-size:22px">${ll.flag}</span>
+      <div>
+        <div style="font-size:13px;font-weight:800;color:var(--green-dark);">${ll.note}</div>
+        <div style="font-size:11px;color:var(--text-light);margin-top:2px;">Open any book and it will read in this language. Tap the language button in the reader to switch.</div>
+      </div>
+    </div>`;
+  }
 
   if(showHero){
     html+=`<div class="featured" onclick="openReader(9)">
@@ -1542,24 +1659,49 @@ function renderLibrary(){
     </div>`;
     // Group by reading difficulty level
     const diffGroups=[
-      {age:'0-3', emoji:'🌱', label:'Seedlings',      amharic:'ዘር',           desc:'Ages 0–3 · Perfect first books'},
-      {age:'3-6', emoji:'🌿', label:'Early Readers',  amharic:'ጀማሪ አንባቢዎች',   desc:'Ages 3–6 · Simple stories'},
-      {age:'6-9', emoji:'📚', label:'Growing Readers',amharic:'እድገት ላይ ያሉ',   desc:'Ages 6–9 · Richer tales'},
+      {age:'0-3', emoji:'🐣', label:'Tiny Tales',      amharic:'ትናንሽ ታሪኮች',    desc:'Ages 0–3 · Short sentences, big pictures — perfect for lap reading together', hdrColor:'#B84A00', hdrBg:'#FFF0E6'},
+      {age:'3-6', emoji:'🌱', label:'Story Time',       amharic:'የታሪክ ጊዜ',       desc:'Ages 3–6 · Simple stories with familiar themes', hdrColor:'var(--green-dark)', hdrBg:'var(--green-pale)'},
+      {age:'6-9', emoji:'🦋', label:'Bright Readers',   amharic:'ደማቅ አንባቢዎች',   desc:'Ages 6–9 · Richer vocabulary and longer adventures', hdrColor:'#3730A3', hdrBg:'#EEF2FF'},
     ];
     diffGroups.forEach(grp=>{
       const lb=f.filter(b=>b.age===grp.age&&b.status==='published');
       if(!lb.length) return;
       html+=`<div class="section">
         <div class="section-hdr">
-          <span class="section-title">${grp.emoji} ${grp.label} <span style="font-weight:400;color:var(--text-light);font-size:13px;">${grp.amharic}</span></span>
+          <span class="section-title" style="display:inline-flex;align-items:center;gap:8px;">
+            <span style="background:${grp.hdrBg};color:${grp.hdrColor};padding:3px 12px;border-radius:20px;font-size:14px;font-weight:800;">${grp.emoji} ${grp.label}</span>
+            <span style="font-weight:400;color:var(--text-light);font-size:12px;">${grp.amharic}</span>
+          </span>
           <span class="section-sub">${grp.desc} · ${lb.length} book${lb.length!==1?'s':''}</span>
         </div>
         <div class="book-grid">${lb.map(bCardHTML).join('')}</div>
       </div>`;
     });
   } else {
-    html+=`<div class="section-hdr plain" style="margin-bottom:14px;"><span class="section-title">${f.length} book${f.length!==1?'s':''} found</span></div>`;
-    html+=`<div class="book-grid">${f.map(bCardHTML).join('')}</div>`;
+    // When a language or age is selected, still group by difficulty for clarity
+    const diffGroups=[
+      {age:'0-3', emoji:'🐣', label:'Tiny Tales',      hdrColor:'#B84A00', hdrBg:'#FFF0E6'},
+      {age:'3-6', emoji:'🌱', label:'Story Time',       hdrColor:'var(--green-dark)', hdrBg:'var(--green-pale)'},
+      {age:'6-9', emoji:'🦋', label:'Bright Readers',   hdrColor:'#3730A3', hdrBg:'#EEF2FF'},
+    ];
+    const grouped = diffGroups.map(g=>({...g, books:f.filter(b=>b.age===g.age&&b.status==='published')})).filter(g=>g.books.length);
+    if(grouped.length>1){
+      // More than one age group — show with dividers
+      grouped.forEach(grp=>{
+        html+=`<div class="section">
+          <div class="section-hdr">
+            <span class="section-title" style="display:inline-flex;align-items:center;gap:8px;">
+              <span style="background:${grp.hdrBg};color:${grp.hdrColor};padding:3px 12px;border-radius:20px;font-size:13px;font-weight:800;">${grp.emoji} ${grp.label}</span>
+            </span>
+            <span class="section-sub">${grp.books.length} book${grp.books.length!==1?'s':''}</span>
+          </div>
+          <div class="book-grid">${grp.books.map(bCardHTML).join('')}</div>
+        </div>`;
+      });
+    } else {
+      html+=`<div class="section-hdr plain" style="margin-bottom:14px;"><span class="section-title">${f.length} book${f.length!==1?'s':''} found</span></div>`;
+      html+=`<div class="book-grid">${f.filter(b=>b.status==='published').map(bCardHTML).join('')}</div>`;
+    }
   }
   container.innerHTML=html;
 }
@@ -1569,27 +1711,40 @@ function _readTime(b){
   const mins=Math.max(1,Math.round(((b.pages||[]).length)*1.5));
   return '~'+mins+' min';
 }
-function _diffStars(age){
-  // Map age band to difficulty stars shown on card
-  const map={'0-3':'⭐','3-6':'⭐⭐','6-9':'⭐⭐⭐'};
-  return map[age]||'⭐';
+function _diffLabel(age){
+  // Returns {emoji, name, cls} for each reading level
+  const map={
+    '0-3':{emoji:'🐣', name:'Tiny Tales',    cls:'level-0-3'},
+    '3-6':{emoji:'🌱', name:'Story Time',    cls:'level-3-6'},
+    '6-9':{emoji:'🦋', name:'Bright Readers',cls:'level-6-9'},
+  };
+  return map[age]||map['0-3'];
 }
 function bCardHTML(b){
   const fav=favourites.has(b.id);
   const prog=readProgress[b.id]||0;
   const progBar=prog>0?`<div style="height:3px;background:var(--green-pale);border-radius:3px;margin-top:5px;overflow:hidden;"><div style="width:${prog}%;height:100%;background:var(--green-mid);border-radius:3px;"></div></div>`:'';
+  // In a language mode, show the native title on the card when available
+  const isNativeLang = activeLang!=='all' && activeLang!=='English';
+  const cardTitle = isNativeLang && b.local ? b.local : b.title;
+  const cardSubTitle = isNativeLang && b.local ? `<div style="font-size:10px;color:var(--text-light);margin-top:1px;">${b.title}</div>` : '';
+  // Cover overlay: show English title when in non-English mode (so the image text is the translation)
+  const coverText = isNativeLang ? b.title : b.local;
+  // Language badge: show the active reading language
+  const langBadge = activeLang==='all' ? b.lang : activeLang;
   return `<div class="bcard" onclick="openReader(${b.id})">
     <div class="bcover ${b.cc}" data-book-id="${b.id}">
       <span style="font-size:44px">${b.emo}</span>
-      <div class="cover-overlay">${b.local}</div>
-      <div class="lang-badge">${b.lang}</div>
+      <div class="cover-overlay">${coverText}</div>
+      <div class="lang-badge">${langBadge}</div>
       <button class="fav-btn" onclick="event.stopPropagation();toggleFav(${b.id})" id="fav-${b.id}">${fav?'❤️':'🤍'}</button>
     </div>
     <div class="binfo">
-      <div class="btitle">${b.title}</div>
+      <div class="btitle">${cardTitle}</div>
+      ${cardSubTitle}
       <div class="bmeta">
-        <span class="tag tag-age" title="Ages ${b.age}">${_diffStars(b.age)}</span>
-        <span class="tag tag-lang">${b.lang}</span>
+        ${(()=>{const d=_diffLabel(b.age);return `<span class="tag tag-age ${d.cls}" title="Ages ${b.age}">${d.emoji} ${d.name}</span>`;})()}
+        <span class="tag tag-lang">${langBadge}</span>
         <span class="tag" style="background:var(--sand);color:var(--text-mid);font-size:9px;padding:2px 5px;">${_readTime(b)}</span>
       </div>
       ${progBar}
@@ -1681,7 +1836,14 @@ function renderAdmin(){
 // ═══════════════════════════════════
 // FILTERS
 // ═══════════════════════════════════
-function setLang(el,v){activeLang=v;document.querySelectorAll('[data-lang]').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderLibrary();}
+function setLang(el,v){
+  activeLang=v;
+  // Mirror language choice into reader so books open in the selected language
+  readerDisplayLang = (v==='all'||v==='English') ? 'text' : 'local';
+  document.querySelectorAll('[data-lang]').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderLibrary();
+}
 function setAge(el,v){activeAge=v;document.querySelectorAll('[data-age]').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderLibrary();}
 let _searchT; function handleSearch(){const v=document.getElementById('searchInput').value.toLowerCase().trim(); clearTimeout(_searchT); _searchT=setTimeout(()=>{searchQ=v;renderLibrary();},160);}
 
@@ -1712,10 +1874,28 @@ function openReader(id){
     stopAudio();
     currentBookId=id;
     currentPage=0;
+    // Inherit reading language from the active filter; default to English
+    // readerDisplayLang is already set by setLang(); only reset if 'all' or 'English'
+    if(activeLang==='all'||activeLang==='English') readerDisplayLang='text';
+    // else keep whatever setLang() set (e.g. 'local' for Amharic filter)
     const b=books.find(bk=>bk.id===id);
     if(!b){ showToast('⚠️ Book not found'); return; }
     document.getElementById('readerTitle').textContent=`${b.title} · ${b.local}`;
     document.getElementById('readerMeta').textContent=`${b.lang} · Ages ${b.age}`;
+    // Show language toggle button — reflects current reading language
+    const hasLocalText = b.pages && b.pages.some(pg=>
+      (pg.local && pg.local.trim()) ||
+      (pg.translations && Object.values(pg.translations).some(t=>t&&t.trim()))
+    );
+    const langBtn = document.getElementById('langToggleBtn');
+    if(langBtn){
+      if(hasLocalText){
+        langBtn.style.display='';
+        _updateLangBtn(langBtn, b);
+      } else {
+        langBtn.style.display='none';
+      }
+    }
     updateFavReaderBtn();
     // Always hide old viewers — StPageFlip handles everything now
     document.getElementById('pdfViewer').style.display='none';
@@ -1757,6 +1937,12 @@ let pfInstance = null;
 function initPageFlip(b){
   // Tear down any existing instance
   if(pfInstance){ try{ pfInstance.destroy(); }catch(e){} pfInstance=null; }
+  // Clear custom single-page viewer navigation helpers
+  window._illViewerGoTo = null;
+  window._illViewerNext = null;
+  window._illViewerPrev = null;
+  // Remove keyboard handler from previous illustrated book
+  if(window._illKeyHandler){ document.removeEventListener('keydown', window._illKeyHandler); window._illKeyHandler = null; }
 
   // Always use a fresh child div as the StPageFlip target — never pass #pfBook
   // directly, because StPageFlip.destroy() can remove the element from the DOM
@@ -1818,15 +2004,14 @@ function initPageFlip(b){
   if(ind) ind.textContent = '1 / '+b.pages.length;
 }
 
-// ── Illustrated books: render each page (image + text) onto a canvas,
-//    then use loadFromImages — avoids display:flex!important breaking StPageFlip ──
+// ── Illustrated books: renders page-0 (cover) immediately so the viewer appears
+//    right away, then renders remaining pages in the background. A slim progress
+//    bar at the bottom of the viewer shows loading progress.
 async function initPageFlipFromIllustrated(b, container){
   const pfBook = document.getElementById('pfBook');
-  // Show loading state
-  pfBook.innerHTML = '<div id="pfLoadingState"><div class="pf-spin"></div><span>Loading pages…</span></div>';
+  pfBook.innerHTML = '<div id="pfLoadingState"><div class="pf-spin"></div><span>Loading cover…</span></div>';
 
   try{
-    if(typeof St==='undefined'||!St.PageFlip) throw new Error('Flip library not loaded');
 
     const wrap = document.getElementById('pfWrap');
     const availW = (wrap.clientWidth || window.innerWidth) - 16;
@@ -1838,47 +2023,40 @@ async function initPageFlipFromIllustrated(b, container){
     const pageH = Math.max(300, Math.min(availH, availW * 0.9));
     const pageW = Math.max(200, Math.floor(pageH * 0.69));
 
-    const offCanvas = document.createElement('canvas');
-    offCanvas.width  = pageW * 2;   // render at 2× for sharp text on retina
-    offCanvas.height = pageH * 2;
-    const ctx = offCanvas.getContext('2d');
-    const dataUrls = [];
+    // Capture display language BEFORE canvas rendering so baked text matches the UI
+    const _canvasDisplayLang = readerDisplayLang==='local' ? activeLang : 'English';
 
-    for(let i=0; i<b.pages.length; i++){
+    // ── Per-page canvas renderer (used for page-0 now and pages 1-N in background) ──
+    async function _renderPage(i){
       const pg = b.pages[i];
-      const ls = document.getElementById('pfLoadingState');
-      if(ls){ const sp=ls.querySelector('span'); if(sp) sp.textContent=`Loading page ${i+1} of ${b.pages.length}…`; }
-
-      ctx.clearRect(0, 0, offCanvas.width, offCanvas.height);
-
+      const oc = document.createElement('canvas');
+      oc.width = pageW*2; oc.height = pageH*2;  // 2× for retina sharpness
+      const ctx = oc.getContext('2d');
+      ctx.clearRect(0,0,oc.width,oc.height);
+      // Ethiopic font for Amharic / Tigrinya
+      const _isEthiopic = ['Amharic','Tigrinya'].includes(_canvasDisplayLang);
+      if(_isEthiopic) try { await document.fonts.load(`16px 'Noto Sans Ethiopic'`); } catch(e){}
+      const _textFont = _isEthiopic ? `'Noto Sans Ethiopic',serif` : `Georgia,serif`;
       if(pg.img){
-        // Load the image — fills top ~78%; cream text strip drawn at bottom ~22%
-        await new Promise((resolve)=>{
+        await new Promise(resolve=>{
           const imgEl = new Image();
           imgEl.onload = ()=>{
-            const cw = offCanvas.width, ch = offCanvas.height;
-            const hasText = pg.text || pg.local;
-            const textZoneH = hasText ? Math.round(ch * 0.22) : 0;
+            const cw=oc.width, ch=oc.height;
+            const _pgCanvasText = _getPageText(pg, _canvasDisplayLang);
+            const hasText = !!_pgCanvasText;
+            const textZoneH = hasText ? Math.round(ch*0.26) : 0;
             const imgZoneH  = ch - textZoneH;
-            // Draw image filling image zone
-            const scale = Math.max(cw / imgEl.width, imgZoneH / imgEl.height);
-            const dw = imgEl.width * scale, dh = imgEl.height * scale;
-            const dx = (cw - dw) / 2, dy = 0;
-            ctx.drawImage(imgEl, dx, dy, dw, dh);
-            // Cream text strip (HTML overlay will sit on top of this zone)
+            const scale = Math.max(cw/imgEl.width, imgZoneH/imgEl.height);
+            const dw=imgEl.width*scale, dh=imgEl.height*scale;
+            const dx=(cw-dw)/2, dy=Math.min(0,(imgZoneH-dh)/2);
+            ctx.save(); ctx.beginPath(); ctx.rect(0,0,cw,imgZoneH); ctx.clip();
+            ctx.drawImage(imgEl, dx,dy,dw,dh);
+            ctx.restore();
             if(hasText){
-              ctx.fillStyle = '#fffdf5';
-              ctx.fillRect(0, imgZoneH, cw, textZoneH);
-              ctx.strokeStyle = '#e8e0d0'; ctx.lineWidth = 2;
+              ctx.fillStyle='#fffdf5'; ctx.fillRect(0,imgZoneH,cw,textZoneH);
+              ctx.strokeStyle='#e8e0d0'; ctx.lineWidth=2;
               ctx.beginPath(); ctx.moveTo(0,imgZoneH); ctx.lineTo(cw,imgZoneH); ctx.stroke();
-              // Draw text on canvas as static baseline (HTML overlay covers during TTS)
-              const lx = cw/2, maxW = cw*0.92;
-              if(pg.text){
-                ctx.fillStyle='#1a1a1a';
-                ctx.font=`${Math.round(ch*0.042)}px Georgia,serif`;
-                ctx.textAlign='center';
-                wrapCanvasText(ctx,pg.text,lx,imgZoneH+textZoneH*0.22,maxW,Math.round(ch*0.052));
-              }
+              // Page number only — story text is rendered by the HTML overlay (illTextOverlay)
               if(!pg.isCover){
                 ctx.fillStyle='#bbb'; ctx.font=`${Math.round(ch*0.025)}px Arial,sans-serif`;
                 ctx.textAlign='right';
@@ -1892,70 +2070,273 @@ async function initPageFlipFromIllustrated(b, container){
         });
       } else {
         // Text-only fallback (emoji books)
-        ctx.fillStyle = '#fefefe';
-        ctx.fillRect(0,0,offCanvas.width,offCanvas.height);
-        ctx.fillStyle = '#333';
-        ctx.font = `${Math.round(offCanvas.height*0.06)}px Georgia,serif`;
-        ctx.textAlign = 'center';
-        wrapCanvasText(ctx, pg.text||'', offCanvas.width/2, offCanvas.height*0.45, offCanvas.width*0.85, offCanvas.height*0.075);
+        ctx.fillStyle='#fefefe'; ctx.fillRect(0,0,oc.width,oc.height);
+        ctx.fillStyle='#333'; ctx.font=`${Math.round(oc.height*0.06)}px ${_textFont}`; ctx.textAlign='center';
+        wrapCanvasText(ctx, _getPageText(pg,_canvasDisplayLang)||'', oc.width/2, oc.height*0.45, oc.width*0.85, oc.height*0.075);
       }
-
-      dataUrls.push(offCanvas.toDataURL('image/jpeg', 0.88));
+      return oc.toDataURL('image/jpeg', 0.88);
     }
 
-    // Re-create the StPageFlip container (loading state replaced pfBook content)
+    // Render cover (page 0) first so the viewer can appear immediately
+    const dataUrls = new Array(b.pages.length).fill(null);
+    dataUrls[0] = await _renderPage(0);
+
+    // ── Build viewer DOM (double-buffer 3D flip) ──────────────────────────────
+    pfInstance = null; // custom viewer — no StPageFlip needed
     pfBook.innerHTML = '';
-    const newContainer = document.createElement('div');
-    pfBook.appendChild(newContainer);
+    const viewer = document.createElement('div');
+    viewer.id = 'illViewer';
+    viewer.style.cssText = `position:relative;overflow:hidden;width:${pageW}px;height:${pageH}px;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,0.32),inset 16px 0 16px -8px rgba(0,0,0,0.16);background:#f0ece0;cursor:pointer;touch-action:pan-y;`;
 
-    pfInstance = new St.PageFlip(newContainer, {
-      width: pageW, height: pageH, size: 'fixed',
-      maxShadowOpacity: 0.5,
-      showCover: hasCover,
-      useMouseEvents: true, swipeDistance: 30,
-      clickEventForward: true, mobileScrollSupport: false
+    // Two stacked images for double-buffer flip (pgA = front, pgB = back)
+    const pgA = document.createElement('img');
+    const pgB = document.createElement('img');
+    pgA.className='ill-pg'; pgA.style.opacity='1'; pgA.style.zIndex='2';
+    pgB.className='ill-pg'; pgB.style.opacity='0'; pgB.style.zIndex='1';
+    viewer.appendChild(pgA); viewer.appendChild(pgB);
+
+    // Slim progress bar at bottom — fills as background pages render
+    const loadBar = document.createElement('div');
+    loadBar.id = 'illLoadBar';
+    loadBar.style.width = Math.round(1/b.pages.length*100)+'%';
+    viewer.appendChild(loadBar);
+
+    pfBook.appendChild(viewer);
+
+    let _frontPg = pgA, _backPg = pgB;
+    let _flipLock = false;
+
+    function _showIllPage(idx){
+      if(idx < 0 || idx >= dataUrls.length) return;
+      // Page not rendered yet — poll until background rendering catches up
+      if(!dataUrls[idx]){
+        const ck = setInterval(()=>{ if(dataUrls[idx]){ clearInterval(ck); _showIllPage(idx); } }, 50);
+        return;
+      }
+      const fromIdx = currentPage;
+      const dir = (idx >= fromIdx) ? 'fwd' : 'back';
+      currentPage = idx;
+      readProgress[currentBookId] = Math.min(100, Math.round(((idx+1)/b.pages.length)*100));
+      _saveState(); _recordReadToday();
+
+      const illo = document.getElementById('illTextOverlay');
+      const ind2 = document.getElementById('pageInd');
+      if(ind2) ind2.textContent = Math.max(1, idx+1-coverOffset)+' / '+storyCount;
+
+      if(fromIdx === idx || _flipLock){
+        // Initial load or locked — show immediately without animation
+        _frontPg.src = dataUrls[idx];
+        _frontPg.style.opacity='1'; _frontPg.className='ill-pg';
+        _backPg.style.opacity='0';
+        stopAudio(); _illUpdateOverlay(idx);
+        if(illo){ illo.style.opacity='1'; illo.style.transition='none'; }
+        if(autoReadMode) setTimeout(()=>startAudio(), 400);
+        return;
+      }
+
+      _flipLock = true;
+      stopAudio();
+      if(illo){ illo.style.transition='opacity 0.05s'; illo.style.opacity='0'; }
+
+      _backPg.src = dataUrls[idx];
+      _backPg.className='ill-pg'; _backPg.style.opacity='0'; _backPg.style.zIndex='1';
+      _frontPg.style.zIndex='3';
+
+      // Shadow sweep for visual realism
+      const shadow = document.createElement('div');
+      shadow.className = 'ill-pg-shadow';
+      if(dir==='back') shadow.style.background='linear-gradient(270deg,rgba(0,0,0,0.22),transparent 60%)';
+      viewer.appendChild(shadow);
+      setTimeout(()=>{ if(shadow.parentNode) shadow.parentNode.removeChild(shadow); }, 500);
+
+      // Phase 1 — outgoing page folds away
+      _frontPg.className = 'ill-pg '+(dir==='fwd' ? 'ill-pg-out' : 'ill-pg-outr');
+
+      setTimeout(()=>{
+        // Phase 2 — incoming page unfolds
+        _backPg.style.opacity='1'; _backPg.style.zIndex='3'; _frontPg.style.zIndex='1';
+        _backPg.className = 'ill-pg '+(dir==='fwd' ? 'ill-pg-in' : 'ill-pg-inr');
+        const tmp=_frontPg; _frontPg=_backPg; _backPg=tmp;
+        setTimeout(()=>{
+          _backPg.className='ill-pg'; _backPg.style.opacity='0'; _backPg.style.zIndex='1';
+          _frontPg.className='ill-pg'; _frontPg.style.zIndex='2';
+          _flipLock=false;
+          if(illo){ _illUpdateOverlay(idx); illo.style.transition='opacity 0.15s ease'; illo.style.opacity='1'; }
+          if(autoReadMode) setTimeout(()=>startAudio(), 350);
+        }, 280);
+      }, 220);
+    }
+
+    // Expose navigation helpers
+    window._illViewerGoTo = _showIllPage;
+    window._illViewerNext = ()=>{ if(currentPage+1 < dataUrls.length) _showIllPage(currentPage+1); };
+    window._illViewerPrev = ()=>{ if(currentPage > 0) _showIllPage(currentPage-1); };
+
+    document.getElementById('prevBtn').onclick = ()=> window._illViewerPrev();
+    document.getElementById('nextBtn').onclick = ()=> window._illViewerNext();
+
+    // Keyboard navigation — arrow keys flip pages
+    if(window._illKeyHandler) document.removeEventListener('keydown', window._illKeyHandler);
+    window._illKeyHandler = (e)=>{
+      if(!document.getElementById('readerOverlay')?.classList.contains('open')) return;
+      if(e.key==='ArrowRight'||e.key==='ArrowDown'){ e.preventDefault(); window._illViewerNext?.(); }
+      else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){ e.preventDefault(); window._illViewerPrev?.(); }
+    };
+    document.addEventListener('keydown', window._illKeyHandler);
+
+    // Swipe support (touch)
+    let _swX=0, _swY=0;
+    viewer.addEventListener('touchstart', e=>{ _swX=e.touches[0].clientX; _swY=e.touches[0].clientY; }, {passive:true});
+    viewer.addEventListener('touchend', e=>{
+      const dx=e.changedTouches[0].clientX-_swX, dy=e.changedTouches[0].clientY-_swY;
+      if(Math.abs(dx)>Math.abs(dy) && Math.abs(dx)>35){ dx<0 ? window._illViewerNext() : window._illViewerPrev(); }
+    }, {passive:true});
+    // Click left/right half to navigate
+    viewer.addEventListener('click', e=>{
+      if(_flipLock) return;
+      const rect=viewer.getBoundingClientRect();
+      e.clientX-rect.left < rect.width/2 ? window._illViewerPrev() : window._illViewerNext();
     });
-    pfInstance.loadFromImages(dataUrls);
 
-    // Position the HTML text overlay to sit exactly over the canvas text strip
+    // Show page 0 immediately — no waiting for all pages
+    _showIllPage(0);
+    const ind = document.getElementById('pageInd');
+    if(ind) ind.textContent = '1 / '+storyCount;
+
+    // Position the HTML text overlay exactly over the canvas cream strip
     setTimeout(()=>{
       const pfWrapEl = document.getElementById('pfWrap');
       const illo = document.getElementById('illTextOverlay');
       if(illo && pfWrapEl){
-        const wrapRect = pfWrapEl.getBoundingClientRect();
-        const contRect = newContainer.getBoundingClientRect();
-        // Distance from canvas bottom to pfWrap bottom
-        const bottomOffset = Math.max(0, wrapRect.bottom - contRect.bottom);
-        const textH = Math.round(pageH * 0.22);
-        illo.style.bottom  = bottomOffset + 'px';
-        illo.style.width   = pageW + 'px';
-        illo.style.height  = textH + 'px';
-        illo.style.fontSize = Math.max(12, Math.round(pageH * 0.042)) + 'px';
-        illo.style.display = 'block';
+        const wrapRect=pfWrapEl.getBoundingClientRect();
+        const vRect=viewer.getBoundingClientRect();
+        const bottomOffset=Math.max(0, wrapRect.bottom-vRect.bottom);
+        const textH=Math.round(pageH*0.26);
+        illo.style.bottom=bottomOffset+'px'; illo.style.width=pageW+'px';
+        illo.style.height=textH+'px'; illo.style.fontSize=Math.max(12,Math.round(pageH*0.035))+'px';
+        illo.style.opacity='1'; illo.style.transition='none'; illo.style.display='block';
         _illUpdateOverlay(currentPage);
       }
     }, 250);
 
-    pfInstance.on('flip', (e)=>{
-      currentPage = e.data;
-      readProgress[currentBookId] = Math.min(100, Math.round(((e.data+1)/b.pages.length)*100));
-      _saveState(); _recordReadToday();
-      stopAudio(); // stop previous page TTS & clear highlights
-      _illUpdateOverlay(e.data); // restore plain text for new page
-      const ind = document.getElementById('pageInd');
-      if(ind) ind.textContent = Math.max(1, e.data+1-coverOffset)+' / '+storyCount;
-      // Auto-read: begin narrating the new page after a short settle delay
-      if(autoReadMode) setTimeout(()=>startAudio(), 400);
-    });
-    document.getElementById('prevBtn').onclick = ()=>{ if(pfInstance) pfInstance.flipPrev(); };
-    document.getElementById('nextBtn').onclick = ()=>{ if(pfInstance) pfInstance.flipNext(); };
-    const ind = document.getElementById('pageInd');
-    if(ind) ind.textContent = '1 / '+storyCount;
+    // ── Background rendering of pages 1-N, then Phase 3 StPageFlip handoff ──
+    (async ()=>{
+      for(let i=1; i<b.pages.length; i++){
+        dataUrls[i] = await _renderPage(i);
+        const lb = document.getElementById('illLoadBar');
+        if(lb){
+          const pct = Math.round((i+1)/b.pages.length*100);
+          lb.style.width = pct+'%';
+          if(pct>=100) setTimeout(()=>{ if(lb) lb.style.opacity='0'; }, 400);
+        }
+      }
+
+      // ── Phase 3: All pages ready — hand off to StPageFlip for natural page curl ──
+      if(typeof St==='undefined'||!St.PageFlip) return; // library not loaded
+      const pb = document.getElementById('pfBook');
+      if(!pb) return;  // reader was closed before all pages finished rendering
+
+      const resumeIdx = currentPage;
+      stopAudio();
+
+      // Tear down the custom double-buffer viewer, build a clean container for StPageFlip
+      pb.innerHTML = '';
+      const sfCont = document.createElement('div');
+      pb.appendChild(sfCont);
+
+      pfInstance = new St.PageFlip(sfCont, {
+        width: pageW, height: pageH,
+        size: 'fixed',
+        usePortrait: true,    // single-page portrait — no two-page-spread ordering issue
+        autoSize: false,
+        showCover: hasCover,
+        useMouseEvents: true, // enables corner-peel hover effect
+        drawShadow: true,     // realistic page shadow during curl
+        maxShadowOpacity: 0.65,
+        swipeDistance: 30,
+        clickEventForward: false,
+        mobileScrollSupport: false
+      });
+
+      pfInstance.loadFromImages(dataUrls);
+
+      // After StPageFlip finishes initializing: restore position + overlay
+      pfInstance.on('init', ()=>{
+        // Apply visual polish to the canvas(es) StPageFlip created
+        sfCont.querySelectorAll('canvas').forEach(c=>{
+          c.style.borderRadius = '10px';
+          c.style.boxShadow    = '0 8px 40px rgba(0,0,0,0.32)';
+        });
+        // Jump to the page the user was on (no flip animation for the resume)
+        if(resumeIdx > 0){ try{ pfInstance.turnToPage(resumeIdx); }catch(e){} }
+        // Re-anchor the TTS text overlay above the StPageFlip canvas
+        requestAnimationFrame(()=>{
+          const pfWrapEl = document.getElementById('pfWrap');
+          const sfCanvas = sfCont.querySelector('canvas');
+          const illo = document.getElementById('illTextOverlay');
+          if(illo && pfWrapEl && sfCanvas){
+            const wRect = pfWrapEl.getBoundingClientRect();
+            const cRect = sfCanvas.getBoundingClientRect();
+            const botOff = Math.max(0, wRect.bottom - cRect.bottom);
+            const tH = Math.round(pageH * 0.26);
+            illo.style.bottom     = botOff+'px';
+            illo.style.width      = pageW+'px';
+            illo.style.height     = tH+'px';
+            illo.style.fontSize   = Math.max(12, Math.round(pageH*0.035))+'px';
+            illo.style.opacity    = '1';
+            illo.style.transition = 'none';
+            illo.style.display    = 'block';
+            _illUpdateOverlay(resumeIdx);
+          }
+        });
+      });
+
+      // Hide the text overlay only during actual page flip animation ('flipping').
+      // We do NOT hide during 'user_fold' because that state fires on hover
+      // (corner-peel preview) and would make the text disappear on mouse-over.
+      // Since canvas text is no longer baked in, double-text is no longer a risk.
+      pfInstance.on('changeState', (e)=>{
+        const illo = document.getElementById('illTextOverlay');
+        if(!illo) return;
+        if(e.data === 'flipping'){
+          illo.style.transition = 'opacity 0.06s';
+          illo.style.opacity    = '0';
+        } else if(e.data === 'read'){
+          illo.style.transition = 'none';
+          illo.style.opacity    = '1';
+          // Re-apply overlay text when page fully settles (catches any timing gaps)
+          _illUpdateOverlay(currentPage);
+        }
+        // 'user_fold' (hover / drag start) → leave opacity unchanged
+      });
+
+      // Keep page state in sync after each StPageFlip flip
+      pfInstance.on('flip', (e)=>{
+        const idx = e.data;
+        currentPage = idx;
+        readProgress[currentBookId] = Math.min(100, Math.round(((idx+1)/b.pages.length)*100));
+        _saveState(); _recordReadToday();
+        const ind2 = document.getElementById('pageInd');
+        if(ind2) ind2.textContent = Math.max(1, idx+1-coverOffset)+' / '+storyCount;
+        stopAudio();
+        _illUpdateOverlay(idx);
+        // Overlay will fade back in via changeState→'read' fired right after this event
+        if(autoReadMode) setTimeout(()=>startAudio(), 400);
+      });
+
+      // Rewire navigation to use StPageFlip
+      window._illViewerGoTo = (idx)=>{ if(pfInstance) pfInstance.turnToPage(idx); };
+      window._illViewerNext = ()=>{ if(pfInstance) pfInstance.flipNext(); };
+      window._illViewerPrev = ()=>{ if(pfInstance) pfInstance.flipPrev(); };
+      document.getElementById('prevBtn').onclick = ()=>{ if(pfInstance) pfInstance.flipPrev(); };
+      document.getElementById('nextBtn').onclick = ()=>{ if(pfInstance) pfInstance.flipNext(); };
+
+    })();
 
   }catch(err){
     console.error('Illustrated flip error:', err);
     const pb = document.getElementById('pfBook');
-    if(pb) pb.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-mid);"><p style="font-weight:700;">Could not load book.</p><p style="font-size:13px;opacity:.7;">'+err.message+'</p></div>';
+    if(pb) pb.innerHTML='<div style="padding:24px;text-align:center;color:var(--text-mid);"><p style="font-weight:700;">Could not load book.</p><p style="font-size:13px;opacity:.7;">'+err.message+'</p></div>';
   }
 }
 
@@ -2181,6 +2562,7 @@ function closeReader(){
     try{ stopAudio(); }catch(e){}
     pdfDoc=null; pdfRendering=false; pdfPageNum=1;
     if(pfInstance){ try{ pfInstance.destroy(); }catch(e){} pfInstance=null; }
+    if(window._illKeyHandler){ document.removeEventListener('keydown', window._illKeyHandler); window._illKeyHandler = null; }
     document.getElementById('pfWrap').style.display='none';
     document.getElementById('pfBook').innerHTML='';
   }catch(e){ console.warn('closeReader cleanup error:', e); }
@@ -2284,18 +2666,16 @@ function getPageText(){
   if(!b) return '';
   // For PDF books: use extracted page text if available, else description
   if(b.pdf_url) return _currentPdfPageText || b.desc||b.description||b.title||'';
+  const displayLang = readerDisplayLang==='local' ? activeLang : 'English';
   // Illustrated books (canvas pages): return current single page text only
   const hasImages = b.pages && b.pages.some(pg=>pg.img);
   if(hasImages){
-    const pg = b.pages[currentPage];
-    return pg ? (pg.text||'').trim() : '';
+    return _getPageText(b.pages[currentPage], displayLang);
   }
   // Text/emoji books: return the two-page spread text
   const lp=b.pages[currentPage];
   const rp=b.pages[currentPage+1];
-  let text=lp?lp.text+' ':'' ;
-  if(rp) text+=rp.text;
-  return text.trim();
+  return (_getPageText(lp,displayLang)+' '+_getPageText(rp,displayLang)).trim();
 }
 
 function toggleAudio(){
@@ -2310,6 +2690,44 @@ function _getAudioEl(){
     document.body.appendChild(_audioEl);
   }
   return _audioEl;
+}
+
+// ── Pick the best available speech-synthesis voice for a BCP-47 locale ──
+// Prefers: Google neural > Safari Premium/Enhanced > any match; avoids Compact voices.
+function _getBestVoice(bcp47){
+  if(!window.speechSynthesis) return null;
+  const voices = window.speechSynthesis.getVoices();
+  if(!voices.length) return null;
+  const lang2 = bcp47.split('-')[0].toLowerCase(); // e.g. 'en', 'am', 'so'
+  // Candidates: exact locale match first, then language prefix match
+  const exact   = voices.filter(v=>v.lang.toLowerCase()===bcp47.toLowerCase());
+  const partial = voices.filter(v=>v.lang.toLowerCase().startsWith(lang2));
+  // If no voice exists for the requested language, fall back to English voices.
+  // This avoids the browser choosing a random wrong-language voice (e.g. German)
+  // which sounds worse than a good English voice reading the same words.
+  const englishVoices = voices.filter(v=>v.lang.toLowerCase().startsWith('en'));
+  const pool = exact.length ? exact
+             : partial.length ? partial
+             : englishVoices.length ? englishVoices
+             : voices;
+  // Score each voice: higher is better
+  const score = v=>{
+    const n = v.name.toLowerCase();
+    let s = 0;
+    if(n.includes('google'))   s+=100; // Chrome neural voices
+    if(n.includes('premium'))  s+=80;  // Safari neural voices
+    if(n.includes('enhanced')) s+=70;  // Safari high-quality
+    if(n.includes('natural'))  s+=60;
+    if(n.includes('neural'))   s+=55;
+    if(n.includes('samantha')) s+=50;  // macOS default — clear and natural
+    if(n.includes('siri'))     s+=40;
+    if(n.includes('compact'))  s-=50;  // penalise low-quality compact
+    if(v.localService===false) s+=10;  // network voices tend to be better
+    if(exact.some(e=>e===v))   s+=5;   // exact locale bonus
+    return s;
+  };
+  const sorted = [...pool].sort((a,b)=>score(b)-score(a));
+  return sorted[0] || null;
 }
 
 function startAudio(){
@@ -2330,17 +2748,27 @@ function startAudio(){
     // Illustrated autoRead: skip pages with no text (e.g. cover) by flipping forward
     if(autoReadMode && b.pages && b.pages.some(pg=>pg.img)){
       if(currentPage+1 < b.pages.length){
-        setTimeout(()=>{ if(pfInstance) pfInstance.flipNext(); }, 1200);
+        setTimeout(()=>{ if(window._illViewerNext) window._illViewerNext(); else if(pfInstance) pfInstance.flipNext(); }, 1200);
       } else { autoReadMode=false; _updateAutoReadBtn(); }
     }
     return;
   }
   // Wrap words in spans for highlighting
   _wrapTextForHighlight(text, b);
+  // Use active language locale when reading in native mode, else English.
+  // If the browser has no voice for the target locale, we'll fall back to English
+  // inside _getBestVoice so keep ttsLang for the utterance but the voice will be English.
+  const _wantedLang = (readerDisplayLang==='local') ? (LANG_TTS[activeLang]||LANG_TTS[b.lang]||'am-ET') : 'en-US';
+  const _nativeVoiceExists = window.speechSynthesis.getVoices()
+    .some(v=>v.lang.toLowerCase().startsWith(_wantedLang.split('-')[0].toLowerCase()));
+  const ttsLang = _nativeVoiceExists ? _wantedLang : 'en-US';
   ttsUtterance=new SpeechSynthesisUtterance(text);
   ttsUtterance.rate=speeds[speedIdx];
   ttsUtterance.pitch=1.05;
-  ttsUtterance.lang=LANG_TTS[b.lang]||'en-US';
+  ttsUtterance.lang=ttsLang;
+  // Use the best available natural/neural voice for this language
+  const bestVoice=_getBestVoice(ttsLang);
+  if(bestVoice) ttsUtterance.voice=bestVoice;
   ttsUtterance.onstart=()=>{
     ttsPlaying=true;
     document.getElementById('playBtn').textContent='⏸';
@@ -2356,19 +2784,47 @@ function startAudio(){
       const secs=Math.floor(elapsed/1000);
       document.getElementById('audioTime').textContent=`${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`;
     },100);
+    // Start the reliable timer-based word highlight engine
+    _startWordHighlightTimer(speeds[speedIdx]);
   };
-  // Word-by-word highlight via boundary events
+  // onboundary: when it fires, snap highlight to exact word and restart chain
+  // from the next word — corrects any drift in the timer-based engine
   ttsUtterance.onboundary=(e)=>{
     if(e.name!=='word') return;
-    document.querySelectorAll('.tts-word').forEach(w=>w.classList.remove('lit'));
-    // Find word span whose data-start matches charIndex
-    const span=document.querySelector(`.tts-word[data-start="${e.charIndex}"]`);
+    const span = document.querySelector(`.tts-word[data-start="${e.charIndex}"]`);
     if(span){
-      span.classList.add('lit');
-      span.scrollIntoView({block:'nearest',behavior:'smooth'});
+      const idx = _ttsWordSpans.indexOf(span);
+      if(idx >= 0){
+        // Highlight this word immediately, then restart chain from next word
+        _ttsWordSpans.forEach(s=>s.classList.remove('lit'));
+        span.classList.add('lit');
+        span.scrollIntoView({block:'nearest',behavior:'smooth'});
+        _startWordHighlightTimer(speeds[speedIdx], idx+1);
+      }
     }
   };
-  ttsUtterance.onend=()=>{ _clearHighlights(); stopAudio(true); };
+  // onend fires as soon as speech ends. Immediately snap highlight to the last
+  // unread word (covers any timer lag), then wait before clearing spans so the
+  // user sees the final words lit. Guard: if a new page started, skip cleanup.
+  ttsUtterance.onend=()=>{
+    // Snap highlight to any word the timer hasn't reached yet
+    if(_ttsWordIdx < _ttsWordSpans.length){
+      _ttsWordSpans.forEach(s=>s.classList.remove('lit'));
+      const remaining = _ttsWordSpans.slice(_ttsWordIdx);
+      // Light up each remaining word briefly in sequence (catch-up flash)
+      remaining.forEach((sp, i)=>{
+        setTimeout(()=>{
+          _ttsWordSpans.forEach(s=>s.classList.remove('lit'));
+          if(sp && sp.isConnected) sp.classList.add('lit');
+        }, i * 90);
+      });
+    }
+    const _utt = ttsUtterance; // capture; if new page starts, ttsUtterance changes
+    const catchUpMs = Math.max(380, (_ttsWordSpans.length - _ttsWordIdx) * 90 + 200);
+    setTimeout(()=>{
+      if(ttsUtterance === _utt){ _clearHighlights(); stopAudio(true); }
+    }, catchUpMs);
+  };
   ttsUtterance.onerror=()=>{ _clearHighlights(); stopAudio(); };
   window.speechSynthesis.speak(ttsUtterance);
 }
@@ -2421,6 +2877,20 @@ function _startRecordedAudio(b){
 }
 
 function stopAudio(finished=false){
+  // ── Detach utterance callbacks BEFORE cancel() ──────────────────────────────
+  // speechSynthesis.cancel() can fire onend/onerror asynchronously on some
+  // browsers. If startAudio() calls stopAudio() and then wraps new word-spans,
+  // those async callbacks would wipe the new spans. Null them out first.
+  if(ttsUtterance){
+    ttsUtterance.onend      = null;
+    ttsUtterance.onerror    = null;
+    ttsUtterance.onboundary = null;
+    ttsUtterance.onstart    = null;
+    ttsUtterance = null;
+  }
+  // Stop timer-based highlight engine and clear any lingering highlights
+  clearTimeout(_ttsHighlightInterval); _ttsHighlightInterval = null;
+  _ttsWordSpans.forEach(s => s.classList.remove('lit'));
   if(window.speechSynthesis) window.speechSynthesis.cancel();
   // Stop pre-recorded audio too
   if(_audioEl && !_audioEl.paused){ _audioEl.pause(); _audioEl.currentTime=0; }
@@ -2443,7 +2913,7 @@ function stopAudio(finished=false){
     if(!b.pdf_url && hasImages){
       // Illustrated book — flip to next canvas page (flip event triggers next read)
       if(currentPage+1 < b.pages.length){
-        setTimeout(()=>{ if(pfInstance) pfInstance.flipNext(); }, 500);
+        setTimeout(()=>{ if(window._illViewerNext) window._illViewerNext(); else if(pfInstance) pfInstance.flipNext(); }, 500);
       } else {
         autoReadMode=false;
         _updateAutoReadBtn();
@@ -2511,14 +2981,54 @@ function _illUpdateOverlay(pageIndex){
   const overlay = document.getElementById('illTextOverlay');
   if(!overlay) return;
   const pg = b.pages[pageIndex];
-  const text = pg ? (pg.text||'').trim() : '';
+  // Determine the display language: 'local' mode uses activeLang, else English
+  const displayLang = readerDisplayLang==='local' ? activeLang : 'English';
+  const text = _getPageText(pg, displayLang);
   if(text){
     overlay.textContent = text;
     overlay.style.display = 'block';
+    overlay.style.opacity = '1';   // guarantee visibility
+    overlay.style.transition = 'none'; // clear any lingering flip transition
+    const _oEth = ['Amharic','Tigrinya'].includes(displayLang);
+    overlay.style.fontFamily = _oEth ? "'Noto Sans Ethiopic',serif" : "Georgia,serif";
   } else {
     overlay.style.display = 'none';
     overlay.innerHTML = '';
   }
+}
+
+// Toggle between English and native language in the illustrated reader
+function _updateLangBtn(btn, b){
+  if(!btn) return;
+  // The button shows what language you'll SWITCH TO (not current)
+  if(readerDisplayLang==='text'){
+    // Currently English → button offers to switch to the book's language
+    const nativeName = {Amharic:'አማ',Tigrinya:'ትግ',Oromiffa:'ORO',Somali:'SOM',Wolaytta:'WOL'}[b.lang]||b.lang.slice(0,3).toUpperCase();
+    btn.textContent=nativeName;
+    btn.title='Switch to '+b.lang;
+    btn.style.background='';btn.style.color='';
+  } else {
+    // Currently native → button offers to switch to English
+    btn.textContent='EN';
+    btn.title='Switch to English';
+    btn.style.background='var(--amber)';btn.style.color='var(--green-dark)';
+  }
+}
+
+function toggleReaderLang(){
+  const b = books.find(bk=>bk.id===currentBookId);
+  if(!b) return;
+  const langBtn = document.getElementById('langToggleBtn');
+  if(readerDisplayLang==='text'){
+    readerDisplayLang='local';
+    showToast('📖 '+b.lang);
+  } else {
+    readerDisplayLang='text';
+    showToast('📖 English');
+  }
+  _updateLangBtn(langBtn, b);
+  stopAudio();
+  _illUpdateOverlay(currentPage);
 }
 
 // ═══════════════════════════════════
@@ -2537,6 +3047,12 @@ function _wrapTextForHighlight(fullText, book){
     });
     overlay.innerHTML = html;
     overlay.style.display = 'block';
+    overlay.style.opacity = '1';   // ensure visible even if a prior flip left it at 0
+    const _wLang = readerDisplayLang==='local' ? activeLang : 'English';
+    overlay.style.fontFamily = ['Amharic','Tigrinya'].includes(_wLang) ? "'Noto Sans Ethiopic',serif" : "Georgia,serif";
+    // Cache span references + reset word index for index-based highlight fallback
+    _ttsWordSpans = Array.from(overlay.querySelectorAll('.tts-word'));
+    _ttsWordIdx = 0;
     return;
   }
   // For text/emoji books: wrap words in left+right page text elements
@@ -2564,6 +3080,8 @@ function _wrapTextForHighlight(fullText, book){
 }
 
 function _clearHighlights(){
+  clearTimeout(_ttsHighlightInterval); _ttsHighlightInterval = null;
+  _ttsWordSpans = []; _ttsWordIdx = 0; // reset word index
   document.querySelectorAll('.tts-word').forEach(w=>{
     // Replace span with plain text to restore original DOM
     const parent=w.parentNode;
