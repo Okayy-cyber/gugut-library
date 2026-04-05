@@ -3356,11 +3356,17 @@ const EL_VOICES = [
 ];
 const EL_MODEL   = 'eleven_turbo_v2_5'; // fast, high-quality
 
-let _elSelectedVoice = localStorage.getItem('gugut_el_voice') || EL_VOICES[0].id;
+let _elSelectedVoice = localStorage.getItem('gugut_el_voice') || _EL_DEFAULT_VOICE;
 let _elAudioCache    = new Map(); // key: `${voiceId}::${text}` → {url, alignment}
 let _elWordTimers    = [];        // active setTimeout IDs for highlight schedule
 
-function _elKey(){ return localStorage.getItem('gugut_el_key') || ''; }
+// Default key — used when no personal key is saved in localStorage.
+// Testers get human voice automatically without any setup.
+// For public launch, replace with a Netlify proxy so the key stays server-side.
+const _EL_DEFAULT_KEY = 'sk_d13cf058b992f30a1c7398b5bf8d644b8d6eb5f0c21cfe75';
+const _EL_DEFAULT_VOICE = '21m00Tcm4TlvDq8ikWAM'; // Rachel — warm storyteller
+
+function _elKey(){ return localStorage.getItem('gugut_el_key') || _EL_DEFAULT_KEY; }
 
 function _elEnabled(){ return !!_elKey(); }
 
