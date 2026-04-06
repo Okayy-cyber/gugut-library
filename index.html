@@ -1332,13 +1332,46 @@ if(location.protocol === 'file:') {
   <!-- Book completion celebration -->
   <div id="completionCelebration" role="dialog" aria-modal="true" aria-label="Book complete!">
     <div class="confetti-wrap" id="confettiWrap"></div>
-    <div class="celeb-emo" id="celebOwlWrap" style="font-size:0;line-height:0;margin-bottom:4px;"></div>
-    <div class="celeb-title">You finished the book!</div>
-    <div class="celeb-sub" id="celebBookName"></div>
-    <div id="celebNextBook"></div>
-    <div class="celeb-actions">
-      <button class="celeb-btn primary" onclick="_celebReadAgain()">📖 Read Again</button>
-      <button class="celeb-btn secondary" onclick="_celebBackToLibrary()">🏠 Back to Library</button>
+
+    <!-- PHASE 1: Celebration screen -->
+    <div id="celebPhase1">
+      <div class="celeb-emo" id="celebOwlWrap" style="font-size:0;line-height:0;margin-bottom:4px;"></div>
+      <div class="celeb-title">You finished the book!</div>
+      <div class="celeb-sub" id="celebBookName"></div>
+      <div id="celebNextBook"></div>
+      <!-- Quiz CTA — shown only when book has quiz data -->
+      <div id="celebQuizBtn" style="display:none;margin:14px 0 6px;width:100%;max-width:320px;">
+        <button style="background:var(--amber);color:var(--green-dark);font-size:18px;font-weight:800;padding:16px 28px;border-radius:18px;width:100%;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(245,192,32,0.4);" onclick="_celebStartQuiz()">🧠 Answer Questions!</button>
+      </div>
+      <div class="celeb-actions">
+        <button class="celeb-btn primary" onclick="_celebReadAgain()">📖 Read Again</button>
+        <button class="celeb-btn secondary" onclick="_celebBackToLibrary()">🏠 Back to Library</button>
+      </div>
+    </div>
+
+    <!-- PHASE 2: Inline quiz — same overlay, no navigation -->
+    <div id="celebPhase2" style="display:none;width:100%;max-width:380px;text-align:left;">
+      <div style="text-align:center;margin-bottom:14px;">
+        <div id="cqOwlWrap" style="display:flex;justify-content:center;margin-bottom:6px;"></div>
+        <div id="cqBookEmo" style="font-size:32px;line-height:1;margin-bottom:4px;"></div>
+        <div id="cqProgress" style="font-size:13px;color:rgba(255,255,255,0.65);font-weight:600;letter-spacing:.3px;"></div>
+      </div>
+      <div id="cqQuestion" style="font-size:18px;font-weight:700;color:#fff;margin-bottom:18px;text-align:center;line-height:1.4;"></div>
+      <div id="cqOptions" style="display:flex;flex-direction:column;gap:10px;"></div>
+      <div id="cqResult" style="display:none;text-align:center;padding:14px 0 4px;">
+        <div id="cqResultEmo" style="font-size:32px;line-height:1;margin-bottom:4px;"></div>
+        <div id="cqResultMsg" style="color:#fff;font-weight:700;font-size:15px;margin-bottom:12px;"></div>
+        <button id="cqNextBtn" onclick="_cqNext()" style="background:var(--amber);color:var(--green-dark);border:none;border-radius:20px;padding:11px 28px;font-weight:800;font-size:15px;cursor:pointer;">Next →</button>
+      </div>
+    </div>
+
+    <!-- PHASE 3: Score screen -->
+    <div id="celebPhase3" style="display:none;text-align:center;width:100%;max-width:340px;">
+      <div id="cqScoreOwlWrap" style="display:flex;justify-content:center;margin-bottom:4px;"></div>
+      <div id="cqScoreEmo" style="display:none;"></div>
+      <div id="cqScoreMsg" style="font-size:22px;font-weight:800;color:#fff;margin-bottom:6px;"></div>
+      <div id="cqScoreSub" style="font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:24px;line-height:1.5;"></div>
+      <div id="cqScoreActions" style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;"></div>
     </div>
   </div>
 </div>
@@ -1563,7 +1596,8 @@ const books = [
       {img:"pages/grandmothers-shawl/page18.jpg",text:"Grandmother folds the shawl neatly while Hana watches.",local:""},
       {img:"pages/grandmothers-shawl/page19.jpg",text:"Hana touches the folded shawl one last time.",local:""},
       {img:"pages/grandmothers-shawl/page20.jpg",text:"Beside Grandmother and the folded shawl, Hana feels loved.",local:""}
-    ]},
+    ],
+    quiz:[{q:"What did Hana find with Grandmother?",opts:["A soft shawl","A big hat","A warm blanket"],a:0},{q:"How did the shawl make Hana feel?",opts:["Cold and scratchy","Warm and safe","Heavy and sleepy"],a:1},{q:"Who was with Hana in the story?",opts:["A friend","Grandfather","Grandmother"],a:2}]},
 
   {id:13,title:"Why the Sun and Moon Live in the Sky",local:"ፀሐይና ጨረቃ ሰማይ ላይ ለምን ኖሩ",lang:"Amharic",age:"6-9",cc:"c2",emo:"☀️",desc:"Long ago Sun and Moon lived on earth — until they invited the great Water to visit.",status:"published",reads:0,
     cover:"pages/why-sun-moon/cover.jpg",
@@ -1589,7 +1623,8 @@ const books = [
       {img:"pages/why-sun-moon/page18.jpg",text:"From above they looked down and understood too late that hospitality without wisdom can invite more than a home can bear.",local:""},
       {img:"pages/why-sun-moon/page19.jpg",text:"They never returned to live on earth, and that is why one travels the day and the other the night across the high open sky.",local:""},
       {img:"pages/why-sun-moon/page20.jpg",text:"And whenever children hear the tale, they remember that true wisdom also measures space, limits, and the power of what one invites inside.",local:""}
-    ]},
+    ],
+    quiz:[{q:"Who did Sun and Moon invite to visit their home?",opts:["The Wind","The Rain","Water","The Earth"],a:2},{q:"What warning did Water give before coming?",opts:["I am dangerous","My family is very large","I will be late","I cannot come"],a:1},{q:"Why did Sun and Moon move to the sky?",opts:["They wanted to shine brighter","Water filled their entire house","They were bored on earth","A storm drove them away"],a:1},{q:"What lesson does this story teach?",opts:["Never make friends","Wisdom means knowing your limits","Always invite everyone","Water is dangerous"],a:1}]},
 
   {id:14,title:"Colors at the Market",local:"በገበያ ያሉ ቀለሞች",lang:"Amharic",age:"0-3",cc:"c3",emo:"🌈",desc:"Mika and a grown-up explore all the beautiful colors at a lively Ethiopian market.",status:"published",reads:0,
     cover:"pages/colors-at-market/cover.jpg",
@@ -1615,7 +1650,8 @@ const books = [
       {img:"pages/colors-at-market/page18.jpg",text:"The colors stay bright in Mika's memory.",local:"ቀለሞቹ በሚካ ትዝታ ውስጥ ብሩህ ሆነው ቀሩ።"},
       {img:"pages/colors-at-market/page19.jpg",text:"Even away from the stalls, Mika still remembers them.",local:"ከሱቆቹ ርቃ ብትሆን እንኳ ሚካ አሁንም ታስታውሳቸዋለች።"},
       {img:"pages/colors-at-market/page20.jpg",text:"Mika smiles softly. One real market held so many colors.",local:"ሚካ ፈገግ አለ። አንዲት ገበያ ብዙ ቀለሞችን ይዛ ነበር።"}
-    ]},
+    ],
+    quiz:[{q:"Where did Mika go in this story?",opts:["To the river","To the market","To school"],a:1},{q:"What color were the tomatoes Mika saw?",opts:["Yellow","Green","Red"],a:2},{q:"What made Mika happy at the market?",opts:["All the colors","All the animals","All the children"],a:0}]},
 
   {id:15,title:"Hana Washes Her Hands",local:"ሃና እጆቿን ትታጠባለች",lang:"Amharic",age:"0-3",cc:"c1",emo:"🤲",desc:"Hana plays until her hands grow dusty, then carefully washes them all by herself.",status:"published",reads:0,
     cover:"pages/hana-washes-hands-ill/cover.jpg",
@@ -1641,7 +1677,8 @@ const books = [
       {img:"pages/hana-washes-hands-ill/page18.jpg",text:"Hana dries her hands neatly, first one, then the other.",local:"ሃና እጆቿን አንዱን ቀጥሎ ሌሎቹን ጥሩ ብላ አደረቀቺ።"},
       {img:"pages/hana-washes-hands-ill/page19.jpg",text:"She looks at her clean hands with quiet satisfaction.",local:"ንጹህ እጆቿን ተመለከተቺ ዝምታ ውስጥ ረካቺ።"},
       {img:"pages/hana-washes-hands-ill/page20.jpg",text:"At mealtime, Hana sits proudly. She washed her hands all by herself.",local:"ምሳ ጊዜ ሃና ኩራት ብላ ቁጭ አለቺ። ብቻዋን እጆቿን አጠበቺ።"}
-    ]},
+    ],
+    quiz:[{q:"Why did Hana need to wash her hands?",opts:["They were wet","They were dusty from playing","They were cold"],a:1},{q:"What did Hana use to wash her hands?",opts:["Only water","Soap and water","A cloth"],a:1},{q:"How did Hana feel when she was done?",opts:["Tired and sad","Proud she did it herself","Hungry and bored"],a:1}]},
 
   {id:16,title:"The Lion and the Hare (Illustrated)",local:"አንበሳ እና ጥንቸሏ",lang:"Amharic",age:"6-9",cc:"c2",emo:"🐇",desc:"A clever hare outsmarts a fearsome lion using only her wits and a deep, still well.",status:"published",reads:0,
     cover:"pages/lion-and-hare-ill/cover.jpg",
@@ -1667,7 +1704,8 @@ const books = [
       {img:"pages/lion-and-hare-ill/page18.jpg",text:"When the animals saw her returning alone, hope spread through them so quickly that it looked almost like light moving through leaves.",local:""},
       {img:"pages/lion-and-hare-ill/page19.jpg",text:"They followed her to the well, understood what had happened, and lifted their voices in relief after too many silent fearful days.",local:""},
       {img:"pages/lion-and-hare-ill/page20.jpg",text:"From then on they remembered that the sharpest strength in the forest had belonged not to the loudest roar but to the smallest creature who kept thinking.",local:""}
-    ]},
+    ],
+    quiz:[{q:"How did Fikir trick the lion?",opts:["She ran very fast","She showed him his own reflection in a well","She hid in a tree","She called for help"],a:1},{q:"What did the other animals think would happen to tiny Fikir?",opts:["She would win easily","She had no chance against the lion","She would hide forever","She would trick him quickly"],a:1},{q:"What happened to the lion at the well?",opts:["He drank deeply","He saw another real lion","He fell into the water","He ran back to his den"],a:2},{q:"What did Fikir use instead of claws or brute strength?",opts:["A sharp stick","Loud roaring","Her quick, clever mind","Help from other animals"],a:2}]},
 
   {id:17,title:"The Mouse and the Lion (Illustrated)",local:"አይጧ እና አንበሳው",lang:"Amharic",age:"3-6",cc:"c4",emo:"🐭",desc:"A tiny mouse wins a great lion's freedom with nothing but sharp teeth and a kind heart.",status:"published",reads:0,
     cover:"pages/mouse-and-lion-ill/cover.jpg",
@@ -1693,7 +1731,8 @@ const books = [
       {img:"pages/mouse-and-lion-ill/page18.jpg",text:"She climbed the ropes and chewed with all her strength.",local:""},
       {img:"pages/mouse-and-lion-ill/page19.jpg",text:"Soon the net loosened, and the lion stepped free.",local:""},
       {img:"pages/mouse-and-lion-ill/page20.jpg",text:"Under the acacia tree, the lion thanked his tiny friend.",local:""}
-    ]},
+    ],
+    quiz:[{q:"What happened to the big, powerful lion?",opts:["He fell in a river","He got caught in a hunter's net","He got lost in the forest","He hurt his paw"],a:1},{q:"How did the tiny mouse rescue the lion?",opts:["By roaring loudly","By bringing elephants to help","By chewing through the net","By scaring the hunters away"],a:2},{q:"What is the lesson of this story?",opts:["Lions are always the strongest","Even a small friend can save you","Mice are the cleverest animals","Never trust a lion"],a:1}]},
 
   {id:18,title:"Saba Sweeps the Courtyard",local:"ሳባ ግቢውን ታፀዳለች",lang:"Amharic",age:"0-3",cc:"c5",emo:"🧹",desc:"Saba notices dry leaves and dust, picks up a broom, and cares for her home with quiet pride.",status:"published",reads:0,
     cover:"pages/saba-sweeps/cover.jpg",
@@ -1719,7 +1758,8 @@ const books = [
       {img:"pages/saba-sweeps/page18.jpg",text:"She stands in the neat courtyard and looks around calmly.",local:"ቀጥ ብላ ቆማ ንጹህ ግቢውን ጸጥ ብላ ዞረቺ።"},
       {img:"pages/saba-sweeps/page19.jpg",text:"The tidy courtyard rests in the warm light.",local:"ቁጢጥ ያለ ግቢ ሞቀ ብርሃን ውስጥ ቆሞ ነበር።"},
       {img:"pages/saba-sweeps/page20.jpg",text:"Saba smiles softly. She helped care for her home.",local:"ሳባ ፈገግ አለቺ። ቤቷን ለመጠበቅ ረዳቺ።"}
-    ]},
+    ],
+    quiz:[{q:"What did Saba notice in the courtyard?",opts:["Beautiful flowers","Dry leaves and dust","A small animal"],a:1},{q:"What tool did Saba use to clean?",opts:["A bucket","A broom","A cloth"],a:1},{q:"How did Saba feel when she finished?",opts:["Bored and tired","Proud of caring for her home","Sad about the mess"],a:1}]},
 
   {id:19,title:"The Crocodile and the Monkey",local:"አዞው እና ዝንጀሮው",lang:"Amharic",age:"6-9",cc:"c6",emo:"🐊",desc:"Milo the monkey and Koro the crocodile are the best of friends — until a dangerous plan tests their trust.",status:"published",reads:0,
     cover:"pages/crocodile-and-monkey/cover.jpg",
@@ -1745,7 +1785,8 @@ const books = [
       {img:"pages/crocodile-and-monkey/page18.jpg",text:"The moment they neared the overhanging branch, Milo sprang upward, scrambled to safety, and clung to the trunk while his breath shook through him.",local:""},
       {img:"pages/crocodile-and-monkey/page19.jpg",text:"From high above he called down that no creature leaves its heart behind, and no friendship can survive the bite of betrayal.",local:""},
       {img:"pages/crocodile-and-monkey/page20.jpg",text:"Koro lowered his head beneath the reflected leaves, and the river remembered that quick thinking may save a life, but broken trust leaves the deepest wound.",local:""}
-    ]},
+    ],
+    quiz:[{q:"What were Milo and Koro at the beginning of the story?",opts:["Enemies","Best friends","Strangers","Rivals in a race"],a:1},{q:"What dangerous thing did Koro plan that tested their friendship?",opts:["He challenged Milo to a race","He tried to trick and harm Milo","He took Milo's food","He blocked Milo's path"],a:1},{q:"What did Milo learn about true friendship?",opts:["Crocodiles are always evil","True friendship never asks you to risk your life","Monkeys should stay in trees","Never go near water"],a:1}]},
 
   {id:20,title:"The Tortoise and the Hare",local:"ኤሊው እና ጥንቸሉ",lang:"Amharic",age:"3-6",cc:"c7",emo:"🐢",desc:"A boastful hare and a steady tortoise race — and only one truly understands what it takes to win.",status:"published",reads:0,
     cover:"pages/tortoise-and-hare/cover.jpg",
@@ -1771,7 +1812,8 @@ const books = [
       {img:"pages/tortoise-and-hare/page18.jpg",text:"One more step, and Tortoise reached the end.",local:""},
       {img:"pages/tortoise-and-hare/page19.jpg",text:"The animals cheered for the patient winner.",local:""},
       {img:"pages/tortoise-and-hare/page20.jpg",text:"Hare smiled too, and learned that steady steps matter.",local:""}
-    ]},
+    ],
+    quiz:[{q:"Who won the race?",opts:["The hare","The tortoise","They tied","Neither of them"],a:1},{q:"Why did the hare lose?",opts:["He was too slow","He got hurt","He stopped to rest and was too proud","He got lost"],a:2},{q:"What does this story teach us?",opts:["Always run as fast as you can","Tortoises are better than hares","Steady effort beats boasting","Races are not important"],a:2}]},
 
   {id:21,title:"The Leopard and the Ram",local:"ነብሩ እና በጉ",lang:"Amharic",age:"6-9",cc:"c8",emo:"🐆",desc:"A leopard expects easy prey — but the ram refuses to show fear, and courage becomes its shield.",status:"published",reads:0,
     cover:"pages/leopard-and-ram/cover.jpg",
@@ -1797,7 +1839,8 @@ const books = [
       {img:"pages/leopard-and-ram/page18.jpg",text:"He knew he had survived not by overpowering danger but by refusing to feed it with visible fear.",local:""},
       {img:"pages/leopard-and-ram/page19.jpg",text:"When other animals heard the tale, they repeated it with admiration, each adding the wind, the meadow, and the sharp curve of the horns.",local:""},
       {img:"pages/leopard-and-ram/page20.jpg",text:"And so the story endured, teaching that courage and self-possession can sometimes defeat an enemy who expects surrender before the struggle begins.",local:""}
-    ]},
+    ],
+    quiz:[{q:"What did the leopard expect from the ram?",opts:["A friendly greeting","A fierce fight","Easy prey to catch","Help crossing a river"],a:2},{q:"How did the ram protect himself?",opts:["By running away","By hiding in bushes","By refusing to show any fear","By calling other rams"],a:2},{q:"What is the lesson of this story?",opts:["Leopards always win","Rams are stronger than leopards","Courage and calm can be a powerful shield","Always run from danger"],a:2}]},
 
   {id:22,title:"The Rooster and the Fox",local:"አውራ ዶሮውና ቀበሮው",lang:"Amharic",age:"3-6",cc:"c1",emo:"🐓",desc:"A sly fox tries to trick a rooster down from his tree — but the rooster is smarter than he looks.",status:"published",reads:0,
     cover:"pages/rooster-and-fox/cover.jpg",
@@ -1823,7 +1866,8 @@ const books = [
       {img:"pages/rooster-and-fox/page18.jpg",text:"The rooster watched from the tree.",local:""},
       {img:"pages/rooster-and-fox/page19.jpg",text:"Then he gave a loud, happy crow.",local:""},
       {img:"pages/rooster-and-fox/page20.jpg",text:"He was safe because he stayed calm and thought clearly.",local:""}
-    ]},
+    ],
+    quiz:[{q:"Where was the clever rooster when the fox arrived?",opts:["In a nest on the ground","Safe up in a tree","Inside a barn","Behind a big rock"],a:1},{q:"Who tried to trick the rooster?",opts:["A wolf","A cat","The sly fox","A big dog"],a:2},{q:"How did the rooster stay safe?",opts:["He flew far away","He called loudly for help","He used his wits and stayed in the tree","He scared the fox with his feathers"],a:2}]},
 
   {id:23,title:"The Man and the Mongoose",local:"ሰውዬው እና ጦጣው",lang:"Amharic",age:"6-9",cc:"c2",emo:"🦡",desc:"A man leaves his baby in the care of a loyal mongoose — and learns a painful lesson about trust.",status:"published",reads:0,
     cover:"pages/man-and-mongoose/cover.jpg",
@@ -1849,7 +1893,8 @@ const books = [
       {img:"pages/man-and-mongoose/page18.jpg",text:"His wife returned and found him holding the mongoose with trembling hands.",local:""},
       {img:"pages/man-and-mongoose/page19.jpg",text:"They buried the mongoose with great care, honoring its bravery and love.",local:""},
       {img:"pages/man-and-mongoose/page20.jpg",text:"From that day he never forgot: act in haste, and you may grieve at leisure.",local:""}
-    ]},
+    ],
+    quiz:[{q:"What did the man ask the mongoose to guard?",opts:["His food store","His jar of gold","His baby","His home"],a:2},{q:"Why did the man hurt the loyal mongoose?",opts:["The mongoose bit him","He saw blood and thought the mongoose harmed the baby","The mongoose ate his food","He was always cruel"],a:1},{q:"What had the brave mongoose actually done?",opts:["It hurt the baby by mistake","It had run away from danger","It killed a snake to save the baby","It went to sleep"],a:2},{q:"What important lesson does this story teach?",opts:["Never keep animals as pets","Stop and think before acting in anger","Mongooses are more loyal than dogs","Snakes are the greatest danger"],a:1}]},
 
   {id:24,title:"The Peasant and the Jar of Gold",local:"ገበሬው እና የወርቅ ጃር",lang:"Amharic",age:"6-9",cc:"c3",emo:"🏺",desc:"A poor peasant digs up a jar of gold — and his honesty leads to something richer than treasure.",status:"published",reads:0,
     cover:"pages/peasant-jar-gold/cover.jpg",
@@ -1875,7 +1920,8 @@ const books = [
       {img:"pages/peasant-jar-gold/page18.jpg",text:"The court filled with surprised laughter and then with agreement, because wisdom had turned a dispute into kinship instead of loss.",local:""},
       {img:"pages/peasant-jar-gold/page19.jpg",text:"In time the families shared harvests, wedding songs, and the quiet pride of having chosen honesty before wealth.",local:""},
       {img:"pages/peasant-jar-gold/page20.jpg",text:"Long after the coins were spent, people still told the story to remind their children that integrity can uncover treasures richer than gold itself.",local:""}
-    ]},
+    ],
+    quiz:[{q:"What did the poor peasant dig up in his field?",opts:["A treasure chest","A jar of gold","A magic lamp","An old clay pot"],a:1},{q:"What quality made the peasant special in this story?",opts:["He was very strong","He was very clever","He was honest about what he found","He was the fastest runner"],a:2},{q:"What did the peasant's honesty bring him in the end?",opts:["An even bigger jar of gold","Fame across the land","A good life richer than treasure","A large piece of land"],a:2}]},
 
   {id:25,title:"The Two Goats on the Bridge",local:"ሁለቱ ፍየሎች በድልድዩ ላይ",lang:"Amharic",age:"0-3",cc:"c4",emo:"🐐",desc:"Two stubborn goats meet in the middle of a narrow bridge — and both fall in before learning to share.",status:"published",reads:0,
     cover:"pages/two-goats-bridge/cover.jpg",
@@ -1901,7 +1947,8 @@ const books = [
       {img:"pages/two-goats-bridge/page18.jpg",text:"The brown goat stepped gently across.",local:"ቡናማ ፍየሏ ቀስ ብላ አለፈቺ።"},
       {img:"pages/two-goats-bridge/page19.jpg",text:"Then the cream goat crossed safely too.",local:"ከዚያ ክሬም ፍየሏ ደህና ሆና አለፈቺ።"},
       {img:"pages/two-goats-bridge/page20.jpg",text:"After that, both goats remembered to share the bridge.",local:"ከዚያ ሁለቱ ፍየሎቹ ድልድዩን መካፈሉን አስታወሱ።"}
-    ]},
+    ],
+    quiz:[{q:"What happened when the two goats met in the middle of the bridge?",opts:["They became friends","They both fell into the river","One goat turned back"],a:1},{q:"Why did the goats fall into the river?",opts:["The bridge broke","They were both too stubborn to give way","A strong wind pushed them"],a:1},{q:"What did the goats learn?",opts:["Run faster next time","Share the bridge and take turns","Jump over each other"],a:1}]},
 ];
 
 // ═══════════════════════════════════
@@ -2485,9 +2532,15 @@ async function initPageFlipFromIllustrated(b, container){
     const hasCover = b.pages[0] && b.pages[0].isCover;
     const coverOffset = hasCover ? 1 : 0;
     const storyCount = b.pages.length - coverOffset;
-    // Portrait dimensions: height × 0.69 aspect ratio (children's book)
-    const pageH = Math.max(300, Math.min(availH, availW * 0.9));
-    const pageW = Math.max(200, Math.floor(pageH * 0.69));
+    // Portrait dimensions — fill available width first for a large book on mobile.
+    // Cap at 430px on desktop so it doesn't look over-sized on a wide screen.
+    const MAX_PAGE_W = 430;
+    let pageW = Math.min(MAX_PAGE_W, Math.max(200, availW - 8));
+    let pageH = Math.round(pageW * 1.45);
+    if (pageH > availH - 16) {
+      pageH = Math.max(300, availH - 16);
+      pageW = Math.max(200, Math.round(pageH / 1.45));
+    }
 
     const _canvasDisplayLang = readerDisplayLang==='local' ? activeLang : 'English';
 
@@ -2774,7 +2827,16 @@ async function initPageFlipFromIllustrated(b, container){
         if(typeof _playPageTurnSound==='function') _playPageTurnSound();
         _positionIllOverlay(); // restores illTextOverlay opacity via _illUpdateOverlay
         if(autoReadMode) setTimeout(()=>startAudio(), 300);
-        if(idx===b.pages.length-1 && typeof _showCompletion==='function') setTimeout(_showCompletion, 800);
+        if(idx===b.pages.length-1 && typeof _showCompletion==='function'){
+          // Only show completion if audio is NOT currently playing.
+          // When audio IS playing the user hit the last page — let it finish;
+          // stopAudio(true) / the EL onended path will call _showCompletion.
+          setTimeout(function(){
+            const audioActive = _audioEl && !_audioEl.paused;
+            const ttsActive   = ttsPlaying;
+            if(!audioActive && !ttsActive) _showCompletion();
+          }, 3000); // 3 s — enough for the user to see the last page illustration
+        }
       }, ms + 40);
     }
 
@@ -3356,15 +3418,15 @@ const EL_VOICES = [
 ];
 const EL_MODEL   = 'eleven_turbo_v2_5'; // fast, high-quality
 
-let _elSelectedVoice = localStorage.getItem('gugut_el_voice') || _EL_DEFAULT_VOICE;
-let _elAudioCache    = new Map(); // key: `${voiceId}::${text}` → {url, alignment}
-let _elWordTimers    = [];        // active setTimeout IDs for highlight schedule
-
 // Default key — used when no personal key is saved in localStorage.
 // Testers get human voice automatically without any setup.
 // For public launch, replace with a Netlify proxy so the key stays server-side.
 const _EL_DEFAULT_KEY = 'sk_d13cf058b992f30a1c7398b5bf8d644b8d6eb5f0c21cfe75';
 const _EL_DEFAULT_VOICE = '21m00Tcm4TlvDq8ikWAM'; // Rachel — warm storyteller
+
+let _elSelectedVoice = localStorage.getItem('gugut_el_voice') || _EL_DEFAULT_VOICE;
+let _elAudioCache    = new Map(); // key: `${voiceId}::${text}` → {url, alignment}
+let _elWordTimers    = [];        // active setTimeout IDs for highlight schedule
 
 function _elKey(){ return localStorage.getItem('gugut_el_key') || _EL_DEFAULT_KEY; }
 
@@ -3858,6 +3920,14 @@ function stopAudio(finished=false){
   }
   // Auto-read: advance to next page/spread when current page finishes
   _clearHighlights();
+  // If audio finished on the last page (manual play, not auto-read), mark complete
+  if(finished && !autoReadMode){
+    const _b=books.find(bk=>bk.id===currentBookId);
+    if(_b && _b.pages && currentPage>=_b.pages.length-1){
+      readProgress[currentBookId]=100; _saveState();
+      if(typeof _showCompletion==='function') setTimeout(_showCompletion, 600);
+    }
+  }
   if(finished && autoReadMode){
     const b=books.find(bk=>bk.id===currentBookId);
     if(!b){ autoReadMode=false; _updateAutoReadBtn(); return; }
@@ -4920,6 +4990,52 @@ function gugutOwlSVG(pose = 'standard', opts = {}) {
 </svg>`;
 }
 
+// ──────────────────────────────────────────────────────────
+// GUGUT OWL ILLUSTRATED IMAGES
+// Maps pose names → PNG filenames in the gugut-deploy folder.
+// Falls back to the SVG owl if the image file isn't found.
+// ──────────────────────────────────────────────────────────
+const _OWL_IMG_MAP = {
+  // Sheet 1 — Core poses
+  'standard':    'owl-standard.png',
+  'waving':      'owl-waving.png',
+  'flying':      'owl-flying.png',
+  'pointing':    'owl-pointing.png',
+  'reading':     'owl-reading.png',
+  'thinking':    'owl-thinking.png',
+  'pencil':      'owl-pencil.png',
+  'presenting':  'owl-presenting.png',
+  'winking':     'owl-winking.png',
+  'celebrating': 'owl-celebrating.png',
+  // Sheet 2 — Achievement / activity
+  'trophy':      'owl-trophy.png',
+  'flag':        'owl-flag.png',
+  'readmore':    'owl-readmore.png',
+  'pilot':       'owl-pilot.png',
+  'books':       'owl-books.png',
+  'graduation':  'owl-graduation.png',
+  'medal':       'owl-medal.png',
+  'explorer':    'owl-explorer.png',
+  'cheerleader': 'owl-cheerleader.png',
+  'question':    'owl-question.png',
+  // Sheet 3 — Expressions
+  'surprised':   'owl-surprised.png',
+  'listening':   'owl-listening.png',
+  'tapping':     'owl-tapping.png',
+  'confused':    'owl-confused.png',
+  'sleeping':    'owl-sleeping.png',
+};
+function gugutOwlImg(pose, opts={}) {
+  const {width=90, height=100, style='', cls=''} = opts;
+  const file = _OWL_IMG_MAP[pose] || _OWL_IMG_MAP['standard'];
+  // SVG fallback pose mapping
+  const svgPose = (pose==='celebrating'||pose==='cheerleader'||pose==='trophy'||pose==='medal'||pose==='graduation') ? 'celebrate'
+                : (pose==='pilot'||pose==='flying') ? 'explore'
+                : (pose==='sleeping') ? 'sleep' : 'standard';
+  const fallback = gugutOwlSVG(svgPose,{width,height}).replace(/`/g,'\\`').replace(/\$/g,'\\$');
+  return `<img src="${file}" width="${width}" height="${height}" alt="Gugut" class="${cls}" style="display:block;object-fit:contain;${style}" onerror="this.outerHTML=gugutOwlSVG('${svgPose}',{width:${width},height:${height}})">`;
+}
+
 // ══════════════════════════════════════════════════════════
 // WORLD MAP — country state + name lookup
 // ══════════════════════════════════════════════════════════
@@ -4993,13 +5109,13 @@ const continentData = {
   africa: {
     title: 'Africa Reading Adventure',
     sub:   'Read books to travel all 54 countries!',
-    owl:   'explore',
+    owl:   'pilot',
     countries: []  // uses the existing D3 Africa map
   },
   asia: {
     title: 'Asia — Coming Soon!',
     sub:   'Gugut is writing stories from across the amazing continent of Asia.',
-    owl:   'sleep',
+    owl:   'sleeping',
     countries: [
       {flag:'🇯🇵', name:'Japan'}, {flag:'🇮🇳', name:'India'}, {flag:'🇨🇳', name:'China'},
       {flag:'🇰🇷', name:'Korea'}, {flag:'🇹🇭', name:'Thailand'}, {flag:'🇻🇳', name:'Vietnam'}
@@ -5008,7 +5124,7 @@ const continentData = {
   europe: {
     title: 'Europe — Coming Soon!',
     sub:   'Adventures from castles, fjords and sunflower fields are on their way!',
-    owl:   'sleep',
+    owl:   'sleeping',
     countries: [
       {flag:'🇫🇷', name:'France'}, {flag:'🇩🇪', name:'Germany'}, {flag:'🇮🇹', name:'Italy'},
       {flag:'🇬🇧', name:'UK'}, {flag:'🇳🇴', name:'Norway'}, {flag:'🇵🇹', name:'Portugal'}
@@ -5017,7 +5133,7 @@ const continentData = {
   americas: {
     title: 'Americas — Coming Soon!',
     sub:   'Stories from the Amazon rainforest to the icy north are coming soon!',
-    owl:   'sleep',
+    owl:   'sleeping',
     countries: [
       {flag:'🇧🇷', name:'Brazil'}, {flag:'🇲🇽', name:'Mexico'}, {flag:'🇨🇦', name:'Canada'},
       {flag:'🇵🇪', name:'Peru'}, {flag:'🇦🇷', name:'Argentina'}, {flag:'🇺🇸', name:'USA'}
@@ -5026,7 +5142,7 @@ const continentData = {
   mideast: {
     title: 'Middle East — Coming Soon!',
     sub:   'Tales from ancient lands of deserts, spice markets and starlit nights.',
-    owl:   'sleep',
+    owl:   'sleeping',
     countries: [
       {flag:'🇸🇦', name:'Saudi Arabia'}, {flag:'🇹🇷', name:'Türkiye'}, {flag:'🇮🇷', name:'Iran'},
       {flag:'🇪🇬', name:'Egypt'}, {flag:'🇮🇱', name:'Israel'}, {flag:'🇯🇴', name:'Jordan'}
@@ -5035,7 +5151,7 @@ const continentData = {
   oceania: {
     title: 'Oceania — Coming Soon!',
     sub:   'Kangaroos, kiwis and coral reefs — stories from the Pacific are brewing!',
-    owl:   'sleep',
+    owl:   'sleeping',
     countries: [
       {flag:'🇦🇺', name:'Australia'}, {flag:'🇳🇿', name:'New Zealand'}, {flag:'🇫🇯', name:'Fiji'},
       {flag:'🇵🇬', name:'Papua NG'}, {flag:'🇸🇧', name:'Solomon Is.'}, {flag:'🇼🇸', name:'Samoa'}
@@ -5063,7 +5179,7 @@ function switchContinent(cont) {
 
   // Update hero owl
   const iconEl = document.getElementById('exploreHeroIcon');
-  if (iconEl) iconEl.innerHTML = gugutOwlSVG(data.owl, {width:54, height:60});
+  if (iconEl) iconEl.innerHTML = gugutOwlImg(data.owl, {width:54, height:60});
 
   const africaMap    = document.getElementById('africaMapContainer');
   const comingPanel  = document.getElementById('comingSoonPanel');
@@ -5097,7 +5213,7 @@ function switchContinent(cont) {
 
     if (csTitle)    csTitle.textContent  = data.title;
     if (csDesc)     csDesc.textContent   = data.sub;
-    if (csOwlWrap)  csOwlWrap.innerHTML  = gugutOwlSVG('sleep', {width:90, height:95});
+    if (csOwlWrap)  csOwlWrap.innerHTML  = gugutOwlImg('sleeping', {width:90, height:95});
     if (csCountries) {
       csCountries.innerHTML = data.countries.map(c =>
         `<div class="cs-preview-flag"><span>${c.flag}</span>${c.name}</div>`
@@ -5155,7 +5271,7 @@ function renderJourneyPath() {
   const ropeFill = document.getElementById('journeyRopeFill');
   if (!stopsEl || !owlWrap) return;
 
-  owlWrap.innerHTML = gugutOwlSVG('explore', {width:34, height:38});
+  owlWrap.innerHTML = gugutOwlImg('pilot', {width:38, height:42});
 
   const totalBooks = AFRICA_COUNTRIES.reduce((s, c) => s + getLangProgress(c.lang).total, 0);
   const booksRead  = AFRICA_COUNTRIES.reduce((s, c) => s + getLangProgress(c.lang).completed, 0);
@@ -5551,7 +5667,8 @@ function filterByLanguage(lang) {
 const PP_KEY = 'gugut_profiles_v1';
 const PP_ACTIVE = 'gugut_active_profile';
 const PP_COLORS = ['#2D7030','#1565C0','#B71C1C','#7B1FA2','#E65100','#00695C'];
-const PP_OWL_POSES = ['standard','wave','read','explore','celebrate','standard'];
+// Profile avatar owl poses — use illustrated image names
+const PP_OWL_POSES = ['waving','reading','thinking','celebrating','pointing','winking'];
 
 function ppLoad() {
   try { return JSON.parse(localStorage.getItem(PP_KEY) || '[]'); } catch(e){ return []; }
@@ -5569,7 +5686,7 @@ function showProfilePicker() {
 
   // Logo owl
   const logoOwl = document.getElementById('ppLogoOwl');
-  if (logoOwl) logoOwl.innerHTML = gugutOwlSVG('wave', {width:70, height:78});
+  if (logoOwl) logoOwl.innerHTML = gugutOwlImg('waving', {width:70, height:78});
 
   renderProfileGrid();
 }
@@ -5593,7 +5710,7 @@ function renderProfileGrid() {
     card.style.borderColor = p.color + '60';
     const booksRead = Object.values(readProgress).filter(v => v >= 100).length;
     card.innerHTML =
-      '<div style="width:64px;height:72px;">' + gugutOwlSVG(PP_OWL_POSES[i % PP_OWL_POSES.length], {width:64, height:72}) + '</div>' +
+      '<div style="width:64px;height:72px;">' + gugutOwlImg(PP_OWL_POSES[i % PP_OWL_POSES.length], {width:64, height:72}) + '</div>' +
       '<div class="pp-card-name">' + escHtml(p.name) + '</div>';
     card.onclick = () => selectProfile(p, i);
     grid.appendChild(card);
@@ -5635,7 +5752,7 @@ function showAddProfileModal() {
 
   // Owl preview
   const owlEl = document.getElementById('ppModalOwl');
-  if (owlEl) owlEl.innerHTML = gugutOwlSVG('wave', {width:60, height:68});
+  if (owlEl) owlEl.innerHTML = gugutOwlImg('waving', {width:60, height:68});
 
   // Color row
   const colorRow = document.getElementById('ppColorRow');
@@ -5690,7 +5807,7 @@ function escHtml(s) {
       try {
         const ap = JSON.parse(localStorage.getItem(PP_ACTIVE) || 'null');
         if (ap && ap.name) {
-          pill.innerHTML = gugutOwlSVG('standard', {width:22, height:24}) + '<span class="active-reader-name">' + escHtml(ap.name) + '</span>';
+          pill.innerHTML = gugutOwlImg('standard', {width:22, height:24}) + '<span class="active-reader-name">' + escHtml(ap.name) + '</span>';
         } else {
           return; // guest mode, don't show pill
         }
@@ -5836,25 +5953,8 @@ closeReader = function() {
   });
   // Resume thumbnail queue if it paused for the reader
   _drainThumbQueue();
-  // Check if book just reached 100%
-  const book = books.find(b => b.id === currentBookId);
-  if (book && readProgress[currentBookId] >= 100 && book.quiz) {
-    const prevLevel = getLevel();
-    // Show owl celebration
-    showOwl('🎉 አንብበሃል! You finished a book!', 'Amazing reading! Keep going to light up the map.');
-    // Trigger level up check
-    setTimeout(() => {
-      const newLevel = getLevel();
-      if (newLevel.level > prevLevel.level) {
-        checkLevelUp(prevLevel);
-      }
-    }, 2500);
-    // Start quiz after owl
-    setTimeout(() => {
-      hideOwl();
-      startQuiz(currentBookId);
-    }, 5000);
-  }
+  // Quiz is now handled inline on the completion screen (🧠 Answer Questions button).
+  // No separate quiz trigger needed here.
 };
 
 // ═══════════════════════════════════
@@ -6068,8 +6168,8 @@ function _showCompletion(){
 
   // Inject the celebrating Gugut owl mascot
   const owlWrap = document.getElementById('celebOwlWrap');
-  if(owlWrap && typeof gugutOwlSVG === 'function') {
-    owlWrap.innerHTML = gugutOwlSVG('celebrate', {width:100, height:110});
+  if(owlWrap) {
+    owlWrap.innerHTML = gugutOwlImg('celebrating', {width:110, height:120});
     owlWrap.style.fontSize = '0';
     owlWrap.style.lineHeight = '1';
     owlWrap.style.marginBottom = '8px';
@@ -6095,7 +6195,7 @@ function _showCompletion(){
       (readProgress[bk.id]||0) < 100
     );
     if(next){
-      nextDiv.innerHTML = `<div class="celeb-next-card" onclick="document.getElementById('completionCelebration').classList.remove('open');openReader(${next.id})">
+      nextDiv.innerHTML = `<div class="celeb-next-card" onclick="_cqReset();document.getElementById('completionCelebration').classList.remove('open');openReader(${next.id})">
         <div class="celeb-next-emo">${next.emo}</div>
         <div class="celeb-next-info">
           <div class="celeb-next-label">Read Next</div>
@@ -6108,6 +6208,13 @@ function _showCompletion(){
       nextDiv.innerHTML = '';
     }
   }
+
+  // Reset to phase 1 (in case previous quiz left it on phase 2/3)
+  _cqReset();
+
+  // Show quiz button only if this book has quiz data
+  const quizBtn = document.getElementById('celebQuizBtn');
+  if(quizBtn) quizBtn.style.display = (b.quiz && b.quiz.length) ? 'block' : 'none';
 
   cel.classList.add('open');
   _launchConfetti();
@@ -6137,6 +6244,7 @@ function _launchConfetti(){
   }
 }
 function _celebReadAgain(){
+  _cqReset();
   document.getElementById('completionCelebration').classList.remove('open');
   // Return to first page — illustrated path
   if(typeof window._illViewerGoTo === 'function'){
@@ -6147,8 +6255,125 @@ function _celebReadAgain(){
   _resetControlsTimer();
 }
 function _celebBackToLibrary(){
+  _cqReset();
   document.getElementById('completionCelebration').classList.remove('open');
   closeReader();
+}
+// ─── INLINE QUIZ ENGINE (runs inside completion overlay) ───
+let _cqData=[], _cqIdx=0, _cqScore=0, _cqBookId=null;
+function _cqReset(){
+  // Restore phase 1 visibility for next time
+  const p1=document.getElementById('celebPhase1');
+  const p2=document.getElementById('celebPhase2');
+  const p3=document.getElementById('celebPhase3');
+  if(p1) p1.style.display='';
+  if(p2) p2.style.display='none';
+  if(p3) p3.style.display='none';
+}
+function _celebStartQuiz(){
+  const b = books.find(bk=>bk.id===currentBookId);
+  if(!b || !b.quiz || !b.quiz.length) return;
+  _cqBookId = currentBookId;
+  _cqData   = b.quiz;
+  _cqIdx    = 0;
+  _cqScore  = 0;
+  // Transition: hide celebration, reveal quiz panel
+  document.getElementById('celebPhase1').style.display='none';
+  document.getElementById('celebPhase2').style.display='block';
+  document.getElementById('celebPhase3').style.display='none';
+  document.getElementById('cqBookEmo').textContent = b.emo || '📖';
+  // Show question-mark owl during quiz
+  const cqOwl = document.getElementById('cqOwlWrap');
+  if(cqOwl) cqOwl.innerHTML = gugutOwlImg('question', {width:80, height:88});
+  _cqShowQ();
+}
+function _cqShowQ(){
+  const q = _cqData[_cqIdx];
+  document.getElementById('cqProgress').textContent = 'Question '+(_cqIdx+1)+' of '+_cqData.length;
+  document.getElementById('cqQuestion').textContent = q.q;
+  document.getElementById('cqResult').style.display='none';
+  const opts = document.getElementById('cqOptions');
+  opts.innerHTML='';
+  q.opts.forEach(function(opt,i){
+    const btn=document.createElement('button');
+    btn.textContent=opt;
+    btn.style='padding:14px 16px;border-radius:14px;border:2px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.12);font-size:15px;font-weight:600;cursor:pointer;text-align:left;color:#fff;width:100%;transition:all .15s;';
+    btn.onmouseenter=function(){if(!btn.disabled)btn.style.background='rgba(255,255,255,0.22)';};
+    btn.onmouseleave=function(){if(!btn.disabled&&btn.style.background==='rgba(255, 255, 255, 0.22)')btn.style.background='rgba(255,255,255,0.12)';};
+    btn.onclick=function(){_cqAnswer(i,q.a,btn);};
+    opts.appendChild(btn);
+  });
+}
+function _cqAnswer(chosen,correct,btn){
+  document.querySelectorAll('#cqOptions button').forEach(function(b){b.disabled=true;});
+  const isRight=(chosen===correct);
+  if(isRight){
+    _cqScore++;
+    btn.style.background='#4CAF50'; btn.style.borderColor='#4CAF50';
+  } else {
+    btn.style.background='#f44336'; btn.style.borderColor='#f44336';
+    const allBtns=document.querySelectorAll('#cqOptions button');
+    if(allBtns[correct]){ allBtns[correct].style.background='#4CAF50'; allBtns[correct].style.borderColor='#4CAF50'; }
+  }
+  // Swap quiz owl to match answer result
+  const cqOwl2 = document.getElementById('cqOwlWrap');
+  if(cqOwl2) cqOwl2.innerHTML = gugutOwlImg(isRight?'cheerleader':'confused', {width:80, height:88});
+  document.getElementById('cqResult').style.display='block';
+  document.getElementById('cqResultEmo').textContent=isRight?'🎉':'💪';
+  document.getElementById('cqResultMsg').textContent=isRight?'Correct! Well done!':'Not quite — but keep going!';
+  const isLast=(_cqIdx>=_cqData.length-1);
+  document.getElementById('cqNextBtn').textContent=isLast?'See Results 🏆':'Next →';
+}
+function _cqNext(){
+  const isLast=(_cqIdx>=_cqData.length-1);
+  if(isLast){ _cqShowScore(); }
+  else {
+    _cqIdx++;
+    // Restore question owl for next question
+    const cqOwl=document.getElementById('cqOwlWrap');
+    if(cqOwl) cqOwl.innerHTML=gugutOwlImg('question',{width:80,height:88});
+    _cqShowQ();
+  }
+}
+function _cqShowScore(){
+  document.getElementById('celebPhase2').style.display='none';
+  document.getElementById('celebPhase3').style.display='block';
+  const total=_cqData.length;
+  const pct=Math.round((_cqScore/total)*100);
+  // Score-based owl: trophy (100%), medal (67%+), readmore (below 67%)
+  const scoreOwlPose = pct===100?'trophy':pct>=67?'medal':'readmore';
+  const scoreOwlWrap = document.getElementById('cqScoreOwlWrap');
+  if(scoreOwlWrap) scoreOwlWrap.innerHTML = gugutOwlImg(scoreOwlPose, {width:110, height:120});
+  const emo=pct===100?'🏆':pct>=67?'⭐':'💪';
+  const msg=pct===100?'Perfect score!':_cqScore+' out of '+total+' — '+(pct>=67?'great job!':'keep reading!');
+  const sub=pct===100?'You understood every part of the story!':pct>=67?'Strong comprehension — you\'re a great reader!':'Read it again and try the quiz once more!';
+  document.getElementById('cqScoreEmo').textContent=emo;
+  document.getElementById('cqScoreMsg').textContent=msg;
+  document.getElementById('cqScoreSub').textContent=sub;
+  // Re-launch confetti for celebration
+  _launchConfetti();
+  // Build action buttons
+  const acts=document.getElementById('cqScoreActions');
+  acts.innerHTML='';
+  // Find next book for "Read Next"
+  const b=books.find(bk=>bk.id===_cqBookId);
+  let nextBook=null;
+  if(b){
+    nextBook=books.find(bk=>bk.status==='published'&&bk.id!==b.id&&bk.lang===b.lang&&(readProgress[bk.id]||0)<100);
+    if(!nextBook) nextBook=books.find(bk=>bk.status==='published'&&bk.id!==b.id&&(readProgress[bk.id]||0)<100);
+  }
+  if(nextBook){
+    const nb=document.createElement('button');
+    nb.textContent='📖 Read Next: '+nextBook.title+' →';
+    nb.style='background:var(--amber);color:var(--green-dark);border:none;border-radius:16px;padding:14px 20px;font-weight:800;font-size:15px;cursor:pointer;width:100%;';
+    nb.onclick=function(){_cqReset();document.getElementById('completionCelebration').classList.remove('open');openReader(nextBook.id);};
+    acts.appendChild(nb);
+  }
+  const lb=document.createElement('button');
+  lb.textContent='🏠 Back to Library';
+  lb.style='background:rgba(255,255,255,0.12);color:#fff;border:2px solid rgba(255,255,255,0.25);border-radius:16px;padding:12px 20px;font-weight:700;font-size:15px;cursor:pointer;width:100%;';
+  lb.onclick=function(){_cqReset();document.getElementById('completionCelebration').classList.remove('open');closeReader();};
+  acts.appendChild(lb);
 }
 </script>
 
