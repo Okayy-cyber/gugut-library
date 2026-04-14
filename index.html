@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -283,14 +283,18 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 #pdfTextOverlay{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;
   display:flex;flex-wrap:wrap;align-content:flex-start;padding:12px;gap:0;z-index:3;
   font-family:'Nunito',sans-serif;font-size:16px;color:transparent;}
-/* Illustrated book text strip — sits BELOW the image frame, never on top of it.
-   Styled as the natural bottom section of a book page. Width set by JS to match page. */
+/* Illustrated book text strip — anchored at bottom of the canvas,
+   same width as the book page. Always visible. Words highlight during TTS. */
 #illTextOverlay{
-  background:#fffdf5;border-top:2px solid #ddd5c5;
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:var(--ill-page-w,300px);background:#fffdf5;
+  border-top:2px solid #ddd5c5;
   padding:10px 16px 12px;font-family:'Nunito',Georgia,sans-serif;
-  font-size:16px;font-weight:600;
-  line-height:1.6;color:#1a1208;text-align:center;
-  display:none;box-sizing:border-box;
+  font-size:var(--ill-font-sz,16px);font-weight:700;
+  line-height:1.55;color:#1a1208;text-align:center;pointer-events:none;
+  z-index:20;display:none;box-sizing:border-box;overflow:hidden;
+  /* warm layered shadow gives depth above the page image */
+  box-shadow:0 -4px 16px rgba(0,0,0,.08),0 2px 12px rgba(0,0,0,.10);
   border-radius:0 0 8px 8px;}
 /* tts-word spans are always pre-wrapped at page render — no DOM mutation on audio start */
 .tts-word{display:inline;border-radius:3px;transition:background .13s ease,box-shadow .13s ease;}
@@ -834,7 +838,7 @@ body.night .africa-map-wrap{box-shadow:0 6px 28px rgba(0,0,0,.5),0 1px 0 rgba(25
 <!-- ⚠️ File:// protocol — auto-redirect to localhost -->
 <div id="fileBanner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#e65100;color:#fff;padding:14px 20px;font-family:Nunito,sans-serif;font-size:14px;font-weight:700;text-align:center;box-shadow:0 3px 12px rgba(0,0,0,.3);">
   ⚠️ Books can't load from here. &nbsp;
-  <button onclick="location.href='http://localhost:8765/gugut-deploy/index.html'" style="background:#fff;color:#e65100;border:none;padding:6px 16px;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px;">▶ Open with Launcher</button>
+  <button onclick="location.href='http://localhost:8765/gugut-library-v3.html'" style="background:#fff;color:#e65100;border:none;padding:6px 16px;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px;">▶ Open with Launcher</button>
   &nbsp;&nbsp;
   <span style="font-size:12px;opacity:0.85">or double-click <em>Start Gugut Library.command</em> first</span>
 </div>
@@ -845,12 +849,12 @@ if(location.protocol === 'file:') {
   // Pad the sticky topbar down so it doesn't hide under the banner
   document.querySelector('.topbar').style.top = '52px';
   // Auto-redirect if the local server is running
-  fetch('http://localhost:8765/gugut-deploy/index.html', {method:'HEAD', mode:'no-cors'})
+  fetch('http://localhost:8765/gugut-library-v3.html', {method:'HEAD', mode:'no-cors'})
     .then(() => {
-      fb.innerHTML = '✅ Local server found — redirecting… <small style="opacity:.75">(or click: <a href="http://localhost:8765/gugut-deploy/index.html" style="color:#fff">open</a>)</small>';
-      setTimeout(() => { location.href = 'http://localhost:8765/gugut-deploy/index.html'; }, 1500);
+      fb.innerHTML = '✅ Local server found — redirecting… <small style="opacity:.75">(or click: <a href="http://localhost:8765/gugut-library-v3.html" style="color:#fff">open</a>)</small>';
+      setTimeout(() => { location.href = 'http://localhost:8765/gugut-library-v3.html'; }, 1500);
     }).catch(() => {
-      fb.innerHTML = '⚠️ <strong>Books can\'t load from here.</strong> &nbsp; <button onclick="location.href=\'http://localhost:8765/gugut-deploy/index.html\'" style="background:#fff;color:#e65100;border:none;padding:5px 14px;border-radius:8px;cursor:pointer;font-weight:800;font-size:13px;">▶ Open with Launcher</button> &nbsp; <small style="opacity:.8">or run <em>Start Gugut Library.command</em> first</small>';
+      fb.innerHTML = '⚠️ <strong>Books can\'t load from here.</strong> &nbsp; <button onclick="location.href=\'http://localhost:8765/gugut-library-v3.html\'" style="background:#fff;color:#e65100;border:none;padding:5px 14px;border-radius:8px;cursor:pointer;font-weight:800;font-size:13px;">▶ Open with Launcher</button> &nbsp; <small style="opacity:.8">or run <em>Start Gugut Library.command</em> first</small>';
     });
 }
 </script>
@@ -1259,6 +1263,8 @@ if(location.protocol === 'file:') {
     <!-- StPageFlip book reader (shown for non-PDF books) -->
     <div id="pfWrap" style="position:relative;">
       <div id="pfBook"></div>
+      <!-- TTS word-highlight overlay for illustrated (canvas) books -->
+      <div id="illTextOverlay"></div>
       <!-- Reading mode picker — shown once per book session -->
       <div id="readModePicker">
         <div class="rmp-title">How would you like to read?</div>
@@ -2535,9 +2541,6 @@ async function initPageFlipFromIllustrated(b, container){
       pageH = Math.max(300, availH - 16);
       pageW = Math.max(200, Math.round(pageH / 1.45));
     }
-    // Image takes the full page height; text overlays the bottom inside the image
-    const imgH = pageH;
-    const txtH = Math.round(pageH * 0.28);   // height reserved inside image for text gradient
 
     const _canvasDisplayLang = readerDisplayLang==='local' ? activeLang : 'English';
 
@@ -2553,10 +2556,81 @@ async function initPageFlipFromIllustrated(b, container){
       const _isEthiopic = ['Amharic','Tigrinya'].includes(_canvasDisplayLang);
       if(_isEthiopic) try{ await document.fonts.load(`16px 'Noto Sans Ethiopic'`); }catch(e){}
       if(pg.img){
-        // Return the raw image path directly — no canvas drawing, no toDataURL().
-        // This avoids the browser's "Tainted canvas" block (file:// images can't be
-        // exported via toDataURL). The text strip is shown by #illTextOverlay instead.
-        return pg.img;
+        await new Promise(resolve=>{
+          const imgEl = new Image();
+          // crossOrigin not needed — all images are same-origin; setting it on a
+          // server without CORS headers would taint the canvas and break toDataURL()
+          imgEl.onload = ()=>{
+            const cw=oc.width, ch=oc.height;
+            const hasText = !!_getPageText(pg,_canvasDisplayLang) && !pg.isCover;
+            const textZoneH = hasText ? Math.round(ch*0.26) : 0;
+            const imgZoneH  = ch - textZoneH;
+
+            if(pg.isCover){
+              // Cover: contain (letterbox) — show full artwork without cropping.
+              // Fill letterbox areas with a zoomed/blurred version of the image,
+              // falling back to a warm dark gradient if ctx.filter isn't supported.
+              const scaleContain = Math.min(cw/imgEl.width, imgZoneH/imgEl.height);
+              const fw = Math.round(imgEl.width * scaleContain);
+              const fh = Math.round(imgEl.height * scaleContain);
+              const fx = Math.round((cw - fw) / 2);
+              const fy = Math.round((imgZoneH - fh) / 2);
+              // Background: zoomed cover fill + blur (graceful degradation if filter unsupported)
+              const bgScale = Math.max(cw/imgEl.width, imgZoneH/imgEl.height) * 1.05;
+              const bgW = Math.round(imgEl.width * bgScale), bgH = Math.round(imgEl.height * bgScale);
+              const bgX = Math.round((cw - bgW) / 2), bgY = Math.round((imgZoneH - bgH) / 2);
+              ctx.save();
+              try{
+                ctx.filter = 'blur(20px) brightness(0.55) saturate(0.8)';
+                ctx.drawImage(imgEl, bgX, bgY, bgW, bgH);
+              }catch(fe){
+                // ctx.filter unsupported or drawImage failed — fill with dark gradient
+                const gCover = ctx.createLinearGradient(0,0,0,imgZoneH);
+                gCover.addColorStop(0,'#1a1208'); gCover.addColorStop(1,'#2d1e0a');
+                ctx.fillStyle=gCover; ctx.fillRect(0,0,cw,imgZoneH);
+              }finally{
+                ctx.restore(); // always clears filter and any other state changes
+              }
+              // Draw full cover artwork on top (letterboxed)
+              ctx.drawImage(imgEl, fx, fy, fw, fh);
+            } else {
+              // Story page: cover-fill (zoom to fill image zone, center-top crop)
+              const scale = Math.max(cw/imgEl.width, imgZoneH/imgEl.height);
+              const dw=imgEl.width*scale, dh=imgEl.height*scale;
+              const dx=(cw-dw)/2, dy=Math.min(0,(imgZoneH-dh)/2);
+              ctx.save(); ctx.beginPath(); ctx.rect(0,0,cw,imgZoneH); ctx.clip();
+              ctx.drawImage(imgEl, dx,dy,dw,dh);
+              ctx.restore();
+            }
+
+            if(hasText){
+              ctx.fillStyle='#fffdf5'; ctx.fillRect(0,imgZoneH,cw,textZoneH);
+              ctx.strokeStyle='#e8e0d0'; ctx.lineWidth=2;
+              ctx.beginPath(); ctx.moveTo(0,imgZoneH); ctx.lineTo(cw,imgZoneH); ctx.stroke();
+              ctx.fillStyle='#bbb';
+              ctx.font=`${Math.round(ch*0.025)}px Arial,sans-serif`;
+              ctx.textAlign='right';
+              ctx.fillText((i+1-coverOffset)+'/'+storyCount, cw-Math.round(cw*0.03), imgZoneH+textZoneH-Math.round(ch*0.018));
+            }
+            resolve();
+          };
+          imgEl.onerror = ()=>{
+            // Draw a warm placeholder so the page isn't blank
+            const cw=oc.width, ch=oc.height;
+            const g=ctx.createLinearGradient(0,0,0,ch);
+            g.addColorStop(0,'#2d4a1e'); g.addColorStop(1,'#1a2e11');
+            ctx.fillStyle=g; ctx.fillRect(0,0,cw,ch);
+            ctx.fillStyle='rgba(255,255,255,.15)';
+            ctx.font=`bold ${Math.round(ch*0.09)}px sans-serif`;
+            ctx.textAlign='center'; ctx.textBaseline='middle';
+            ctx.fillText('🖼️', cw/2, ch*0.42);
+            ctx.font=`${Math.round(ch*0.035)}px sans-serif`;
+            ctx.fillStyle='rgba(255,255,255,.4)';
+            ctx.fillText('Image unavailable', cw/2, ch*0.58);
+            resolve();
+          };
+          imgEl.src = pg.img;
+        });
       } else {
         // Text-only page: warm parchment background with centered story text
         const grd = ctx.createLinearGradient(0, 0, 0, oc.height);
@@ -2615,40 +2689,23 @@ async function initPageFlipFromIllustrated(b, container){
     // Works reliably on all devices, fully supports TTS word-highlight overlay.
     pfInstance = null;
     pfBook.innerHTML = '';
-
-    // pfBook is a flex column: image frame on top, text strip below
-    pfBook.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:0;';
-
-    // Image-only container — no text inside, full illustration visible
     const newContainer = document.createElement('div');
     newContainer.style.cssText =
-      `width:${pageW}px;height:${imgH}px;position:relative;overflow:hidden;`+
-      `border-radius:8px 8px 0 0;`+
+      `width:${pageW}px;height:${pageH}px;position:relative;overflow:hidden;`+
+      `border-radius:8px;`+
+      // Layered shadow: deep drop shadow + right-edge book-spine shadow + warm glow
       `box-shadow:0 8px 40px rgba(0,0,0,.65),0 2px 8px rgba(0,0,0,.4),`+
               `-3px 0 12px rgba(0,0,0,.35),3px 0 20px rgba(0,0,0,.25);`;
     pfBook.appendChild(newContainer);
 
-    // Text strip — sits BELOW the image as a natural part of the page layout
-    const textStrip = document.createElement('div');
-    textStrip.id = 'illTextOverlay';
-    textStrip.style.cssText =
-      `width:${pageW}px;font-size:${Math.max(14, Math.round(pageW * 0.048))}px;`+
-      `background:#fffdf5;border-top:2px solid #e8e0d0;`+
-      `padding:10px 16px 12px;text-align:center;box-sizing:border-box;`+
-      `border-radius:0 0 8px 8px;`+
-      `box-shadow:0 8px 20px rgba(0,0,0,.35),-3px 0 12px rgba(0,0,0,.2),3px 0 12px rgba(0,0,0,.2);`+
-      `display:none;`;
-    pfBook.appendChild(textStrip);
-
     // Layer A = visible page, Layer B = waiting off-screen
-    // object-fit:cover preserves aspect ratio; object-position:top pins the illustration top
     const _imgA = document.createElement('img');
-    _imgA.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:block;user-select:none;object-fit:cover;object-position:top center;';
+    _imgA.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:block;user-select:none;';
     _imgA.src = dataUrls[0];
     newContainer.appendChild(_imgA);
 
     const _imgB = document.createElement('img');
-    _imgB.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:block;user-select:none;object-fit:cover;object-position:top center;transform:translateX(100%);';
+    _imgB.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:block;user-select:none;transform:translateX(100%);';
     newContainer.appendChild(_imgB);
 
     let _useA = true;   // which layer is currently the visible one
@@ -2679,7 +2736,8 @@ async function initPageFlipFromIllustrated(b, container){
       curr.style.transition  = 'none';
       curr.style.opacity     = '0';   // covered by flipper front face
       curr.style.zIndex      = '2';
-      // Text strip is below the image — no need to hide it during the flip animation
+      const _illo = document.getElementById('illTextOverlay');
+      if(_illo) _illo.style.opacity = '0';
 
       // 2. Build the perspective wrapper positioned exactly over newContainer
       //    inside pfWrap (which has overflow:visible and position:relative).
@@ -2692,8 +2750,8 @@ async function initPageFlipFromIllustrated(b, container){
       const perspWrap = document.createElement('div');
       perspWrap.style.cssText =
         `position:absolute;top:${relTop}px;left:${relLeft}px;`+
-        `width:${pageW}px;height:${imgH}px;perspective:2400px;z-index:30;`+
-        `pointer-events:none;border-radius:8px 8px 0 0;`;
+        `width:${pageW}px;height:${pageH}px;perspective:2400px;z-index:30;`+
+        `pointer-events:none;border-radius:8px;`;
       pfWrapEl.appendChild(perspWrap);
 
       // 3. The flipping page element (preserve-3d safe here — no overflow:hidden ancestor)
@@ -2711,7 +2769,7 @@ async function initPageFlipFromIllustrated(b, container){
       frontFace.style.cssText =
         `position:absolute;top:0;left:0;width:100%;height:100%;`+
         `backface-visibility:hidden;-webkit-backface-visibility:hidden;`+
-        `background:url('${dataUrls[currentPage]}') top center/cover no-repeat;`+
+        `background:url('${dataUrls[currentPage]}') 0 0/100% 100% no-repeat;`+
         `border-radius:8px;`+
         // Forward: page lifts at right edge (shadow on right). Backward: shadow on left.
         `box-shadow:${isForward ? 'inset -8px 0 18px rgba(0,0,0,.13)' : 'inset 8px 0 18px rgba(0,0,0,.13)'};`;
@@ -2722,7 +2780,7 @@ async function initPageFlipFromIllustrated(b, container){
         `position:absolute;top:0;left:0;width:100%;height:100%;`+
         `backface-visibility:hidden;-webkit-backface-visibility:hidden;`+
         `transform:rotateY(180deg);`+
-        `background:url('${dataUrls[idx]}') top center/cover no-repeat;`+
+        `background:url('${dataUrls[idx]}') 0 0/100% 100% no-repeat;`+
         `border-radius:8px;`+
         // Forward: newly-revealed page has spine shadow on left. Backward: shadow on right.
         `box-shadow:${isForward ? 'inset 8px 0 18px rgba(0,0,0,.08)' : 'inset -8px 0 18px rgba(0,0,0,.08)'};`;
@@ -2824,11 +2882,22 @@ async function initPageFlipFromIllustrated(b, container){
     // Show "Cover" in indicator if book has a cover page, else page 1 dot
     if(typeof _renderPageDots==='function') _renderPageDots(coverOffset > 0 ? -1 : 0, storyCount);
 
-    // ── Refresh font-size on the text strip (called after resize or page change) ──
+    // ── Position the floating text overlay over the canvas cream strip ─────────
     function _positionIllOverlay(){
+      const pfWrapEl = document.getElementById('pfWrap');
       const illo = document.getElementById('illTextOverlay');
-      if(!illo) return;
-      illo.style.fontSize = Math.max(13, Math.round(pageW * 0.048)) + 'px';
+      if(!illo || !pfWrapEl) return;
+      const wrapH = pfWrapEl.clientHeight || pfWrapEl.offsetHeight || window.innerHeight;
+      const bottomGap = Math.max(0, Math.round((wrapH - pageH) / 2));
+      const textH = Math.round(pageH * 0.26);
+      illo.style.bottom   = bottomGap + 'px';
+      illo.style.width    = pageW + 'px';
+      illo.style.height   = textH + 'px';
+      illo.style.fontSize = Math.max(13, Math.round(pageH * 0.042)) + 'px';
+      illo.style.transition = 'none';
+      // Do NOT force display:block here — _illUpdateOverlay sets display
+      // based on whether the page actually has text, preventing a flash of
+      // an empty overlay on cover pages and image-only pages.
       _illUpdateOverlay(currentPage);
     }
     if(window._illResizeHandler) window.removeEventListener('resize', window._illResizeHandler);
@@ -3580,8 +3649,7 @@ async function _startELAudio(b, text, mySession){
   if(mySession !== _ttsSessionId){ if(pb) pb.textContent='▶'; return true; }
 
   if(!result){
-    // Key expired or quota exhausted — prompt user to update their key
-    showToast('🎙️ Human voice unavailable — tap Settings → Human Voice to update your key');
+    showToast('⚠️ ElevenLabs unavailable — using browser voice');
     if(pb) pb.textContent='▶';
     return false; // fall through to Web Speech
   }
@@ -3947,13 +4015,21 @@ function _illUpdateOverlay(pageIndex){
   const displayLang = readerDisplayLang==='local' ? activeLang : 'English';
   const text = _getPageText(pg, displayLang);
   if(text){
-    // Plain text — always visible as-is. TTS wraps words in spans at audio start.
-    overlay.textContent = text;
+    // Pre-wrap every word in a .tts-word span at render time — NOT at audio start.
+    // This means the DOM is stable: audio start/stop only toggle .lit, zero re-paint.
+    let _hw='', _hoff=0;
+    text.split(/(\s+)/).forEach(tok=>{
+      if(/^\s+$/.test(tok)){_hw+=tok;_hoff+=tok.length;}
+      else{_hw+=`<span class="tts-word" data-start="${_hoff}">${tok}</span>`;_hoff+=tok.length;}
+    });
+    overlay.innerHTML = _hw;
     overlay.style.display = 'block';
     overlay.style.opacity = '1';
+    overlay.style.transition = 'none';
     const _oEth = ['Amharic','Tigrinya'].includes(displayLang);
-    overlay.style.fontFamily = _oEth ? "'Noto Sans Ethiopic',serif" : "'Nunito',Georgia,sans-serif";
-    // Auto-scale font size so long passages fit in the strip without clipping.
+    overlay.style.fontFamily = _oEth ? "'Noto Sans Ethiopic',serif" : "'Nunito',Georgia,serif";
+    // Auto-scale font size so long passages always fit in the strip without clipping.
+    // Base: pageH * 0.042 (set by _positionIllOverlay). Scale down for text > 70 chars.
     const _basePx = parseFloat(overlay.style.fontSize) || Math.max(13, Math.round(window.innerHeight * 0.042));
     const _scaled = text.length > 70
       ? Math.max(12, Math.round(_basePx * Math.sqrt(65 / text.length)))
@@ -3961,7 +4037,7 @@ function _illUpdateOverlay(pageIndex){
     overlay.style.fontSize = _scaled + 'px';
   } else {
     overlay.style.display = 'none';
-    overlay.textContent = '';
+    overlay.innerHTML = '';
   }
 }
 
@@ -4008,15 +4084,8 @@ function _wrapTextForHighlight(fullText, book){
   if(!book.pdf_url && hasImages){
     const overlay = document.getElementById('illTextOverlay');
     if(!overlay) return;
-    // Wrap plain textContent in .tts-word spans now (at audio start, not at render time).
-    const currentText = overlay.textContent;
-    if(!currentText.trim()){ _ttsWordSpans=[]; _ttsWordIdx=0; return; }
-    let html='', offset=0;
-    currentText.split(/(\s+)/).forEach(tok=>{
-      if(/^\s+$/.test(tok)){html+=tok;offset+=tok.length;}
-      else{html+=`<span class="tts-word" data-start="${offset}">${tok}</span>`;offset+=tok.length;}
-    });
-    overlay.innerHTML = html;
+    // Spans are already in the DOM — pre-wrapped by _illUpdateOverlay at page render.
+    // Zero DOM mutation here. Just collect the spans; the highlight engine does the rest.
     _ttsWordSpans = Array.from(overlay.querySelectorAll('.tts-word'));
     _ttsWordIdx = 0;
     return;
@@ -4064,10 +4133,7 @@ function _clearHighlights(){
       el.normalize();
     });
   }
-  // Illustrated books: restore plain text (remove the spans that were inserted at TTS start).
-  if(_cbHasImg){
-    _illUpdateOverlay(currentPage);
-  }
+  // DO NOT call _illUpdateOverlay here — spans already live in the overlay, ready for the next play.
 }
 
 // ═══════════════════════════════════
