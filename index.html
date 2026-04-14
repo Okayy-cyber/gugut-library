@@ -283,20 +283,18 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 #pdfTextOverlay{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;
   display:flex;flex-wrap:wrap;align-content:flex-start;padding:12px;gap:0;z-index:3;
   font-family:'Nunito',sans-serif;font-size:16px;color:transparent;}
-/* Illustrated book text — sits INSIDE the image at the bottom, gradient-fade background.
-   Looks like text is printed on the page. Always visible; words highlight during TTS. */
+/* Illustrated book text strip — anchored at bottom of the book canvas.
+   Solid cream background. Always visible. Words highlight during TTS. */
 #illTextOverlay{
   position:absolute;bottom:0;left:0;right:0;
-  background:linear-gradient(transparent,rgba(255,252,238,.97) 30%);
-  padding:44px 14px 14px;
-  font-family:Georgia,'Times New Roman',serif;font-weight:400;
-  line-height:1.55;color:#1a1a1a;text-align:center;
-  display:none;box-sizing:border-box;
-  border-radius:0 0 8px 8px;
-  pointer-events:none;}
-/* TTS word spans — inline, no colour change, highlight only */
-#illTextOverlay .tts-word{display:inline;padding:1px 3px;border-radius:3px;transition:background .1s;}
-#illTextOverlay .tts-word.lit{background:rgba(245,192,32,.65);color:#142B1A;font-weight:700;}
+  background:#fffdf5;
+  border-top:2px solid #ddd5c5;
+  padding:10px 16px 12px;font-family:'Nunito',Georgia,sans-serif;
+  font-size:16px;font-weight:700;
+  line-height:1.55;color:#1a1208;text-align:center;pointer-events:none;
+  z-index:20;display:none;box-sizing:border-box;overflow:hidden;
+  box-shadow:0 -4px 16px rgba(0,0,0,.08);
+  border-radius:0 0 8px 8px;}
 /* tts-word spans are always pre-wrapped at page render — no DOM mutation on audio start */
 .tts-word{display:inline;border-radius:3px;transition:background .13s ease,box-shadow .13s ease;}
 /* Karaoke highlight: background + glow only — no scale, no weight, no color change = zero layout shift */
@@ -2822,9 +2820,13 @@ async function initPageFlipFromIllustrated(b, container){
     // Show "Cover" in indicator if book has a cover page, else page 1 dot
     if(typeof _renderPageDots==='function') _renderPageDots(coverOffset > 0 ? -1 : 0, storyCount);
 
-    // ── Update text strip content (strip is in normal DOM flow below image) ─────
+    // ── Set text strip height and font-size to match the book page dimensions ────
     function _positionIllOverlay(){
-      // No positioning math needed — strip is a flex child below newContainer.
+      const illo = document.getElementById('illTextOverlay');
+      if(!illo) return;
+      const textH = Math.round(pageH * 0.26);
+      illo.style.height   = textH + 'px';
+      illo.style.fontSize = Math.max(13, Math.round(pageH * 0.042)) + 'px';
       _illUpdateOverlay(currentPage);
     }
     if(window._illResizeHandler) window.removeEventListener('resize', window._illResizeHandler);
