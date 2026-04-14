@@ -283,17 +283,14 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 #pdfTextOverlay{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;
   display:flex;flex-wrap:wrap;align-content:flex-start;padding:12px;gap:0;z-index:3;
   font-family:'Nunito',sans-serif;font-size:16px;color:transparent;}
-/* Illustrated book text strip — anchored at bottom of the book canvas.
-   Solid cream background. Always visible. Words highlight during TTS. */
+/* Illustrated book text strip — sits BELOW the image frame, never on top of it.
+   Styled as the natural bottom section of a book page. Width set by JS to match page. */
 #illTextOverlay{
-  position:absolute;bottom:0;left:0;right:0;
-  background:#fffdf5;
-  border-top:2px solid #ddd5c5;
+  background:#fffdf5;border-top:2px solid #ddd5c5;
   padding:10px 16px 12px;font-family:'Nunito',Georgia,sans-serif;
-  font-size:16px;font-weight:700;
-  line-height:1.55;color:#1a1208;text-align:center;pointer-events:none;
-  z-index:20;display:none;box-sizing:border-box;overflow:hidden;
-  box-shadow:0 -4px 16px rgba(0,0,0,.08);
+  font-size:16px;font-weight:600;
+  line-height:1.6;color:#1a1208;text-align:center;
+  display:none;box-sizing:border-box;
   border-radius:0 0 8px 8px;}
 /* tts-word spans are always pre-wrapped at page render — no DOM mutation on audio start */
 .tts-word{display:inline;border-radius:3px;transition:background .13s ease,box-shadow .13s ease;}
@@ -2619,19 +2616,29 @@ async function initPageFlipFromIllustrated(b, container){
     pfInstance = null;
     pfBook.innerHTML = '';
 
-    // Single container: image fills it, text overlay sits at the bottom inside
+    // pfBook is a flex column: image frame on top, text strip below
+    pfBook.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:0;';
+
+    // Image-only container — no text inside, full illustration visible
     const newContainer = document.createElement('div');
     newContainer.style.cssText =
       `width:${pageW}px;height:${imgH}px;position:relative;overflow:hidden;`+
-      `border-radius:8px;`+
+      `border-radius:8px 8px 0 0;`+
       `box-shadow:0 8px 40px rgba(0,0,0,.65),0 2px 8px rgba(0,0,0,.4),`+
               `-3px 0 12px rgba(0,0,0,.35),3px 0 20px rgba(0,0,0,.25);`;
     pfBook.appendChild(newContainer);
 
-    // Text overlay — will be appended AFTER images so it's on top in z-order
+    // Text strip — sits BELOW the image as a natural part of the page layout
     const textStrip = document.createElement('div');
     textStrip.id = 'illTextOverlay';
-    textStrip.style.cssText = `font-size:${Math.max(14, Math.round(pageW * 0.048))}px;z-index:5;`;
+    textStrip.style.cssText =
+      `width:${pageW}px;font-size:${Math.max(14, Math.round(pageW * 0.048))}px;`+
+      `background:#fffdf5;border-top:2px solid #e8e0d0;`+
+      `padding:10px 16px 12px;text-align:center;box-sizing:border-box;`+
+      `border-radius:0 0 8px 8px;`+
+      `box-shadow:0 8px 20px rgba(0,0,0,.35),-3px 0 12px rgba(0,0,0,.2),3px 0 12px rgba(0,0,0,.2);`+
+      `display:none;`;
+    pfBook.appendChild(textStrip);
 
     // Layer A = visible page, Layer B = waiting off-screen
     // object-fit:cover preserves aspect ratio; object-position:top pins the illustration top
@@ -2643,8 +2650,6 @@ async function initPageFlipFromIllustrated(b, container){
     const _imgB = document.createElement('img');
     _imgB.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:block;user-select:none;object-fit:cover;object-position:top center;transform:translateX(100%);';
     newContainer.appendChild(_imgB);
-    // Append text overlay last — sits on top of both image layers
-    newContainer.appendChild(textStrip);
 
     let _useA = true;   // which layer is currently the visible one
     let _busy  = false; // prevent overlapping animations
@@ -2674,8 +2679,7 @@ async function initPageFlipFromIllustrated(b, container){
       curr.style.transition  = 'none';
       curr.style.opacity     = '0';   // covered by flipper front face
       curr.style.zIndex      = '2';
-      const _illo = document.getElementById('illTextOverlay');
-      if(_illo) _illo.style.opacity = '0';
+      // Text strip is below the image — no need to hide it during the flip animation
 
       // 2. Build the perspective wrapper positioned exactly over newContainer
       //    inside pfWrap (which has overflow:visible and position:relative).
@@ -2820,13 +2824,11 @@ async function initPageFlipFromIllustrated(b, container){
     // Show "Cover" in indicator if book has a cover page, else page 1 dot
     if(typeof _renderPageDots==='function') _renderPageDots(coverOffset > 0 ? -1 : 0, storyCount);
 
-    // ── Set text strip height and font-size to match the book page dimensions ────
+    // ── Refresh font-size on the text strip (called after resize or page change) ──
     function _positionIllOverlay(){
       const illo = document.getElementById('illTextOverlay');
       if(!illo) return;
-      const textH = Math.round(pageH * 0.26);
-      illo.style.height   = textH + 'px';
-      illo.style.fontSize = Math.max(13, Math.round(pageH * 0.042)) + 'px';
+      illo.style.fontSize = Math.max(13, Math.round(pageW * 0.048)) + 'px';
       _illUpdateOverlay(currentPage);
     }
     if(window._illResizeHandler) window.removeEventListener('resize', window._illResizeHandler);
