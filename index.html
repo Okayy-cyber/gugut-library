@@ -283,19 +283,20 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 #pdfTextOverlay{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;
   display:flex;flex-wrap:wrap;align-content:flex-start;padding:12px;gap:0;z-index:3;
   font-family:'Nunito',sans-serif;font-size:16px;color:transparent;}
-/* Illustrated book text strip — sits BELOW the image, never overlaid on it.
-   Always visible as plain text; words get amber highlight during TTS. */
+/* Illustrated book text — sits INSIDE the image at the bottom, gradient-fade background.
+   Looks like text is printed on the page. Always visible; words highlight during TTS. */
 #illTextOverlay{
-  background:#ffffff;border-top:2px solid #e8e0d0;
-  padding:10px 18px 14px;font-family:'Nunito',Georgia,sans-serif;font-weight:700;
-  line-height:1.5;color:#1a1a1a;text-align:center;
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(transparent,rgba(255,252,238,.97) 30%);
+  padding:44px 14px 14px;
+  font-family:Georgia,'Times New Roman',serif;font-weight:400;
+  line-height:1.55;color:#1a1a1a;text-align:center;
   display:none;box-sizing:border-box;
   border-radius:0 0 8px 8px;
-  box-shadow:0 8px 32px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.35),
-             -3px 0 12px rgba(0,0,0,.2),3px 0 16px rgba(0,0,0,.15);}
-/* TTS word spans in the illustrated strip — inline so spaces render naturally between words */
-#illTextOverlay .tts-word{display:inline;color:inherit;padding:1px 2px;border-radius:3px;transition:background .1s;}
-#illTextOverlay .tts-word.lit{background:rgba(245,192,32,.6);color:var(--green-dark);font-weight:900;}
+  pointer-events:none;}
+/* TTS word spans — inline, no colour change, highlight only */
+#illTextOverlay .tts-word{display:inline;padding:1px 3px;border-radius:3px;transition:background .1s;}
+#illTextOverlay .tts-word.lit{background:rgba(245,192,32,.65);color:#142B1A;font-weight:700;}
 /* tts-word spans are always pre-wrapped at page render — no DOM mutation on audio start */
 .tts-word{display:inline;border-radius:3px;transition:background .13s ease,box-shadow .13s ease;}
 /* Karaoke highlight: background + glow only — no scale, no weight, no color change = zero layout shift */
@@ -2539,9 +2540,9 @@ async function initPageFlipFromIllustrated(b, container){
       pageH = Math.max(300, availH - 16);
       pageW = Math.max(200, Math.round(pageH / 1.45));
     }
-    // Split into image zone (top) + text strip (bottom below the image, never overlaid)
-    const imgH = Math.round(pageH * 0.74);   // image portion
-    const txtH = pageH - imgH;               // text strip portion below image
+    // Image takes the full page height; text overlays the bottom inside the image
+    const imgH = pageH;
+    const txtH = Math.round(pageH * 0.28);   // height reserved inside image for text gradient
 
     const _canvasDisplayLang = readerDisplayLang==='local' ? activeLang : 'English';
 
@@ -2620,27 +2621,19 @@ async function initPageFlipFromIllustrated(b, container){
     pfInstance = null;
     pfBook.innerHTML = '';
 
-    // ── Wrapper: image container on top, text strip below ───────────────────────
-    const bookWrapper = document.createElement('div');
-    bookWrapper.style.cssText = `display:flex;flex-direction:column;align-items:center;width:${pageW}px;`;
-    pfBook.appendChild(bookWrapper);
-
-    // Image zone — no text drawn here, image kept at natural proportions
+    // Single container: image fills it, text overlay sits at the bottom inside
     const newContainer = document.createElement('div');
     newContainer.style.cssText =
       `width:${pageW}px;height:${imgH}px;position:relative;overflow:hidden;`+
-      `border-radius:8px 8px 0 0;`+
+      `border-radius:8px;`+
       `box-shadow:0 8px 40px rgba(0,0,0,.65),0 2px 8px rgba(0,0,0,.4),`+
               `-3px 0 12px rgba(0,0,0,.35),3px 0 20px rgba(0,0,0,.25);`;
-    bookWrapper.appendChild(newContainer);
+    pfBook.appendChild(newContainer);
 
-    // Text strip — plain HTML below the image, always visible, highlighted during TTS
+    // Text overlay — will be appended AFTER images so it's on top in z-order
     const textStrip = document.createElement('div');
     textStrip.id = 'illTextOverlay';
-    textStrip.style.cssText =
-      `width:${pageW}px;min-height:${txtH}px;`+
-      `font-size:${Math.max(14, Math.round(pageW * 0.052))}px;`;
-    bookWrapper.appendChild(textStrip);
+    textStrip.style.cssText = `font-size:${Math.max(14, Math.round(pageW * 0.048))}px;z-index:5;`;
 
     // Layer A = visible page, Layer B = waiting off-screen
     // object-fit:cover preserves aspect ratio; object-position:top pins the illustration top
@@ -2652,6 +2645,8 @@ async function initPageFlipFromIllustrated(b, container){
     const _imgB = document.createElement('img');
     _imgB.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:block;user-select:none;object-fit:cover;object-position:top center;transform:translateX(100%);';
     newContainer.appendChild(_imgB);
+    // Append text overlay last — sits on top of both image layers
+    newContainer.appendChild(textStrip);
 
     let _useA = true;   // which layer is currently the visible one
     let _busy  = false; // prevent overlapping animations
