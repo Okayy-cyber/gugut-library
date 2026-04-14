@@ -283,51 +283,26 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 #pdfTextOverlay{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;
   display:flex;flex-wrap:wrap;align-content:flex-start;padding:12px;gap:0;z-index:3;
   font-family:'Nunito',sans-serif;font-size:16px;color:transparent;}
-/* Illustrated book text overlay — sits EXACTLY over the canvas text zone.
-   opacity:0 at rest (canvas text shows through); opacity:1 during TTS so
-   word spans can be highlighted — looks like the canvas text is lighting up. */
+/* Illustrated book text strip — sits BELOW the image, never overlaid on it.
+   Always visible as plain text; words get amber highlight during TTS. */
 #illTextOverlay{
-  position:absolute;top:0;left:0;
-  width:300px;height:78px;          /* overridden by _positionIllOverlay() */
-  background:transparent;           /* canvas text always shows through */
-  font-family:Georgia,'Noto Sans Ethiopic',serif;
-  font-weight:400;
-  font-size:16px;                   /* overridden by _positionIllOverlay() */
-  line-height:1.55;
-  color:transparent;                /* overlay text invisible — only .lit amber box shows */
-  text-align:center;
-  pointer-events:none;z-index:20;
-  display:none;                     /* JS sets display:block on pages with text */
-  box-sizing:border-box;overflow:hidden;
-  padding:0 6%;                     /* 6% each side → 88% inner width, matches canvas wrapCanvasText maxW */
-}
-/* tts-word spans — used in #illTextStrip (portrait reader) */
-.tts-word{display:inline;border-radius:3px;transition:background .13s ease;color:inherit;}
-.tts-word.lit{background:rgba(245,192,32,.62);border-radius:3px;box-shadow:0 0 0 2px rgba(245,192,32,.38);}
-
-/* ── Portrait illustrated book reader ── */
-/* Portrait illustrated reader — image fills the whole frame; text strip
-   overlays the bottom as a gradient panel (like a real children's book page). */
-#illReader{display:none;position:relative;flex:1;min-height:0;width:100%;overflow:hidden;background:#111;}
-#illImgZone{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer;}
-#illPageImg{max-width:100%;max-height:100%;object-fit:contain;display:block;user-select:none;-webkit-user-drag:none;}
-/* Text strip overlays the bottom of the image with a fading gradient panel */
-#illTextStrip{
-  position:absolute;bottom:0;left:0;right:0;
-  background:linear-gradient(to bottom,transparent 0%,rgba(255,253,240,.82) 28%,rgba(255,253,240,.97) 52%,#fffdf0 100%);
-  padding:36px 22px 18px;
-  text-align:center;font-family:Georgia,serif;font-size:clamp(14px,3.8vw,20px);
-  font-weight:700;color:#1a1a1a;line-height:1.65;
-  box-sizing:border-box;min-height:90px;
-  display:flex;align-items:flex-end;justify-content:center;flex-wrap:wrap;gap:0;
-  pointer-events:none;}
-#illTextStrip .tts-word{display:inline;color:inherit;border-radius:3px;transition:background .13s ease;padding:1px 2px;margin:0 1px;}
-#illTextStrip .tts-word.lit{background:rgba(245,192,32,.75);color:var(--green-dark);font-weight:800;border-radius:4px;box-shadow:0 0 0 2px rgba(245,192,32,.4);}
-/* Slide-in animation on page turn */
-@keyframes illPageIn{from{opacity:.15;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
-@keyframes illPageInPrev{from{opacity:.15;transform:translateX(-28px)}to{opacity:1;transform:translateX(0)}}
-#illPageImg.page-in{animation:illPageIn .22s ease-out;}
-#illPageImg.page-in-prev{animation:illPageInPrev .22s ease-out;}
+  background:#ffffff;border-top:2px solid #e8e0d0;
+  padding:10px 18px 14px;font-family:'Nunito',Georgia,sans-serif;font-weight:700;
+  line-height:1.5;color:#1a1a1a;text-align:center;
+  display:none;box-sizing:border-box;
+  border-radius:0 0 8px 8px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5),0 2px 8px rgba(0,0,0,.35),
+             -3px 0 12px rgba(0,0,0,.2),3px 0 16px rgba(0,0,0,.15);}
+/* TTS word spans in the illustrated strip — inline so spaces render naturally between words */
+#illTextOverlay .tts-word{display:inline;color:inherit;padding:1px 2px;border-radius:3px;transition:background .1s;}
+#illTextOverlay .tts-word.lit{background:rgba(245,192,32,.6);color:var(--green-dark);font-weight:900;}
+/* tts-word spans are always pre-wrapped at page render — no DOM mutation on audio start */
+.tts-word{display:inline;border-radius:3px;transition:background .13s ease,box-shadow .13s ease;}
+/* Karaoke highlight: background + glow only — no scale, no weight, no color change = zero layout shift */
+.tts-word.lit{
+  background:rgba(245,192,32,.38);
+  box-shadow:0 0 0 2px rgba(245,192,32,.32),0 2px 8px rgba(245,192,32,.22);
+  border-radius:3px;}
 
 
 /* StPageFlip book container */
@@ -863,7 +838,7 @@ body.night .africa-map-wrap{box-shadow:0 6px 28px rgba(0,0,0,.5),0 1px 0 rgba(25
 <!-- ⚠️ File:// protocol — auto-redirect to localhost -->
 <div id="fileBanner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#e65100;color:#fff;padding:14px 20px;font-family:Nunito,sans-serif;font-size:14px;font-weight:700;text-align:center;box-shadow:0 3px 12px rgba(0,0,0,.3);">
   ⚠️ Books can't load from here. &nbsp;
-  <button onclick="location.href='http://localhost:8765/gugut-library-v3.html'" style="background:#fff;color:#e65100;border:none;padding:6px 16px;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px;">▶ Open with Launcher</button>
+  <button onclick="location.href='http://localhost:8765/gugut-deploy/index.html'" style="background:#fff;color:#e65100;border:none;padding:6px 16px;border-radius:8px;cursor:pointer;font-weight:800;font-size:14px;">▶ Open with Launcher</button>
   &nbsp;&nbsp;
   <span style="font-size:12px;opacity:0.85">or double-click <em>Start Gugut Library.command</em> first</span>
 </div>
@@ -874,12 +849,12 @@ if(location.protocol === 'file:') {
   // Pad the sticky topbar down so it doesn't hide under the banner
   document.querySelector('.topbar').style.top = '52px';
   // Auto-redirect if the local server is running
-  fetch('http://localhost:8765/gugut-library-v3.html', {method:'HEAD', mode:'no-cors'})
+  fetch('http://localhost:8765/gugut-deploy/index.html', {method:'HEAD', mode:'no-cors'})
     .then(() => {
-      fb.innerHTML = '✅ Local server found — redirecting… <small style="opacity:.75">(or click: <a href="http://localhost:8765/gugut-library-v3.html" style="color:#fff">open</a>)</small>';
-      setTimeout(() => { location.href = 'http://localhost:8765/gugut-library-v3.html'; }, 1500);
+      fb.innerHTML = '✅ Local server found — redirecting… <small style="opacity:.75">(or click: <a href="http://localhost:8765/gugut-deploy/index.html" style="color:#fff">open</a>)</small>';
+      setTimeout(() => { location.href = 'http://localhost:8765/gugut-deploy/index.html'; }, 1500);
     }).catch(() => {
-      fb.innerHTML = '⚠️ <strong>Books can\'t load from here.</strong> &nbsp; <button onclick="location.href=\'http://localhost:8765/gugut-library-v3.html\'" style="background:#fff;color:#e65100;border:none;padding:5px 14px;border-radius:8px;cursor:pointer;font-weight:800;font-size:13px;">▶ Open with Launcher</button> &nbsp; <small style="opacity:.8">or run <em>Start Gugut Library.command</em> first</small>';
+      fb.innerHTML = '⚠️ <strong>Books can\'t load from here.</strong> &nbsp; <button onclick="location.href=\'http://localhost:8765/gugut-deploy/index.html\'" style="background:#fff;color:#e65100;border:none;padding:5px 14px;border-radius:8px;cursor:pointer;font-weight:800;font-size:13px;">▶ Open with Launcher</button> &nbsp; <small style="opacity:.8">or run <em>Start Gugut Library.command</em> first</small>';
     });
 }
 </script>
@@ -1288,8 +1263,6 @@ if(location.protocol === 'file:') {
     <!-- StPageFlip book reader (shown for non-PDF books) -->
     <div id="pfWrap" style="position:relative;">
       <div id="pfBook"></div>
-      <!-- TTS word-highlight overlay for illustrated (canvas) books -->
-      <div id="illTextOverlay"></div>
       <!-- Reading mode picker — shown once per book session -->
       <div id="readModePicker">
         <div class="rmp-title">How would you like to read?</div>
@@ -1313,13 +1286,6 @@ if(location.protocol === 'file:') {
       <div class="reader-tap-zone" id="tapNext" onclick="document.getElementById('nextBtn').click()" aria-label="Next page" title="Next page (→ key)">
         <span class="tap-arrow">›</span>
       </div>
-    </div>
-    <!-- Portrait illustrated book reader (single page: image + text strip) -->
-    <div id="illReader">
-      <div id="illImgZone">
-        <img id="illPageImg" alt="" draggable="false" />
-      </div>
-      <div id="illTextStrip"></div>
     </div>
     <!-- Legacy spread (hidden — kept for DOM references) -->
     <div class="book-flip-wrap" style="display:none;">
@@ -1364,13 +1330,46 @@ if(location.protocol === 'file:') {
   <!-- Book completion celebration -->
   <div id="completionCelebration" role="dialog" aria-modal="true" aria-label="Book complete!">
     <div class="confetti-wrap" id="confettiWrap"></div>
-    <div class="celeb-emo" id="celebOwlWrap" style="font-size:0;line-height:0;margin-bottom:4px;"></div>
-    <div class="celeb-title">You finished the book!</div>
-    <div class="celeb-sub" id="celebBookName"></div>
-    <div id="celebNextBook"></div>
-    <div class="celeb-actions">
-      <button class="celeb-btn primary" onclick="_celebReadAgain()">📖 Read Again</button>
-      <button class="celeb-btn secondary" onclick="_celebBackToLibrary()">🏠 Back to Library</button>
+
+    <!-- PHASE 1: Celebration screen -->
+    <div id="celebPhase1">
+      <div class="celeb-emo" id="celebOwlWrap" style="font-size:0;line-height:0;margin-bottom:4px;"></div>
+      <div class="celeb-title">You finished the book!</div>
+      <div class="celeb-sub" id="celebBookName"></div>
+      <div id="celebNextBook"></div>
+      <!-- Quiz CTA — shown only when book has quiz data -->
+      <div id="celebQuizBtn" style="display:none;margin:14px 0 6px;width:100%;max-width:320px;">
+        <button style="background:var(--amber);color:var(--green-dark);font-size:18px;font-weight:800;padding:16px 28px;border-radius:18px;width:100%;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(245,192,32,0.4);" onclick="_celebStartQuiz()">🧠 Answer Questions!</button>
+      </div>
+      <div class="celeb-actions">
+        <button class="celeb-btn primary" onclick="_celebReadAgain()">📖 Read Again</button>
+        <button class="celeb-btn secondary" onclick="_celebBackToLibrary()">🏠 Back to Library</button>
+      </div>
+    </div>
+
+    <!-- PHASE 2: Inline quiz — same overlay, no navigation -->
+    <div id="celebPhase2" style="display:none;width:100%;max-width:380px;text-align:left;">
+      <div style="text-align:center;margin-bottom:14px;">
+        <div id="cqOwlWrap" style="display:flex;justify-content:center;margin-bottom:6px;"></div>
+        <div id="cqBookEmo" style="font-size:32px;line-height:1;margin-bottom:4px;"></div>
+        <div id="cqProgress" style="font-size:13px;color:rgba(255,255,255,0.65);font-weight:600;letter-spacing:.3px;"></div>
+      </div>
+      <div id="cqQuestion" style="font-size:18px;font-weight:700;color:#fff;margin-bottom:18px;text-align:center;line-height:1.4;"></div>
+      <div id="cqOptions" style="display:flex;flex-direction:column;gap:10px;"></div>
+      <div id="cqResult" style="display:none;text-align:center;padding:14px 0 4px;">
+        <div id="cqResultEmo" style="font-size:32px;line-height:1;margin-bottom:4px;"></div>
+        <div id="cqResultMsg" style="color:#fff;font-weight:700;font-size:15px;margin-bottom:12px;"></div>
+        <button id="cqNextBtn" onclick="_cqNext()" style="background:var(--amber);color:var(--green-dark);border:none;border-radius:20px;padding:11px 28px;font-weight:800;font-size:15px;cursor:pointer;">Next →</button>
+      </div>
+    </div>
+
+    <!-- PHASE 3: Score screen -->
+    <div id="celebPhase3" style="display:none;text-align:center;width:100%;max-width:340px;">
+      <div id="cqScoreOwlWrap" style="display:flex;justify-content:center;margin-bottom:4px;"></div>
+      <div id="cqScoreEmo" style="display:none;"></div>
+      <div id="cqScoreMsg" style="font-size:22px;font-weight:800;color:#fff;margin-bottom:6px;"></div>
+      <div id="cqScoreSub" style="font-size:14px;color:rgba(255,255,255,0.7);margin-bottom:24px;line-height:1.5;"></div>
+      <div id="cqScoreActions" style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;"></div>
     </div>
   </div>
 </div>
@@ -1543,7 +1542,7 @@ if(location.protocol === 'file:') {
 // DATA
 // ═══════════════════════════════════
 const books = [
-{id:9,title:"The King's Secret",local:"የንጉሱ ምስጢር",lang:"Amharic",age:"6-9",cc:"c2",emo:"👑",desc:"A king hides a funny secret under his crown — but secrets have a way of getting out.",status:"published",reads:0,
+  {id:9,title:"The King's Secret",local:"የንጉሱ ምስጢር",lang:"Amharic",age:"6-9",cc:"c2",emo:"👑",desc:"A king hides a funny secret under his crown — but secrets have a way of getting out.",status:"published",reads:0,
     cover:"pages/kings-secret/cover.jpg",
     pages:[
       {img:"pages/kings-secret/cover.jpg",text:"",local:"",isCover:true},
@@ -1569,21 +1568,386 @@ const books = [
       {img:"pages/kings-secret/page20.jpg",text:"Mamo never forgot that secrets buried in the earth may still rise again, especially when the wind decides to sing.",local:""}
     ],
     quiz:[{q:"What did the king have that was unusual?",opts:["A small nose 👃","Long ears like an ox 🫏","Green eyes 👁️","Tiny feet 🦶"],a:1},{q:"How did the king hide his secret?",opts:["With a scarf 🧣","Under water 💧","With a big crown 👑","In a cave 🏔️"],a:2},{q:"What grew from the spot where Mamo whispered?",opts:["A tree 🌳","Flowers 🌸","Tall green reeds 🌿","A mushroom 🍄"],a:2},{q:"What did the flute sing when the shepherd boy played it?",opts:["A lullaby 🎵","A war song ⚔️","The king's secret 🤫","Nothing at all 🤐"],a:2}]},
-{id:27,title:"Hana Washes Her Hands",lang:"en",age:"3-6",country:"Ethiopia",tags:["habits","health"],desc:"Hana learns the importance of washing her hands before meals.",cover:"pages/hana-washes-her-hands/cover.jpg",pages:[{img:"pages/hana-washes-her-hands/cover.jpg",text:"",isCover:true},{img:"pages/hana-washes-her-hands/page01.jpg",text:"Hana plays quietly in the compound in the soft morning light.",local:""},{img:"pages/hana-washes-her-hands/page02.jpg",text:"She keeps playing until her little hands grow dusty.",local:""},{img:"pages/hana-washes-her-hands/page03.jpg",text:"Soon Hana notices that mealtime is near.",local:""},{img:"pages/hana-washes-her-hands/page04.jpg",text:"She looks toward the washing place and knows what to do.",local:""},{img:"pages/hana-washes-her-hands/page05.jpg",text:"Hana walks calmly toward the sink and faucet.",local:""},{img:"pages/hana-washes-her-hands/page06.jpg",text:"At the washing area, the soap and towel wait nearby.",local:""},{img:"pages/hana-washes-her-hands/page07.jpg",text:"Hana reaches for the faucet with careful hands.",local:""},{img:"pages/hana-washes-her-hands/page08.jpg",text:"Cool water begins to run, and Hana wets her hands.",local:""},{img:"pages/hana-washes-her-hands/page09.jpg",text:"She takes the soap and holds it with focus.",local:""},{img:"pages/hana-washes-her-hands/page10.jpg",text:"Hana rubs the soap on her hands and smiles at the bubbles.",local:""},{img:"pages/hana-washes-her-hands/page11.jpg",text:"She scrubs her palms carefully, one against the other.",local:""},{img:"pages/hana-washes-her-hands/page12.jpg",text:"Then Hana cleans the backs of her hands.",local:""},{img:"pages/hana-washes-her-hands/page13.jpg",text:"She rubs between her fingers, slowly and well.",local:""},{img:"pages/hana-washes-her-hands/page14.jpg",text:"Hana cleans her thumbs and fingertips step by step.",local:""},{img:"pages/hana-washes-her-hands/page15.jpg",text:"She rinses her hands under the clean running water.",local:""},{img:"pages/hana-washes-her-hands/page16.jpg",text:"Hana keeps rinsing until the soap is all gone.",local:""},{img:"pages/hana-washes-her-hands/page17.jpg",text:"She turns off the faucet and reaches for the towel.",local:""},{img:"pages/hana-washes-her-hands/page18.jpg",text:"Hana dries her hands neatly, first one, then the other.",local:""},{img:"pages/hana-washes-her-hands/page19.jpg",text:"She looks at her clean hands with quiet satisfaction.",local:""},{img:"pages/hana-washes-her-hands/page20.jpg",text:"At mealtime, Hana sits proudly. She washed her hands all by herself.",local:""}],quiz:[]},
-{id:28,title:"The Lion and the Hare",lang:"en",age:"6-12",country:"Ethiopia",tags:["fable","courage"],desc:"A clever hare outsmarts a proud lion using wit and wisdom.",cover:"pages/lion-and-the-hare/cover.jpg",pages:[{img:"pages/lion-and-the-hare/cover.jpg",text:"",isCover:true},{img:"pages/lion-and-the-hare/page01.jpg",text:"For many seasons a fierce lion ruled the forest by terror, forcing the animals to send him one victim each day so he would not hunt them all.",local:""},{img:"pages/lion-and-the-hare/page02.jpg",text:"Every morning fear moved through the trees before the sun fully rose, because no family knew whose turn would come next.",local:""},{img:"pages/lion-and-the-hare/page03.jpg",text:"When the lot fell to Fikir the hare, the larger animals wept for her, believing such a small creature had no chance at all.",local:""},{img:"pages/lion-and-the-hare/page04.jpg",text:"Fikir’s legs shook, but on her slow walk through the scrub she kept looking, listening, and thinking instead of giving her fear the last word.",local:""},{img:"pages/lion-and-the-hare/page05.jpg",text:"She noticed how deep wells kept both reflections and echoes, and by the time the sun climbed higher a plan had begun to form.",local:""},{img:"pages/lion-and-the-hare/page06.jpg",text:"So she arrived very late to the lion’s den, dusty and breathing hard while the hungry ruler lashed his tail against the ground.",local:""},{img:"pages/lion-and-the-hare/page07.jpg",text:"The lion roared so loudly that birds burst from the branches and demanded to know why his meal had dared to delay him.",local:""},{img:"pages/lion-and-the-hare/page08.jpg",text:"Bowing low, Fikir said another lion had stopped her on the path and claimed to be the true king of the forest.",local:""},{img:"pages/lion-and-the-hare/page09.jpg",text:"Pride ignited in the lion faster than hunger, and he demanded to be taken at once to this insolent rival.",local:""},{img:"pages/lion-and-the-hare/page10.jpg",text:"Fikir led him away from the den across hot stones and thorn-shadowed paths, making sure his anger stayed hotter than his caution.",local:""},{img:"pages/lion-and-the-hare/page11.jpg",text:"At last they reached a deep well ringed with old stone, its water so clear and dark that it held the sky like polished metal.",local:""},{img:"pages/lion-and-the-hare/page12.jpg",text:"Fikir peered over the rim and whispered that the rival lion had hidden inside after boasting he feared no king at all.",local:""},{img:"pages/lion-and-the-hare/page13.jpg",text:"The lion shoved forward and looked down into the water, where his own face glared back from the dark circle below.",local:""},{img:"pages/lion-and-the-hare/page14.jpg",text:"He bared his teeth, and the reflected lion bared its teeth as well, while the well sent his roar back at him as if from an enemy throat.",local:""},{img:"pages/lion-and-the-hare/page15.jpg",text:"Blinded by rage, the lion gathered himself and leaped straight into the well to attack the challenger he thought he saw.",local:""},{img:"pages/lion-and-the-hare/page16.jpg",text:"Water exploded upward, then closed again, and the forest around the well fell suddenly, unbelievably quiet.",local:""},{img:"pages/lion-and-the-hare/page17.jpg",text:"Fikir waited only long enough to know the danger was truly gone before racing back along the path.",local:""},{img:"pages/lion-and-the-hare/page18.jpg",text:"When the animals saw her returning alone, hope spread through them so quickly that it looked almost like light moving through leaves.",local:""},{img:"pages/lion-and-the-hare/page19.jpg",text:"They followed her to the well, understood what had happened, and lifted their voices in relief after too many silent fearful days.",local:""},{img:"pages/lion-and-the-hare/page20.jpg",text:"From then on they remembered that the sharpest strength in the forest had belonged not to the loudest roar but to the smallest creature who kept thinking.",local:""}],quiz:[]},
-{id:29,title:"The Mouse and the Lion",lang:"en",age:"3-6",country:"Ethiopia",tags:["fable","kindness"],desc:"A tiny mouse repays a lion's kindness in an unexpected way.",cover:"pages/mouse-and-the-lion/cover.jpg",pages:[{img:"pages/mouse-and-the-lion/cover.jpg",text:"",isCover:true},{img:"pages/mouse-and-the-lion/page01.jpg",text:"In the warm grass, a tiny mouse hurried along.",local:""},{img:"pages/mouse-and-the-lion/page02.jpg",text:"Nearby, a great lion slept under an acacia tree.",local:""},{img:"pages/mouse-and-the-lion/page03.jpg",text:"The mouse saw his mane and his giant paws.",local:""},{img:"pages/mouse-and-the-lion/page04.jpg",text:"She wanted just one little look.",local:""},{img:"pages/mouse-and-the-lion/page05.jpg",text:"But her feet slipped, and she ran across the lion's paw.",local:""},{img:"pages/mouse-and-the-lion/page06.jpg",text:"The lion woke at once.",local:""},{img:"pages/mouse-and-the-lion/page07.jpg",text:"With one big paw, he stopped the tiny mouse.",local:""},{img:"pages/mouse-and-the-lion/page08.jpg",text:"\"Please let me go,\" whispered the mouse.",local:""},{img:"pages/mouse-and-the-lion/page09.jpg",text:"\"I am small, but one day I may help you.\"",local:""},{img:"pages/mouse-and-the-lion/page10.jpg",text:"The lion blinked, then gave a deep soft laugh.",local:""},{img:"pages/mouse-and-the-lion/page11.jpg",text:"\"You help me?\" he rumbled.",local:""},{img:"pages/mouse-and-the-lion/page12.jpg",text:"Still, he was kind, and he lifted his paw.",local:""},{img:"pages/mouse-and-the-lion/page13.jpg",text:"The mouse scampered away and looked back with thanks.",local:""},{img:"pages/mouse-and-the-lion/page14.jpg",text:"Days later, the lion walked through the same bright grass.",local:""},{img:"pages/mouse-and-the-lion/page15.jpg",text:"Then ropes dropped around him and held him fast.",local:""},{img:"pages/mouse-and-the-lion/page16.jpg",text:"He pulled and roared, but the net would not break.",local:""},{img:"pages/mouse-and-the-lion/page17.jpg",text:"The tiny mouse heard his call and came running.",local:""},{img:"pages/mouse-and-the-lion/page18.jpg",text:"She climbed the ropes and chewed with all her strength.",local:""},{img:"pages/mouse-and-the-lion/page19.jpg",text:"Soon the net loosened, and the lion stepped free.",local:""},{img:"pages/mouse-and-the-lion/page20.jpg",text:"Under the acacia tree, the lion thanked his tiny friend.",local:""}],quiz:[]},
-{id:30,title:"Saba Sweeps the Courtyard",lang:"en",age:"3-6",country:"Ethiopia",tags:["chores","community"],desc:"Saba helps keep her community courtyard clean and tidy.",cover:"pages/saba-sweeps-the-courtyard/cover.jpg",pages:[{img:"pages/saba-sweeps-the-courtyard/cover.jpg",text:"",isCover:true},{img:"pages/saba-sweeps-the-courtyard/page01.jpg",text:"Saba notices dry leaves and dust in the courtyard.",local:""},{img:"pages/saba-sweeps-the-courtyard/page02.jpg",text:"She looks carefully and decides to help.",local:""},{img:"pages/saba-sweeps-the-courtyard/page03.jpg",text:"Saba picks up the small broom.",local:""},{img:"pages/saba-sweeps-the-courtyard/page04.jpg",text:"She begins sweeping in small careful strokes.",local:""},{img:"pages/saba-sweeps-the-courtyard/page05.jpg",text:"Leaves and dust gather into a little pile.",local:""},{img:"pages/saba-sweeps-the-courtyard/page06.jpg",text:"Saba keeps sweeping with steady rhythm.",local:""},{img:"pages/saba-sweeps-the-courtyard/page07.jpg",text:"She moves across the courtyard, working carefully.",local:""},{img:"pages/saba-sweeps-the-courtyard/page08.jpg",text:"The courtyard begins to look cleaner and calmer.",local:""},{img:"pages/saba-sweeps-the-courtyard/page09.jpg",text:"Saba sweeps the last small bits into place.",local:""},{img:"pages/saba-sweeps-the-courtyard/page10.jpg",text:"She pauses and looks at her work with quiet satisfaction.",local:""},{img:"pages/saba-sweeps-the-courtyard/page11.jpg",text:"Saba checks if any leaves or dust are still left behind.",local:""},{img:"pages/saba-sweeps-the-courtyard/page12.jpg",text:"She sweeps one small area again with care.",local:""},{img:"pages/saba-sweeps-the-courtyard/page13.jpg",text:"Saba gathers the last bits neatly together.",local:""},{img:"pages/saba-sweeps-the-courtyard/page14.jpg",text:"She makes one final pass across the courtyard.",local:""},{img:"pages/saba-sweeps-the-courtyard/page15.jpg",text:"Now the courtyard feels open, clean, and peaceful.",local:""},{img:"pages/saba-sweeps-the-courtyard/page16.jpg",text:"A warm grown-up notices Saba’s helpful work.",local:""},{img:"pages/saba-sweeps-the-courtyard/page17.jpg",text:"Saba puts the broom back in its proper place.",local:""},{img:"pages/saba-sweeps-the-courtyard/page18.jpg",text:"She stands in the neat courtyard and looks around calmly.",local:""},{img:"pages/saba-sweeps-the-courtyard/page19.jpg",text:"The tidy courtyard rests in the warm light.",local:""},{img:"pages/saba-sweeps-the-courtyard/page20.jpg",text:"Saba smiles softly. She helped care for her home.",local:""}],quiz:[]},
-{id:31,title:"The Crocodile and the Monkey",lang:"en",age:"6-12",country:"Ethiopia",tags:["fable","trickster"],desc:"A quick-thinking monkey escapes a crafty crocodile's trap.",cover:"pages/crocodile-and-the-monkey/cover.jpg",pages:[{img:"pages/crocodile-and-the-monkey/cover.jpg",text:"",isCover:true},{img:"pages/crocodile-and-the-monkey/page01.jpg",text:"On the edge of a wide river, a young monkey named Milo lived in a fig tree whose branches leaned over the water like open arms.",local:""},{img:"pages/crocodile-and-the-monkey/page02.jpg",text:"Each morning he ate the sweetest fruit at the top and tossed the ripest figs down to Koro the crocodile, who floated below like a drifting log.",local:""},{img:"pages/crocodile-and-the-monkey/page03.jpg",text:"At first they were only curious about one another, but day after day they traded fruit for stories until the river no longer felt like a border between them.",local:""},{img:"pages/crocodile-and-the-monkey/page04.jpg",text:"Milo described the birds that stitched through the leaves at dawn, and Koro described the cold deep places where the current moved as silently as thought.",local:""},{img:"pages/crocodile-and-the-monkey/page05.jpg",text:"Soon Milo began setting aside the best wild mangoes for his friend, and Koro carried them in his jaws across to his home on the far bank.",local:""},{img:"pages/crocodile-and-the-monkey/page06.jpg",text:"There Koro's wife tasted the fruit and frowned with envy, asking what sort of creature could live on such sweetness every day.",local:""},{img:"pages/crocodile-and-the-monkey/page07.jpg",text:"When Koro told her about Milo, she said a heart fed on figs and mangoes must be the richest meal in the whole river country.",local:""},{img:"pages/crocodile-and-the-monkey/page08.jpg",text:"Koro recoiled from the idea, but his wife pressed him with tears, flattery, and sharp words until his loyalty bent under the strain.",local:""},{img:"pages/crocodile-and-the-monkey/page09.jpg",text:"The next morning he returned to Milo with a careful smile and said his wife wished to thank him properly with a meal at their riverside home.",local:""},{img:"pages/crocodile-and-the-monkey/page10.jpg",text:"Milo had never crossed the water and hesitated, yet the invitation sounded warm, and friendship can make even a cautious heart step forward.",local:""},{img:"pages/crocodile-and-the-monkey/page11.jpg",text:"Because monkeys could not swim that river, Milo climbed onto Koro's broad back and gripped the rough scales as they pushed into the current.",local:""},{img:"pages/crocodile-and-the-monkey/page12.jpg",text:"At first Milo laughed at the cool spray and the glittering fish below, but as the tree drifted farther behind him he felt his chest tighten.",local:""},{img:"pages/crocodile-and-the-monkey/page13.jpg",text:"Halfway across, where the river turned dark and deep, Koro's silence grew too heavy to carry, and at last he confessed the cruel plan.",local:""},{img:"pages/crocodile-and-the-monkey/page14.jpg",text:"For one breath Milo felt pure terror, as if the sky had dropped into the river with him, but fear cleared into thought almost at once.",local:""},{img:"pages/crocodile-and-the-monkey/page15.jpg",text:"He slapped his forehead and cried that Koro should have warned him earlier, because he never carried his heart when climbing or traveling.",local:""},{img:"pages/crocodile-and-the-monkey/page16.jpg",text:"To keep it safe, he said, he had left it hanging in the fig tree where the river breeze could cool it between the leaves.",local:""},{img:"pages/crocodile-and-the-monkey/page17.jpg",text:"Koro, slow with guilt and desperate to believe there was still a way to please his wife, turned back toward the familiar shore.",local:""},{img:"pages/crocodile-and-the-monkey/page18.jpg",text:"The moment they neared the overhanging branch, Milo sprang upward, scrambled to safety, and clung to the trunk while his breath shook through him.",local:""},{img:"pages/crocodile-and-the-monkey/page19.jpg",text:"From high above he called down that no creature leaves its heart behind, and no friendship can survive the bite of betrayal.",local:""},{img:"pages/crocodile-and-the-monkey/page20.jpg",text:"Koro lowered his head beneath the reflected leaves, and for many seasons afterward the river remembered that quick thinking may save a life, but broken trust leaves the deepest wound.",local:""}],quiz:[]},
-{id:32,title:"The Tortoise and the Hare",lang:"en",age:"3-6",country:"Ethiopia",tags:["fable","perseverance"],desc:"The slow tortoise teaches the speedy hare that steady wins the race.",cover:"pages/tortoise-and-the-hare/cover.jpg",pages:[{img:"pages/tortoise-and-the-hare/cover.jpg",text:"",isCover:true},{img:"pages/tortoise-and-the-hare/page01.jpg",text:"On a sunny morning, Hare bounced along the path.",local:""},{img:"pages/tortoise-and-the-hare/page02.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page03.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page04.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page05.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page06.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page07.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page08.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page09.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page10.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page11.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page12.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page13.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page14.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page15.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page16.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page17.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page18.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page19.jpg",text:"",local:""},{img:"pages/tortoise-and-the-hare/page20.jpg",text:"",local:""}],quiz:[]},
-{id:33,title:"The Leopard and the Ram",lang:"en",age:"6-12",country:"Ethiopia",tags:["fable","bravery"],desc:"A bold ram stands up to a fearsome leopard with surprising results.",cover:"pages/leopard-and-the-ram/cover.jpg",pages:[{img:"pages/leopard-and-the-ram/cover.jpg",text:"",isCover:true},{img:"pages/leopard-and-the-ram/page01.jpg",text:"On a broad meadow where the grass bent silver under the wind, a leopard spotted a ram grazing alone among thorn-tree shadows.",local:""},{img:"pages/leopard-and-the-ram/page02.jpg",text:"The leopard licked his teeth with easy confidence, because he had chased many animals and watched them scatter before he even leaped.",local:""},{img:"pages/leopard-and-the-ram/page03.jpg",text:"He moved closer through the grass, expecting the ram to panic at the first glimpse of spotted fur and flashing eyes.",local:""},{img:"pages/leopard-and-the-ram/page04.jpg",text:"But the ram did not run. He lifted his head, planted his hooves, and studied the leopard as carefully as the leopard studied him.",local:""},{img:"pages/leopard-and-the-ram/page05.jpg",text:"This was not because the ram was stronger or swifter, but because he knew that fear shown too early can invite the very danger one hopes to escape.",local:""},{img:"pages/leopard-and-the-ram/page06.jpg",text:"The leopard stepped into the open and asked with a mocking smile why the ram stood still instead of begging the hills for mercy.",local:""},{img:"pages/leopard-and-the-ram/page07.jpg",text:"The ram lowered his horns and answered that perhaps he was the one deciding whether the leopard was worth the trouble.",local:""},{img:"pages/leopard-and-the-ram/page08.jpg",text:"Those words, spoken calmly in the open wind, struck the leopard like a stone because they did not fit the story he had expected to live.",local:""},{img:"pages/leopard-and-the-ram/page09.jpg",text:"He circled left, then right, waiting for a tremble, a backward step, some proof that the ram's courage was only a costume.",local:""},{img:"pages/leopard-and-the-ram/page10.jpg",text:"Yet the ram kept staring, hooves firm in the earth, making the leopard imagine sharp horns driving upward if he misjudged a single leap.",local:""},{img:"pages/leopard-and-the-ram/page11.jpg",text:"Predators often rely not only on muscle but on the fear that weakens another creature before the fight begins.",local:""},{img:"pages/leopard-and-the-ram/page12.jpg",text:"Now that fear was missing, and in its place stood a silence the leopard could not easily read.",local:""},{img:"pages/leopard-and-the-ram/page13.jpg",text:"He snarled and pawed the ground, but even his own noise seemed less convincing in the face of the ram's steady gaze.",local:""},{img:"pages/leopard-and-the-ram/page14.jpg",text:"The ram took one deliberate step forward, not many, just enough to say that courage can move as well as stand.",local:""},{img:"pages/leopard-and-the-ram/page15.jpg",text:"That small advance broke the leopard's certainty more than a charge might have done, because it turned doubt back against the hunter.",local:""},{img:"pages/leopard-and-the-ram/page16.jpg",text:"At last the leopard muttered that he had no appetite for wool and rocks and backed away with injured pride.",local:""},{img:"pages/leopard-and-the-ram/page17.jpg",text:"Only when the spotted body disappeared into the long grass did the ram allow himself one slow breath of relief.",local:""},{img:"pages/leopard-and-the-ram/page18.jpg",text:"He knew he had survived not by overpowering danger but by refusing to feed it with visible fear.",local:""},{img:"pages/leopard-and-the-ram/page19.jpg",text:"When other animals heard the tale, they repeated it with admiration, each adding the wind, the meadow, and the sharp curve of the horns.",local:""},{img:"pages/leopard-and-the-ram/page20.jpg",text:"And so the story endured, teaching that courage and self-possession can sometimes defeat an enemy who expects surrender before the struggle begins.",local:""}],quiz:[]},
-{id:34,title:"The Rooster and the Fox",lang:"en",age:"3-6",country:"Ethiopia",tags:["fable","cleverness"],desc:"A clever rooster turns the tables on a sly fox.",cover:"pages/rooster-and-the-fox/cover.jpg",pages:[{img:"pages/rooster-and-the-fox/cover.jpg",text:"",isCover:true},{img:"pages/rooster-and-the-fox/page01.jpg",text:"One morning, a rooster stood high in a tree.",local:""},{img:"pages/rooster-and-the-fox/page02.jpg",text:"His red comb shone in the sun.",local:""},{img:"pages/rooster-and-the-fox/page03.jpg",text:"Below the tree, a fox looked up and smiled.",local:""},{img:"pages/rooster-and-the-fox/page04.jpg",text:"She wanted the rooster to come down.",local:""},{img:"pages/rooster-and-the-fox/page05.jpg",text:"\"Good news!\" called the fox.",local:""},{img:"pages/rooster-and-the-fox/page06.jpg",text:"\"Now all the animals are friends.\"",local:""},{img:"pages/rooster-and-the-fox/page07.jpg",text:"\"Come down and celebrate with me,\" she said.",local:""},{img:"pages/rooster-and-the-fox/page08.jpg",text:"The rooster stayed on his branch.",local:""},{img:"pages/rooster-and-the-fox/page09.jpg",text:"He listened, but he did not believe her.",local:""},{img:"pages/rooster-and-the-fox/page10.jpg",text:"Then he looked far down the path.",local:""},{img:"pages/rooster-and-the-fox/page11.jpg",text:"\"How wonderful,\" said the rooster.",local:""},{img:"pages/rooster-and-the-fox/page12.jpg",text:"\"I think I see some dogs coming too.\"",local:""},{img:"pages/rooster-and-the-fox/page13.jpg",text:"The fox turned at once.",local:""},{img:"pages/rooster-and-the-fox/page14.jpg",text:"Her tail gave a nervous twitch.",local:""},{img:"pages/rooster-and-the-fox/page15.jpg",text:"\"Why worry?\" asked the rooster. \"The dogs are our friends now too.\"",local:""},{img:"pages/rooster-and-the-fox/page16.jpg",text:"\"Perhaps they did not hear the news,\" said the fox.",local:""},{img:"pages/rooster-and-the-fox/page17.jpg",text:"And away she ran as fast as she could.",local:""},{img:"pages/rooster-and-the-fox/page18.jpg",text:"The rooster watched from the tree.",local:""},{img:"pages/rooster-and-the-fox/page19.jpg",text:"Then he gave a loud, happy crow.",local:""},{img:"pages/rooster-and-the-fox/page20.jpg",text:"He was safe because he stayed calm and thought clearly.",local:""}],quiz:[]},
-{id:35,title:"The Man and the Mongoose",lang:"en",age:"6-12",country:"Ethiopia",tags:["fable","trust"],desc:"A man learns a hard lesson about judging too quickly.",cover:"pages/man-and-the-mongoose/cover.jpg",pages:[{img:"pages/man-and-the-mongoose/cover.jpg",text:"",isCover:true},{img:"pages/man-and-the-mongoose/page01.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page02.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page03.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page04.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page05.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page06.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page07.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page08.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page09.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page10.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page11.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page12.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page13.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page14.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page15.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page16.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page17.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page18.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page19.jpg",text:"",local:""},{img:"pages/man-and-the-mongoose/page20.jpg",text:"",local:""}],quiz:[]},
-{id:36,title:"The Peasant and the Jar of Gold",lang:"en",age:"6-12",country:"Ethiopia",tags:["fable","wisdom"],desc:"A peasant discovers a jar of gold and must decide what is truly valuable.",cover:"pages/peasant-and-the-jar-of-gold/cover.jpg",pages:[{img:"pages/peasant-and-the-jar-of-gold/cover.jpg",text:"",isCover:true},{img:"pages/peasant-and-the-jar-of-gold/page01.jpg",text:"In the Amhara highlands, a peasant named Tesfaye saved coins for years until he could finally buy a narrow field from a neighbor named Alemu.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page02.jpg",text:"The field was not large, but it curved around a slope where rain held well, and Tesfaye saw in it the chance to feed his family with dignity.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page03.jpg",text:"On the first week after the sale, he worked before sunrise, turning the soil with patient strokes while swallows skimmed low through the morning mist.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page04.jpg",text:"Then his hoe struck something hard beneath the earth with a sound unlike stone, and he knelt to clear the dirt away by hand.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page05.jpg",text:"What emerged was an old clay jar, sealed and heavy, buried so long that roots had wrapped around it like fingers.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page06.jpg",text:"When Tesfaye opened it, gold coins flashed inside, bright as trapped sunlight, enough wealth to change a poor household in one glance.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page07.jpg",text:"Yet instead of shouting with joy, he sat very still, because the gold had not been part of the bargain he had made.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page08.jpg",text:"He covered the jar again, loaded it carefully, and carried it straight to Alemu, saying the treasure must belong to the man who had owned the field before him.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page09.jpg",text:"Alemu stared in astonishment, then pushed the jar back, arguing that he had sold the land and everything hidden within it.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page10.jpg",text:"Tesfaye refused, saying he had bought soil for planting, not riches for which he had never worked and never paid.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page11.jpg",text:"Soon the two men found themselves arguing in the village lane, each trying to give the gold to the other while curious neighbors gathered around.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page12.jpg",text:"People shook their heads in wonder, for they had seen many quarrels over money but never one in which both sides refused to keep it.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page13.jpg",text:"At last the elders sent them to the local judge, a thoughtful man who listened without interrupting while the clay jar sat between them on a woven mat.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page14.jpg",text:"When he heard the full story, the judge smiled in a way that made the whole room lean closer instead of speaking too soon.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page15.jpg",text:"He asked Tesfaye whether he had a son and Alemu whether he had a daughter, and both men answered yes with visible confusion.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page16.jpg",text:"Then the judge declared that the gold belonged to neither greed nor chance alone but should become a blessing that joined two honest households.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page17.jpg",text:"He proposed that Tesfaye's son and Alemu's daughter be married when they were of age, and that the jar of gold be kept for their new beginning.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page18.jpg",text:"The court filled with surprised laughter and then with agreement, because wisdom had turned a dispute into kinship instead of loss.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page19.jpg",text:"In time the families shared harvests, wedding songs, and the quiet pride of having chosen honesty before wealth.",local:""},{img:"pages/peasant-and-the-jar-of-gold/page20.jpg",text:"Long after the coins were spent on home, oxen, and seed, people still told the story to remind their children that integrity can uncover treasures richer than gold itself",local:""}],quiz:[]},
-{id:37,title:"The Two Goats on the Bridge",lang:"en",age:"3-6",country:"Ethiopia",tags:["fable","sharing"],desc:"Two stubborn goats on a narrow bridge learn to work together.",cover:"pages/two-goats-on-the-bridge/cover.jpg",pages:[{img:"pages/two-goats-on-the-bridge/cover.jpg",text:"",isCover:true},{img:"pages/two-goats-on-the-bridge/page01.jpg",text:"On a green hill, a cream goat walked toward a bridge.",local:""},{img:"pages/two-goats-on-the-bridge/page02.jpg",text:"From the other side, a brown goat walked too.",local:""},{img:"pages/two-goats-on-the-bridge/page03.jpg",text:"The bridge was narrow over a bubbling stream.",local:""},{img:"pages/two-goats-on-the-bridge/page04.jpg",text:"Step by step, they both came closer.",local:""},{img:"pages/two-goats-on-the-bridge/page05.jpg",text:"Soon they met in the middle.",local:""},{img:"pages/two-goats-on-the-bridge/page06.jpg",text:"There was not enough room to pass.",local:""},{img:"pages/two-goats-on-the-bridge/page07.jpg",text:"\"Please move back,\" said the cream goat.",local:""},{img:"pages/two-goats-on-the-bridge/page08.jpg",text:"\"No, you move back,\" said the brown goat.",local:""},{img:"pages/two-goats-on-the-bridge/page09.jpg",text:"Both goats stood stiff and stubborn.",local:""},{img:"pages/two-goats-on-the-bridge/page10.jpg",text:"They stamped their hooves on the wooden boards.",local:""},{img:"pages/two-goats-on-the-bridge/page11.jpg",text:"Then they pushed head to head.",local:""},{img:"pages/two-goats-on-the-bridge/page12.jpg",text:"The bridge shook under their feet.",local:""},{img:"pages/two-goats-on-the-bridge/page13.jpg",text:"Splash! Both goats slipped into the shallow water.",local:""},{img:"pages/two-goats-on-the-bridge/page14.jpg",text:"They stood up, wet and surprised.",local:""},{img:"pages/two-goats-on-the-bridge/page15.jpg",text:"For a moment, they said nothing at all.",local:""},{img:"pages/two-goats-on-the-bridge/page16.jpg",text:"Then both goats began to feel a little silly.",local:""},{img:"pages/two-goats-on-the-bridge/page17.jpg",text:"The cream goat bent low and made room.",local:""},{img:"pages/two-goats-on-the-bridge/page18.jpg",text:"The brown goat stepped gently across.",local:""},{img:"pages/two-goats-on-the-bridge/page19.jpg",text:"Then the cream goat crossed safely too.",local:""},{img:"pages/two-goats-on-the-bridge/page20.jpg",text:"After that, both goats remembered to share the bridge.",local:""}],quiz:[]},
-{id:38,title:"Why the Sun and Moon Live in the Sky",lang:"en",age:"6-12",country:"Nigeria",tags:["myth","nature"],desc:"An African origin story about how Sun and Moon came to live in the sky.",cover:"pages/why-the-sun-and-moon/cover.jpg",pages:[{img:"pages/why-the-sun-and-moon/cover.jpg",text:"",isCover:true},{img:"pages/why-the-sun-and-moon/page01.jpg",text:"Long ago, before the world had settled into its present rhythms, Sun and Moon lived together on the earth as close companions.",local:""},{img:"pages/why-the-sun-and-moon/page02.jpg",text:"Their house stood in a bright place between land and water, where mornings opened clear and evenings glowed silver over the reeds.",local:""},{img:"pages/why-the-sun-and-moon/page03.jpg",text:"Among all their friends, none was more admired than Water, whose family included rivers, fish, frogs, lilies, and creatures too many to count.",local:""},{img:"pages/why-the-sun-and-moon/page04.jpg",text:"Again and again Sun and Moon visited Water in broad cool places, and each time they returned home they said their friendship should not remain one-sided.",local:""},{img:"pages/why-the-sun-and-moon/page05.jpg",text:"So they invited Water to visit them, but Water answered with courtesy that such a visit was no small thing.",local:""},{img:"pages/why-the-sun-and-moon/page06.jpg",text:"My family is large, Water warned, and if I come, I do not come alone; are you certain your house can hold us all.",local:""},{img:"pages/why-the-sun-and-moon/page07.jpg",text:"Sun, bright with confidence, and Moon, gentle but determined, promised they would build wider walls and a larger court.",local:""},{img:"pages/why-the-sun-and-moon/page08.jpg",text:"They worked for days, raising beams, smoothing floors, and opening every side of the house to make room for honored guests.",local:""},{img:"pages/why-the-sun-and-moon/page09.jpg",text:"When all was ready they sent another invitation, and this time Water agreed to come with the household of the deep.",local:""},{img:"pages/why-the-sun-and-moon/page10.jpg",text:"At first only a little water slipped through the doorway, carrying tiny fish that flashed like dropped bits of light.",local:""},{img:"pages/why-the-sun-and-moon/page11.jpg",text:"Then more came, filling the floor to the ankles while Sun and Moon laughed nervously and urged their guest farther inside.",local:""},{img:"pages/why-the-sun-and-moon/page12.jpg",text:"Soon crabs, reeds, turtles, and long silver fish moved through the rooms, and Water rose from ankles to knees and from knees to waist.",local:""},{img:"pages/why-the-sun-and-moon/page13.jpg",text:"Still Sun and Moon kept insisting there was room, because turning a guest away after such effort seemed unthinkable and rude.",local:""},{img:"pages/why-the-sun-and-moon/page14.jpg",text:"Water climbed to the roof beams, pressing against the walls with the weight of a whole world entering at once.",local:""},{img:"pages/why-the-sun-and-moon/page15.jpg",text:"At last Sun and Moon had nowhere left to stand except the very top of the house, high above their drowned furniture and floating mats.",local:""},{img:"pages/why-the-sun-and-moon/page16.jpg",text:"Even there Water continued rising, immense and unstoppable, because its nature was to spread wherever space welcomed it.",local:""},{img:"pages/why-the-sun-and-moon/page17.jpg",text:"So Sun leaped upward first, blazing into the sky, and Moon followed, carrying cool light into the dark that came after.",local:""},{img:"pages/why-the-sun-and-moon/page18.jpg",text:"From above they looked down and understood too late that hospitality without wisdom can invite more than a home can bear.",local:""},{img:"pages/why-the-sun-and-moon/page19.jpg",text:"They never returned to live on earth, and that is why one travels the day and the other the night across the high open sky.",local:""},{img:"pages/why-the-sun-and-moon/page20.jpg",text:"And whenever children hear the tale, they remember that welcome is noble, but true wisdom also measures space, limits, and the power of what one invites inside.",local:""}],quiz:[]},
-{id:39,title:"Colors at the Market",lang:"en",age:"0-3",country:"Ethiopia",tags:["colors","market"],desc:"A vibrant tour of a busy African market full of colour and life.",cover:"pages/colors-at-the-market/cover.jpg",pages:[{img:"pages/colors-at-the-market/cover.jpg",text:"",isCover:true},{img:"pages/colors-at-the-market/page01.jpg",text:"Mika arrives at the market with a trusted grown-up.",local:""},{img:"pages/colors-at-the-market/page02.jpg",text:"All around, the market glows with color.",local:""},{img:"pages/colors-at-the-market/page03.jpg",text:"Mika looks closely at red tomatoes.",local:""},{img:"pages/colors-at-the-market/page04.jpg",text:"Next come green peppers and leafy vegetables.",local:""},{img:"pages/colors-at-the-market/page05.jpg",text:"Yellow fruit shines in the warm light.",local:""},{img:"pages/colors-at-the-market/page06.jpg",text:"Orange vegetables add another color to the day.",local:""},{img:"pages/colors-at-the-market/page07.jpg",text:"Brown baskets and earthy tones feel warm and steady.",local:""},{img:"pages/colors-at-the-market/page08.jpg",text:"A pale white cloth or garlic catches Mika’s eye.",local:""},{img:"pages/colors-at-the-market/page09.jpg",text:"Mika begins to point to the colors with delight.",local:""},{img:"pages/colors-at-the-market/page10.jpg",text:"The grown-up gently notices the colors with Mika.",local:""},{img:"pages/colors-at-the-market/page11.jpg",text:"Mika compares two or three colors side by side.",local:""},{img:"pages/colors-at-the-market/page12.jpg",text:"Purple onions add a new rich color to the market.",local:""},{img:"pages/colors-at-the-market/page13.jpg",text:"One colorful item rests in Mika’s hands.",local:""},{img:"pages/colors-at-the-market/page14.jpg",text:"The grown-up helps Mika notice color in more and more places.",local:""},{img:"pages/colors-at-the-market/page15.jpg",text:"Now Mika begins to recognize familiar colors in new things.",local:""},{img:"pages/colors-at-the-market/page16.jpg",text:"The market feels full of beauty and quiet order.",local:""},{img:"pages/colors-at-the-market/page17.jpg",text:"Mika and the grown-up begin their walk away.",local:""},{img:"pages/colors-at-the-market/page18.jpg",text:"The colors stay bright in Mika’s memory.",local:""},{img:"pages/colors-at-the-market/page19.jpg",text:"Even away from the stalls, Mika still remembers them.",local:""},{img:"pages/colors-at-the-market/page20.jpg",text:"Mika smiles softly. One real market held so many colors.",local:""}],quiz:[]},
-{id:40,title:"My Grandmother’s Shawl",lang:"en",age:"0-3",country:"Ethiopia",tags:["family","warmth","grandma"],desc:"Hana and her grandmother share quiet, tender moments wrapped together in a beloved shawl.",cover:"pages/my-grandmothers-shawl/cover.jpg",pages:[{img:"pages/my-grandmothers-shawl/cover.jpg",text:"",isCover:true},{img:"pages/my-grandmothers-shawl/page01.jpg",text:"Grandmother’s shawl rests nearby in the morning light.",local:""},{img:"pages/my-grandmothers-shawl/page02.jpg",text:"Hana sees the shawl and reaches toward it.",local:""},{img:"pages/my-grandmothers-shawl/page03.jpg",text:"Grandmother opens the shawl wide.",local:""},{img:"pages/my-grandmothers-shawl/page04.jpg",text:"Hana touches the soft edge with careful fingers.",local:""},{img:"pages/my-grandmothers-shawl/page05.jpg",text:"The shawl falls around them like a little tent.",local:""},{img:"pages/my-grandmothers-shawl/page06.jpg",text:"Hana peeks out from the warm cloth.",local:""},{img:"pages/my-grandmothers-shawl/page07.jpg",text:"Now the shawl rests around Hana’s shoulders.",local:""},{img:"pages/my-grandmothers-shawl/page08.jpg",text:"Grandmother lifts one side and makes a cozy nook.",local:""},{img:"pages/my-grandmothers-shawl/page09.jpg",text:"Hana settles into the shawl on the mat.",local:""},{img:"pages/my-grandmothers-shawl/page10.jpg",text:"The cloth wraps around them both.",local:""},{img:"pages/my-grandmothers-shawl/page11.jpg",text:"Hana looks up and sees the shawl above her like a sky.",local:""},{img:"pages/my-grandmothers-shawl/page12.jpg",text:"She peeks from one side while Grandmother peeks from the other.",local:""},{img:"pages/my-grandmothers-shawl/page13.jpg",text:"Together they smooth the shawl flat.",local:""},{img:"pages/my-grandmothers-shawl/page14.jpg",text:"Hana sits on the shawl in her special place.",local:""},{img:"pages/my-grandmothers-shawl/page15.jpg",text:"Grandmother folds one side gently over Hana’s lap.",local:""},{img:"pages/my-grandmothers-shawl/page16.jpg",text:"Hana leans close and feels warm and safe.",local:""},{img:"pages/my-grandmothers-shawl/page17.jpg",text:"The shawl hangs softly behind them as they rest together.",local:""},{img:"pages/my-grandmothers-shawl/page18.jpg",text:"Grandmother folds the shawl neatly while Hana watches.",local:""},{img:"pages/my-grandmothers-shawl/page19.jpg",text:"Hana touches the folded shawl one last time.",local:""},{img:"pages/my-grandmothers-shawl/page20.jpg",text:"Beside Grandmother and the folded shawl, Hana feels loved.",local:""}],quiz:[]}
-];;
+
+  // ── Illustrated books (canvas-rendered, image+text per page) ──
+  {id:12,title:"My Grandmother's Shawl",local:"የአያቴ ሻውል",lang:"Amharic",age:"0-3",cc:"c1",emo:"🧣",desc:"Little Hana discovers the magic of her grandmother's soft, warm shawl.",status:"published",reads:0,
+    cover:"pages/grandmothers-shawl/cover.jpg",
+    pages:[
+      {img:"pages/grandmothers-shawl/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/grandmothers-shawl/page01.jpg",text:"Grandmother's shawl rests nearby in the morning light.",local:""},
+      {img:"pages/grandmothers-shawl/page02.jpg",text:"Hana sees the shawl and reaches toward it.",local:""},
+      {img:"pages/grandmothers-shawl/page03.jpg",text:"Grandmother opens the shawl wide.",local:""},
+      {img:"pages/grandmothers-shawl/page04.jpg",text:"Hana touches the soft edge with careful fingers.",local:""},
+      {img:"pages/grandmothers-shawl/page05.jpg",text:"The shawl falls around them like a little tent.",local:""},
+      {img:"pages/grandmothers-shawl/page06.jpg",text:"Hana peeks out from the warm cloth.",local:""},
+      {img:"pages/grandmothers-shawl/page07.jpg",text:"Now the shawl rests around Hana's shoulders.",local:""},
+      {img:"pages/grandmothers-shawl/page08.jpg",text:"Grandmother lifts one side and makes a cozy nook.",local:""},
+      {img:"pages/grandmothers-shawl/page09.jpg",text:"Hana settles into the shawl on the mat.",local:""},
+      {img:"pages/grandmothers-shawl/page10.jpg",text:"The cloth wraps around them both.",local:""},
+      {img:"pages/grandmothers-shawl/page11.jpg",text:"Hana looks up and sees the shawl above her like a sky.",local:""},
+      {img:"pages/grandmothers-shawl/page12.jpg",text:"She peeks from one side while Grandmother peeks from the other.",local:""},
+      {img:"pages/grandmothers-shawl/page13.jpg",text:"Together they smooth the shawl flat.",local:""},
+      {img:"pages/grandmothers-shawl/page14.jpg",text:"Hana sits on the shawl in her special place.",local:""},
+      {img:"pages/grandmothers-shawl/page15.jpg",text:"Grandmother folds one side gently over Hana's lap.",local:""},
+      {img:"pages/grandmothers-shawl/page16.jpg",text:"Hana leans close and feels warm and safe.",local:""},
+      {img:"pages/grandmothers-shawl/page17.jpg",text:"The shawl hangs softly behind them as they rest together.",local:""},
+      {img:"pages/grandmothers-shawl/page18.jpg",text:"Grandmother folds the shawl neatly while Hana watches.",local:""},
+      {img:"pages/grandmothers-shawl/page19.jpg",text:"Hana touches the folded shawl one last time.",local:""},
+      {img:"pages/grandmothers-shawl/page20.jpg",text:"Beside Grandmother and the folded shawl, Hana feels loved.",local:""}
+    ],
+    quiz:[{q:"What did Hana find with Grandmother?",opts:["A soft shawl","A big hat","A warm blanket"],a:0},{q:"How did the shawl make Hana feel?",opts:["Cold and scratchy","Warm and safe","Heavy and sleepy"],a:1},{q:"Who was with Hana in the story?",opts:["A friend","Grandfather","Grandmother"],a:2}]},
+
+  {id:13,title:"Why the Sun and Moon Live in the Sky",local:"ፀሐይና ጨረቃ ሰማይ ላይ ለምን ኖሩ",lang:"Amharic",age:"6-9",cc:"c2",emo:"☀️",desc:"Long ago Sun and Moon lived on earth — until they invited the great Water to visit.",status:"published",reads:0,
+    cover:"pages/why-sun-moon/cover.jpg",
+    pages:[
+      {img:"pages/why-sun-moon/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/why-sun-moon/page01.jpg",text:"Long ago, before the world had settled into its present rhythms, Sun and Moon lived together on the earth as close companions.",local:""},
+      {img:"pages/why-sun-moon/page02.jpg",text:"Their house stood in a bright place between land and water, where mornings opened clear and evenings glowed silver over the reeds.",local:""},
+      {img:"pages/why-sun-moon/page03.jpg",text:"Among all their friends, none was more admired than Water, whose family included rivers, fish, frogs, lilies, and creatures too many to count.",local:""},
+      {img:"pages/why-sun-moon/page04.jpg",text:"Again and again Sun and Moon visited Water in broad cool places, and each time they returned they said their friendship should not remain one-sided.",local:""},
+      {img:"pages/why-sun-moon/page05.jpg",text:"So they invited Water to visit them, but Water answered with courtesy that such a visit was no small thing.",local:""},
+      {img:"pages/why-sun-moon/page06.jpg",text:"My family is large, Water warned, and if I come, I do not come alone; are you certain your house can hold us all?",local:""},
+      {img:"pages/why-sun-moon/page07.jpg",text:"Sun, bright with confidence, and Moon, gentle but determined, promised they would build wider walls and a larger court.",local:""},
+      {img:"pages/why-sun-moon/page08.jpg",text:"They worked for days, raising beams, smoothing floors, and opening every side of the house to make room for honored guests.",local:""},
+      {img:"pages/why-sun-moon/page09.jpg",text:"When all was ready they sent another invitation, and this time Water agreed to come with the household of the deep.",local:""},
+      {img:"pages/why-sun-moon/page10.jpg",text:"At first only a little water slipped through the doorway, carrying tiny fish that flashed like dropped bits of light.",local:""},
+      {img:"pages/why-sun-moon/page11.jpg",text:"Then more came, filling the floor to the ankles while Sun and Moon laughed nervously and urged their guest farther inside.",local:""},
+      {img:"pages/why-sun-moon/page12.jpg",text:"Soon crabs, reeds, turtles, and long silver fish moved through the rooms, and Water rose from ankles to knees and from knees to waist.",local:""},
+      {img:"pages/why-sun-moon/page13.jpg",text:"Still Sun and Moon kept insisting there was room, because turning a guest away after such effort seemed unthinkable and rude.",local:""},
+      {img:"pages/why-sun-moon/page14.jpg",text:"Water climbed to the roof beams, pressing against the walls with the weight of a whole world entering at once.",local:""},
+      {img:"pages/why-sun-moon/page15.jpg",text:"At last Sun and Moon had nowhere left to stand except the very top of the house, high above their drowned furniture.",local:""},
+      {img:"pages/why-sun-moon/page16.jpg",text:"Even there Water continued rising, immense and unstoppable, because its nature was to spread wherever space welcomed it.",local:""},
+      {img:"pages/why-sun-moon/page17.jpg",text:"So Sun leaped upward first, blazing into the sky, and Moon followed, carrying cool light into the dark that came after.",local:""},
+      {img:"pages/why-sun-moon/page18.jpg",text:"From above they looked down and understood too late that hospitality without wisdom can invite more than a home can bear.",local:""},
+      {img:"pages/why-sun-moon/page19.jpg",text:"They never returned to live on earth, and that is why one travels the day and the other the night across the high open sky.",local:""},
+      {img:"pages/why-sun-moon/page20.jpg",text:"And whenever children hear the tale, they remember that true wisdom also measures space, limits, and the power of what one invites inside.",local:""}
+    ],
+    quiz:[{q:"Who did Sun and Moon invite to visit their home?",opts:["The Wind","The Rain","Water","The Earth"],a:2},{q:"What warning did Water give before coming?",opts:["I am dangerous","My family is very large","I will be late","I cannot come"],a:1},{q:"Why did Sun and Moon move to the sky?",opts:["They wanted to shine brighter","Water filled their entire house","They were bored on earth","A storm drove them away"],a:1},{q:"What lesson does this story teach?",opts:["Never make friends","Wisdom means knowing your limits","Always invite everyone","Water is dangerous"],a:1}]},
+
+  {id:14,title:"Colors at the Market",local:"በገበያ ያሉ ቀለሞች",lang:"Amharic",age:"0-3",cc:"c3",emo:"🌈",desc:"Mika and a grown-up explore all the beautiful colors at a lively Ethiopian market.",status:"published",reads:0,
+    cover:"pages/colors-at-market/cover.jpg",
+    pages:[
+      {img:"pages/colors-at-market/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/colors-at-market/page01.jpg",text:"Mika arrives at the market with a trusted grown-up.",local:"ሚካ ከሚያምን አዋቂ ጋር ወደ ገበያ ደረሰ።"},
+      {img:"pages/colors-at-market/page02.jpg",text:"All around, the market glows with color.",local:"ዙሪያዋ ሁሉ ገበያው በቀለሞች ፈካ።"},
+      {img:"pages/colors-at-market/page03.jpg",text:"Mika looks closely at red tomatoes.",local:"ሚካ ቀይ ቲማቲሞቹን በቀረብ ቀረብ አየ።"},
+      {img:"pages/colors-at-market/page04.jpg",text:"Next come green peppers and leafy vegetables.",local:"ቀጥሎ አረንጓዴ ፍሬዎችና ቅጠላ አትክልቶች ታዩ።"},
+      {img:"pages/colors-at-market/page05.jpg",text:"Yellow fruit shines in the warm light.",local:"ቢጫ ፍሬ በሞቀ ብርሃን ውስጥ ብሩህ ሆነ።"},
+      {img:"pages/colors-at-market/page06.jpg",text:"Orange vegetables add another color to the day.",local:"ብርቱካናማ አትክልቶች ለቀኑ ሌላ ቀለም ጨመሩ።"},
+      {img:"pages/colors-at-market/page07.jpg",text:"Brown baskets and earthy tones feel warm and steady.",local:"ቡናማ ቅርጫቶችና የምድር ቀለሞች ሞቅ ያለ ስሜት ሰጡ።"},
+      {img:"pages/colors-at-market/page08.jpg",text:"A pale white cloth catches Mika's eye.",local:"ፈዛዛ ነጭ ጨርቅ የሚካን ዓይን ስቦ ያዘ።"},
+      {img:"pages/colors-at-market/page09.jpg",text:"Mika begins to point to the colors with delight.",local:"ሚካ ቀለሞቹን በደስታ ጠቆሞ ጀመረ።"},
+      {img:"pages/colors-at-market/page10.jpg",text:"The grown-up gently notices the colors with Mika.",local:"አዋቂው ሚካ ጋር ቀስ ብሎ ቀለሞቹን ታዘበ።"},
+      {img:"pages/colors-at-market/page11.jpg",text:"Mika compares two or three colors side by side.",local:"ሚካ ሁለትና ሦስት ቀለሞችን ጎን ለጎን አወዳደረ።"},
+      {img:"pages/colors-at-market/page12.jpg",text:"Purple onions add a new rich color to the market.",local:"ወደዳ ሽንኩርቶዎች ሌላ ዘርፈ-ብዙ ቀለም ለገበያው ሰጡ።"},
+      {img:"pages/colors-at-market/page13.jpg",text:"One colorful item rests in Mika's hands.",local:"አንድ ቀለም ያለው ዕቃ በሚካ እጆቿ ተቀምጦ ነበር።"},
+      {img:"pages/colors-at-market/page14.jpg",text:"The grown-up helps Mika notice color in more and more places.",local:"አዋቂው ሚካ ቀለምን ከብዙ ቦታ እንድትለይ ረዳ።"},
+      {img:"pages/colors-at-market/page15.jpg",text:"Now Mika begins to recognize familiar colors in new things.",local:"ሚካ አሁን አዲስ ዕቃዎች ላይ ቀለሞቹን ማወቅ ጀምሯ።"},
+      {img:"pages/colors-at-market/page16.jpg",text:"The market feels full of beauty and quiet order.",local:"ገበያው ውበትና ጸጥ ያለ ሥርዓት ሞልቶ ነበር።"},
+      {img:"pages/colors-at-market/page17.jpg",text:"Mika and the grown-up begin their walk away.",local:"ሚካና አዋቂው ተጉዘው ሊሄዱ ጀምሩ።"},
+      {img:"pages/colors-at-market/page18.jpg",text:"The colors stay bright in Mika's memory.",local:"ቀለሞቹ በሚካ ትዝታ ውስጥ ብሩህ ሆነው ቀሩ።"},
+      {img:"pages/colors-at-market/page19.jpg",text:"Even away from the stalls, Mika still remembers them.",local:"ከሱቆቹ ርቃ ብትሆን እንኳ ሚካ አሁንም ታስታውሳቸዋለች።"},
+      {img:"pages/colors-at-market/page20.jpg",text:"Mika smiles softly. One real market held so many colors.",local:"ሚካ ፈገግ አለ። አንዲት ገበያ ብዙ ቀለሞችን ይዛ ነበር።"}
+    ],
+    quiz:[{q:"Where did Mika go in this story?",opts:["To the river","To the market","To school"],a:1},{q:"What color were the tomatoes Mika saw?",opts:["Yellow","Green","Red"],a:2},{q:"What made Mika happy at the market?",opts:["All the colors","All the animals","All the children"],a:0}]},
+
+  {id:15,title:"Hana Washes Her Hands",local:"ሃና እጆቿን ትታጠባለች",lang:"Amharic",age:"0-3",cc:"c1",emo:"🤲",desc:"Hana plays until her hands grow dusty, then carefully washes them all by herself.",status:"published",reads:0,
+    cover:"pages/hana-washes-hands-ill/cover.jpg",
+    pages:[
+      {img:"pages/hana-washes-hands-ill/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/hana-washes-hands-ill/page01.jpg",text:"Hana plays quietly in the compound in the soft morning light.",local:"ሃና በለሆሳስ ጠዋት ብርሃን ውስጥ ግቢው ውስጥ ጸጥ ብላ ትጫወታለች።"},
+      {img:"pages/hana-washes-hands-ill/page02.jpg",text:"She keeps playing until her little hands grow dusty.",local:"ትንሽ እጆቿ ዱቄታማ እስኪሆኑ ድረስ ትጫወት ቀጠለች።"},
+      {img:"pages/hana-washes-hands-ill/page03.jpg",text:"Soon Hana notices that mealtime is near.",local:"ሃና ብዙም ሳይቆይ የምሳ ጊዜ ቅርብ እንደሆነ ተገነዘበች።"},
+      {img:"pages/hana-washes-hands-ill/page04.jpg",text:"She looks toward the washing place and knows what to do.",local:"ወደ ማጠቢያ ቦታ ተመለከተቺ ምን ማድረግ እንዳለባት ያወቀቺ ነው።"},
+      {img:"pages/hana-washes-hands-ill/page05.jpg",text:"Hana walks calmly toward the sink and faucet.",local:"ሃና ወደ ቧምቧና ቅዳዳ ቀጥ ብላ ሄደቺ።"},
+      {img:"pages/hana-washes-hands-ill/page06.jpg",text:"At the washing area, the soap and towel wait nearby.",local:"በማጠቢያ ቦታ ሳሙናና ፎጣ ቅርብ ሆነው ጠበቋቸው።"},
+      {img:"pages/hana-washes-hands-ill/page07.jpg",text:"Hana reaches for the faucet with careful hands.",local:"ሃና ቧምቧውን ጥንቃቄ ባለው እጆቿ ዞረቺ።"},
+      {img:"pages/hana-washes-hands-ill/page08.jpg",text:"Cool water begins to run, and Hana wets her hands.",local:"ቀዝቃዛ ውሃ ሊፈሰስ ጀምሮ ሃና እጆቿን አጠቡ።"},
+      {img:"pages/hana-washes-hands-ill/page09.jpg",text:"She takes the soap and holds it with focus.",local:"ሳሙናውን ወሰደቺ ትኩረት ይዛ ያዘቺ።"},
+      {img:"pages/hana-washes-hands-ill/page10.jpg",text:"Hana rubs the soap on her hands and smiles at the bubbles.",local:"ሃና ሳሙናውን በእጆቿ አሻሻ ፍሰቱን አይታ ፈገግ አለቺ።"},
+      {img:"pages/hana-washes-hands-ill/page11.jpg",text:"She scrubs her palms carefully, one against the other.",local:"መዳፎቿን ጥንቃቄ ብላ አንዱን ከሌላው ጋር አሻሸቺ።"},
+      {img:"pages/hana-washes-hands-ill/page12.jpg",text:"Then Hana cleans the backs of her hands.",local:"ከዚያ ሃና የእጆቿን ጀርባ አጸዳቺ።"},
+      {img:"pages/hana-washes-hands-ill/page13.jpg",text:"She rubs between her fingers, slowly and well.",local:"ጣቶቿ መካከል ቀስ ብላ ደጋግማ ጠርቸቺ።"},
+      {img:"pages/hana-washes-hands-ill/page14.jpg",text:"Hana cleans her thumbs and fingertips step by step.",local:"ሃና አውራ ጣቶቿንና ጣት ጫፎቿን ደረጃ ደረጃ አጠቡ።"},
+      {img:"pages/hana-washes-hands-ill/page15.jpg",text:"She rinses her hands under the clean running water.",local:"ንጹህ ፈሰሰ ውሃ ስር እጆቿን አጸዳቺ።"},
+      {img:"pages/hana-washes-hands-ill/page16.jpg",text:"Hana keeps rinsing until the soap is all gone.",local:"ሳሙናው ሙሉ ሲወጣ ሃና ማጠቡን ቀጠለቺ።"},
+      {img:"pages/hana-washes-hands-ill/page17.jpg",text:"She turns off the faucet and reaches for the towel.",local:"ቧምቧውን አጠፋቺ ፎጣን ወሰደቺ።"},
+      {img:"pages/hana-washes-hands-ill/page18.jpg",text:"Hana dries her hands neatly, first one, then the other.",local:"ሃና እጆቿን አንዱን ቀጥሎ ሌሎቹን ጥሩ ብላ አደረቀቺ።"},
+      {img:"pages/hana-washes-hands-ill/page19.jpg",text:"She looks at her clean hands with quiet satisfaction.",local:"ንጹህ እጆቿን ተመለከተቺ ዝምታ ውስጥ ረካቺ።"},
+      {img:"pages/hana-washes-hands-ill/page20.jpg",text:"At mealtime, Hana sits proudly. She washed her hands all by herself.",local:"ምሳ ጊዜ ሃና ኩራት ብላ ቁጭ አለቺ። ብቻዋን እጆቿን አጠበቺ።"}
+    ],
+    quiz:[{q:"Why did Hana need to wash her hands?",opts:["They were wet","They were dusty from playing","They were cold"],a:1},{q:"What did Hana use to wash her hands?",opts:["Only water","Soap and water","A cloth"],a:1},{q:"How did Hana feel when she was done?",opts:["Tired and sad","Proud she did it herself","Hungry and bored"],a:1}]},
+
+  {id:16,title:"The Lion and the Hare (Illustrated)",local:"አንበሳ እና ጥንቸሏ",lang:"Amharic",age:"6-9",cc:"c2",emo:"🐇",desc:"A clever hare outsmarts a fearsome lion using only her wits and a deep, still well.",status:"published",reads:0,
+    cover:"pages/lion-and-hare-ill/cover.jpg",
+    pages:[
+      {img:"pages/lion-and-hare-ill/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/lion-and-hare-ill/page01.jpg",text:"For many seasons a fierce lion ruled the forest by terror, forcing the animals to send him one victim each day.",local:""},
+      {img:"pages/lion-and-hare-ill/page02.jpg",text:"Every morning fear moved through the trees before the sun fully rose, because no family knew whose turn would come next.",local:""},
+      {img:"pages/lion-and-hare-ill/page03.jpg",text:"When the lot fell to Fikir the hare, the larger animals wept for her, believing such a small creature had no chance at all.",local:""},
+      {img:"pages/lion-and-hare-ill/page04.jpg",text:"Fikir's legs shook, but on her slow walk she kept looking, listening, and thinking instead of giving her fear the last word.",local:""},
+      {img:"pages/lion-and-hare-ill/page05.jpg",text:"She noticed how deep wells kept both reflections and echoes, and by the time the sun climbed higher a plan had begun to form.",local:""},
+      {img:"pages/lion-and-hare-ill/page06.jpg",text:"So she arrived very late to the lion's den, dusty and breathing hard while the hungry ruler lashed his tail against the ground.",local:""},
+      {img:"pages/lion-and-hare-ill/page07.jpg",text:"The lion roared so loudly that birds burst from the branches and demanded to know why his meal had dared to delay him.",local:""},
+      {img:"pages/lion-and-hare-ill/page08.jpg",text:"Bowing low, Fikir said another lion had stopped her on the path and claimed to be the true king of the forest.",local:""},
+      {img:"pages/lion-and-hare-ill/page09.jpg",text:"Pride ignited in the lion faster than hunger, and he demanded to be taken at once to this insolent rival.",local:""},
+      {img:"pages/lion-and-hare-ill/page10.jpg",text:"Fikir led him away from the den across hot stones and thorn-shadowed paths, making sure his anger stayed hotter than his caution.",local:""},
+      {img:"pages/lion-and-hare-ill/page11.jpg",text:"At last they reached a deep well ringed with old stone, its water so clear and dark that it held the sky like polished metal.",local:""},
+      {img:"pages/lion-and-hare-ill/page12.jpg",text:"Fikir peered over the rim and whispered that the rival lion had hidden inside after boasting he feared no king at all.",local:""},
+      {img:"pages/lion-and-hare-ill/page13.jpg",text:"The lion shoved forward and looked down into the water, where his own face glared back from the dark circle below.",local:""},
+      {img:"pages/lion-and-hare-ill/page14.jpg",text:"He bared his teeth, and the reflected lion bared its teeth as well, while the well sent his roar back as if from an enemy throat.",local:""},
+      {img:"pages/lion-and-hare-ill/page15.jpg",text:"Blinded by rage, the lion gathered himself and leaped straight into the well to attack the challenger he thought he saw.",local:""},
+      {img:"pages/lion-and-hare-ill/page16.jpg",text:"Water exploded upward, then closed again, and the forest around the well fell suddenly, unbelievably quiet.",local:""},
+      {img:"pages/lion-and-hare-ill/page17.jpg",text:"Fikir waited only long enough to know the danger was truly gone before racing back along the path.",local:""},
+      {img:"pages/lion-and-hare-ill/page18.jpg",text:"When the animals saw her returning alone, hope spread through them so quickly that it looked almost like light moving through leaves.",local:""},
+      {img:"pages/lion-and-hare-ill/page19.jpg",text:"They followed her to the well, understood what had happened, and lifted their voices in relief after too many silent fearful days.",local:""},
+      {img:"pages/lion-and-hare-ill/page20.jpg",text:"From then on they remembered that the sharpest strength in the forest had belonged not to the loudest roar but to the smallest creature who kept thinking.",local:""}
+    ],
+    quiz:[{q:"How did Fikir trick the lion?",opts:["She ran very fast","She showed him his own reflection in a well","She hid in a tree","She called for help"],a:1},{q:"What did the other animals think would happen to tiny Fikir?",opts:["She would win easily","She had no chance against the lion","She would hide forever","She would trick him quickly"],a:1},{q:"What happened to the lion at the well?",opts:["He drank deeply","He saw another real lion","He fell into the water","He ran back to his den"],a:2},{q:"What did Fikir use instead of claws or brute strength?",opts:["A sharp stick","Loud roaring","Her quick, clever mind","Help from other animals"],a:2}]},
+
+  {id:17,title:"The Mouse and the Lion (Illustrated)",local:"አይጧ እና አንበሳው",lang:"Amharic",age:"3-6",cc:"c4",emo:"🐭",desc:"A tiny mouse wins a great lion's freedom with nothing but sharp teeth and a kind heart.",status:"published",reads:0,
+    cover:"pages/mouse-and-lion-ill/cover.jpg",
+    pages:[
+      {img:"pages/mouse-and-lion-ill/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/mouse-and-lion-ill/page01.jpg",text:"In the warm grass, a tiny mouse hurried along.",local:""},
+      {img:"pages/mouse-and-lion-ill/page02.jpg",text:"Nearby, a great lion slept under an acacia tree.",local:""},
+      {img:"pages/mouse-and-lion-ill/page03.jpg",text:"The mouse saw his mane and his giant paws.",local:""},
+      {img:"pages/mouse-and-lion-ill/page04.jpg",text:"She wanted just one little look.",local:""},
+      {img:"pages/mouse-and-lion-ill/page05.jpg",text:"But her feet slipped, and she ran across the lion's paw.",local:""},
+      {img:"pages/mouse-and-lion-ill/page06.jpg",text:"The lion woke at once.",local:""},
+      {img:"pages/mouse-and-lion-ill/page07.jpg",text:"With one big paw, he stopped the tiny mouse.",local:""},
+      {img:"pages/mouse-and-lion-ill/page08.jpg",text:"Please let me go, whispered the mouse.",local:""},
+      {img:"pages/mouse-and-lion-ill/page09.jpg",text:"I am small, but one day I may help you.",local:""},
+      {img:"pages/mouse-and-lion-ill/page10.jpg",text:"The lion blinked, then gave a deep soft laugh.",local:""},
+      {img:"pages/mouse-and-lion-ill/page11.jpg",text:"You help me? he rumbled.",local:""},
+      {img:"pages/mouse-and-lion-ill/page12.jpg",text:"Still, he was kind, and he lifted his paw.",local:""},
+      {img:"pages/mouse-and-lion-ill/page13.jpg",text:"The mouse scampered away and looked back with thanks.",local:""},
+      {img:"pages/mouse-and-lion-ill/page14.jpg",text:"Days later, the lion walked through the same bright grass.",local:""},
+      {img:"pages/mouse-and-lion-ill/page15.jpg",text:"Then ropes dropped around him and held him fast.",local:""},
+      {img:"pages/mouse-and-lion-ill/page16.jpg",text:"He pulled and roared, but the net would not break.",local:""},
+      {img:"pages/mouse-and-lion-ill/page17.jpg",text:"The tiny mouse heard his call and came running.",local:""},
+      {img:"pages/mouse-and-lion-ill/page18.jpg",text:"She climbed the ropes and chewed with all her strength.",local:""},
+      {img:"pages/mouse-and-lion-ill/page19.jpg",text:"Soon the net loosened, and the lion stepped free.",local:""},
+      {img:"pages/mouse-and-lion-ill/page20.jpg",text:"Under the acacia tree, the lion thanked his tiny friend.",local:""}
+    ],
+    quiz:[{q:"What happened to the big, powerful lion?",opts:["He fell in a river","He got caught in a hunter's net","He got lost in the forest","He hurt his paw"],a:1},{q:"How did the tiny mouse rescue the lion?",opts:["By roaring loudly","By bringing elephants to help","By chewing through the net","By scaring the hunters away"],a:2},{q:"What is the lesson of this story?",opts:["Lions are always the strongest","Even a small friend can save you","Mice are the cleverest animals","Never trust a lion"],a:1}]},
+
+  {id:18,title:"Saba Sweeps the Courtyard",local:"ሳባ ግቢውን ታፀዳለች",lang:"Amharic",age:"0-3",cc:"c5",emo:"🧹",desc:"Saba notices dry leaves and dust, picks up a broom, and cares for her home with quiet pride.",status:"published",reads:0,
+    cover:"pages/saba-sweeps/cover.jpg",
+    pages:[
+      {img:"pages/saba-sweeps/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/saba-sweeps/page01.jpg",text:"Saba notices dry leaves and dust in the courtyard.",local:"ሳባ ደረቅ ቅጠሎችና አቧራ ግቢ ውስጥ እንዳሉ አስተዋለቺ።"},
+      {img:"pages/saba-sweeps/page02.jpg",text:"She looks carefully and decides to help.",local:"ጥንቃቄ ብላ ተመለከተቺ ለመርዳት ወሰነቺ።"},
+      {img:"pages/saba-sweeps/page03.jpg",text:"Saba picks up the small broom.",local:"ሳባ ትንሽ መጥረጊያ አነሳቺ።"},
+      {img:"pages/saba-sweeps/page04.jpg",text:"She begins sweeping in small careful strokes.",local:"ትናንሽ ጥንቃቄ ያለ ምቱ ጠርዳ ጀምራቺ።"},
+      {img:"pages/saba-sweeps/page05.jpg",text:"Leaves and dust gather into a little pile.",local:"ቅጠሎችና አቧራ ወደ ትንሽ ጉብ ሆኑ።"},
+      {img:"pages/saba-sweeps/page06.jpg",text:"Saba keeps sweeping with steady rhythm.",local:"ሳባ ቀጥ ያለ ቅብብሎሽ ጠርዳ ቀጠለቺ።"},
+      {img:"pages/saba-sweeps/page07.jpg",text:"She moves across the courtyard, working carefully.",local:"ጥንቃቄ ብላ ግቢውን አቋርጣ ሠራቺ።"},
+      {img:"pages/saba-sweeps/page08.jpg",text:"The courtyard begins to look cleaner and calmer.",local:"ግቢው ንጹህና ሰላማዊ ሆኖ ጀምሩ።"},
+      {img:"pages/saba-sweeps/page09.jpg",text:"Saba sweeps the last small bits into place.",local:"ሳባ ትናንሽ ቀሪ ቁርጥራጮቹን ጠረደቺ።"},
+      {img:"pages/saba-sweeps/page10.jpg",text:"She pauses and looks at her work with quiet satisfaction.",local:"ቆማ ሥራዋን ዝምታ ውስጥ ረካቺ።"},
+      {img:"pages/saba-sweeps/page11.jpg",text:"Saba checks if any leaves or dust are still left behind.",local:"ሳባ ቅጠሎችና አቧራ ቀርቶ እንዳለ ፈተሸቺ።"},
+      {img:"pages/saba-sweeps/page12.jpg",text:"She sweeps one small area again with care.",local:"ሌላ ትንሽ ቦታ ደግማ ጥንቃቄ ብላ ጠረደቺ።"},
+      {img:"pages/saba-sweeps/page13.jpg",text:"Saba gathers the last bits neatly together.",local:"ሳባ የቀሩ ቁርጥራጮቹን ጥሩ ብላ ሰበሰበቺ።"},
+      {img:"pages/saba-sweeps/page14.jpg",text:"She makes one final pass across the courtyard.",local:"ግቢውን አቋርጣ የመጨረሻ ዙር ሠራቺ።"},
+      {img:"pages/saba-sweeps/page15.jpg",text:"Now the courtyard feels open, clean, and peaceful.",local:"አሁን ግቢው ክፍት፤ ንጹህ፤ ሰላማዊ ሆነ።"},
+      {img:"pages/saba-sweeps/page16.jpg",text:"A warm grown-up notices Saba's helpful work.",local:"ሞቅ ያለ አዋቂ የሳባን ጥሩ ሥራ ተዘበ።"},
+      {img:"pages/saba-sweeps/page17.jpg",text:"Saba puts the broom back in its proper place.",local:"ሳባ መጥረጊያዋን ወደ ቦታው መለሰቺ።"},
+      {img:"pages/saba-sweeps/page18.jpg",text:"She stands in the neat courtyard and looks around calmly.",local:"ቀጥ ብላ ቆማ ንጹህ ግቢውን ጸጥ ብላ ዞረቺ።"},
+      {img:"pages/saba-sweeps/page19.jpg",text:"The tidy courtyard rests in the warm light.",local:"ቁጢጥ ያለ ግቢ ሞቀ ብርሃን ውስጥ ቆሞ ነበር።"},
+      {img:"pages/saba-sweeps/page20.jpg",text:"Saba smiles softly. She helped care for her home.",local:"ሳባ ፈገግ አለቺ። ቤቷን ለመጠበቅ ረዳቺ።"}
+    ],
+    quiz:[{q:"What did Saba notice in the courtyard?",opts:["Beautiful flowers","Dry leaves and dust","A small animal"],a:1},{q:"What tool did Saba use to clean?",opts:["A bucket","A broom","A cloth"],a:1},{q:"How did Saba feel when she finished?",opts:["Bored and tired","Proud of caring for her home","Sad about the mess"],a:1}]},
+
+  {id:19,title:"The Crocodile and the Monkey",local:"አዞው እና ዝንጀሮው",lang:"Amharic",age:"6-9",cc:"c6",emo:"🐊",desc:"Milo the monkey and Koro the crocodile are the best of friends — until a dangerous plan tests their trust.",status:"published",reads:0,
+    cover:"pages/crocodile-and-monkey/cover.jpg",
+    pages:[
+      {img:"pages/crocodile-and-monkey/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/crocodile-and-monkey/page01.jpg",text:"On the edge of a wide river, a young monkey named Milo lived in a fig tree whose branches leaned over the water like open arms.",local:""},
+      {img:"pages/crocodile-and-monkey/page02.jpg",text:"Each morning he ate the sweetest fruit at the top and tossed the ripest figs down to Koro the crocodile, who floated below like a drifting log.",local:""},
+      {img:"pages/crocodile-and-monkey/page03.jpg",text:"At first they were only curious about one another, but day after day they traded fruit for stories until the river no longer felt like a border between them.",local:""},
+      {img:"pages/crocodile-and-monkey/page04.jpg",text:"Milo described the birds that stitched through the leaves at dawn, and Koro described the cold deep places where the current moved as silently as thought.",local:""},
+      {img:"pages/crocodile-and-monkey/page05.jpg",text:"Soon Milo began setting aside the best wild mangoes for his friend, and Koro carried them in his jaws across to his home on the far bank.",local:""},
+      {img:"pages/crocodile-and-monkey/page06.jpg",text:"There Koro's wife tasted the fruit and frowned with envy, asking what sort of creature could live on such sweetness every day.",local:""},
+      {img:"pages/crocodile-and-monkey/page07.jpg",text:"When Koro told her about Milo, she said a heart fed on figs and mangoes must be the richest meal in the whole river country.",local:""},
+      {img:"pages/crocodile-and-monkey/page08.jpg",text:"Koro recoiled from the idea, but his wife pressed him with tears, flattery, and sharp words until his loyalty bent under the strain.",local:""},
+      {img:"pages/crocodile-and-monkey/page09.jpg",text:"The next morning he returned to Milo with a careful smile and said his wife wished to thank him with a meal at their riverside home.",local:""},
+      {img:"pages/crocodile-and-monkey/page10.jpg",text:"Milo had never crossed the water and hesitated, yet the invitation sounded warm, and friendship can make even a cautious heart step forward.",local:""},
+      {img:"pages/crocodile-and-monkey/page11.jpg",text:"Because monkeys could not swim that river, Milo climbed onto Koro's broad back and gripped the rough scales as they pushed into the current.",local:""},
+      {img:"pages/crocodile-and-monkey/page12.jpg",text:"At first Milo laughed at the cool spray and the glittering fish below, but as the tree drifted farther behind him he felt his chest tighten.",local:""},
+      {img:"pages/crocodile-and-monkey/page13.jpg",text:"Halfway across, where the river turned dark and deep, Koro's silence grew too heavy to carry, and at last he confessed the cruel plan.",local:""},
+      {img:"pages/crocodile-and-monkey/page14.jpg",text:"For one breath Milo felt pure terror, as if the sky had dropped into the river with him, but fear cleared into thought almost at once.",local:""},
+      {img:"pages/crocodile-and-monkey/page15.jpg",text:"He slapped his forehead and cried that Koro should have warned him earlier, because he never carried his heart when climbing or traveling.",local:""},
+      {img:"pages/crocodile-and-monkey/page16.jpg",text:"To keep it safe, he said, he had left it hanging in the fig tree where the river breeze could cool it between the leaves.",local:""},
+      {img:"pages/crocodile-and-monkey/page17.jpg",text:"Koro, slow with guilt and desperate to believe there was still a way, turned back toward the familiar shore.",local:""},
+      {img:"pages/crocodile-and-monkey/page18.jpg",text:"The moment they neared the overhanging branch, Milo sprang upward, scrambled to safety, and clung to the trunk while his breath shook through him.",local:""},
+      {img:"pages/crocodile-and-monkey/page19.jpg",text:"From high above he called down that no creature leaves its heart behind, and no friendship can survive the bite of betrayal.",local:""},
+      {img:"pages/crocodile-and-monkey/page20.jpg",text:"Koro lowered his head beneath the reflected leaves, and the river remembered that quick thinking may save a life, but broken trust leaves the deepest wound.",local:""}
+    ],
+    quiz:[{q:"What were Milo and Koro at the beginning of the story?",opts:["Enemies","Best friends","Strangers","Rivals in a race"],a:1},{q:"What dangerous thing did Koro plan that tested their friendship?",opts:["He challenged Milo to a race","He tried to trick and harm Milo","He took Milo's food","He blocked Milo's path"],a:1},{q:"What did Milo learn about true friendship?",opts:["Crocodiles are always evil","True friendship never asks you to risk your life","Monkeys should stay in trees","Never go near water"],a:1}]},
+
+  {id:20,title:"The Tortoise and the Hare",local:"ኤሊው እና ጥንቸሉ",lang:"Amharic",age:"3-6",cc:"c7",emo:"🐢",desc:"A boastful hare and a steady tortoise race — and only one truly understands what it takes to win.",status:"published",reads:0,
+    cover:"pages/tortoise-and-hare/cover.jpg",
+    pages:[
+      {img:"pages/tortoise-and-hare/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/tortoise-and-hare/page01.jpg",text:"On a sunny morning, Hare bounced along the path.",local:""},
+      {img:"pages/tortoise-and-hare/page02.jpg",text:"He could hop fast over stones and grass.",local:""},
+      {img:"pages/tortoise-and-hare/page03.jpg",text:"Nearby, Tortoise walked with quiet little steps.",local:""},
+      {img:"pages/tortoise-and-hare/page04.jpg",text:"I may be slow, said Tortoise, but I keep going.",local:""},
+      {img:"pages/tortoise-and-hare/page05.jpg",text:"The animals gathered to watch a race.",local:""},
+      {img:"pages/tortoise-and-hare/page06.jpg",text:"Hare leaped ahead in a flash.",local:""},
+      {img:"pages/tortoise-and-hare/page07.jpg",text:"Tortoise kept walking, step by step.",local:""},
+      {img:"pages/tortoise-and-hare/page08.jpg",text:"Hare looked back and laughed.",local:""},
+      {img:"pages/tortoise-and-hare/page09.jpg",text:"I have plenty of time, he said.",local:""},
+      {img:"pages/tortoise-and-hare/page10.jpg",text:"He curled up under a shady tree.",local:""},
+      {img:"pages/tortoise-and-hare/page11.jpg",text:"Soon Hare was fast asleep.",local:""},
+      {img:"pages/tortoise-and-hare/page12.jpg",text:"Tortoise passed by without a sound.",local:""},
+      {img:"pages/tortoise-and-hare/page13.jpg",text:"Step by step, he followed the path.",local:""},
+      {img:"pages/tortoise-and-hare/page14.jpg",text:"The finish place came closer and closer.",local:""},
+      {img:"pages/tortoise-and-hare/page15.jpg",text:"At last Hare woke with a start.",local:""},
+      {img:"pages/tortoise-and-hare/page16.jpg",text:"He dashed as fast as he could.",local:""},
+      {img:"pages/tortoise-and-hare/page17.jpg",text:"But Tortoise kept going, calm and steady.",local:""},
+      {img:"pages/tortoise-and-hare/page18.jpg",text:"One more step, and Tortoise reached the end.",local:""},
+      {img:"pages/tortoise-and-hare/page19.jpg",text:"The animals cheered for the patient winner.",local:""},
+      {img:"pages/tortoise-and-hare/page20.jpg",text:"Hare smiled too, and learned that steady steps matter.",local:""}
+    ],
+    quiz:[{q:"Who won the race?",opts:["The hare","The tortoise","They tied","Neither of them"],a:1},{q:"Why did the hare lose?",opts:["He was too slow","He got hurt","He stopped to rest and was too proud","He got lost"],a:2},{q:"What does this story teach us?",opts:["Always run as fast as you can","Tortoises are better than hares","Steady effort beats boasting","Races are not important"],a:2}]},
+
+  {id:21,title:"The Leopard and the Ram",local:"ነብሩ እና በጉ",lang:"Amharic",age:"6-9",cc:"c8",emo:"🐆",desc:"A leopard expects easy prey — but the ram refuses to show fear, and courage becomes its shield.",status:"published",reads:0,
+    cover:"pages/leopard-and-ram/cover.jpg",
+    pages:[
+      {img:"pages/leopard-and-ram/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/leopard-and-ram/page01.jpg",text:"On a broad meadow where the grass bent silver under the wind, a leopard spotted a ram grazing alone among thorn-tree shadows.",local:""},
+      {img:"pages/leopard-and-ram/page02.jpg",text:"The leopard licked his teeth with easy confidence, because he had chased many animals and watched them scatter before he even leaped.",local:""},
+      {img:"pages/leopard-and-ram/page03.jpg",text:"He moved closer through the grass, expecting the ram to panic at the first glimpse of spotted fur and flashing eyes.",local:""},
+      {img:"pages/leopard-and-ram/page04.jpg",text:"But the ram did not run. He lifted his head, planted his hooves, and studied the leopard as carefully as the leopard studied him.",local:""},
+      {img:"pages/leopard-and-ram/page05.jpg",text:"This was not because the ram was stronger or swifter, but because he knew that fear shown too early can invite the very danger one hopes to escape.",local:""},
+      {img:"pages/leopard-and-ram/page06.jpg",text:"The leopard stepped into the open and asked with a mocking smile why the ram stood still instead of begging the hills for mercy.",local:""},
+      {img:"pages/leopard-and-ram/page07.jpg",text:"The ram lowered his horns and answered that perhaps he was the one deciding whether the leopard was worth the trouble.",local:""},
+      {img:"pages/leopard-and-ram/page08.jpg",text:"Those words, spoken calmly in the open wind, struck the leopard like a stone because they did not fit the story he had expected to live.",local:""},
+      {img:"pages/leopard-and-ram/page09.jpg",text:"He circled left, then right, waiting for a tremble, a backward step, some proof that the ram's courage was only a costume.",local:""},
+      {img:"pages/leopard-and-ram/page10.jpg",text:"Yet the ram kept staring, hooves firm in the earth, making the leopard imagine sharp horns driving upward if he misjudged a single leap.",local:""},
+      {img:"pages/leopard-and-ram/page11.jpg",text:"Predators often rely not only on muscle but on the fear that weakens another creature before the fight begins.",local:""},
+      {img:"pages/leopard-and-ram/page12.jpg",text:"Now that fear was missing, and in its place stood a silence the leopard could not easily read.",local:""},
+      {img:"pages/leopard-and-ram/page13.jpg",text:"He snarled and pawed the ground, but even his own noise seemed less convincing in the face of the ram's steady gaze.",local:""},
+      {img:"pages/leopard-and-ram/page14.jpg",text:"The ram took one deliberate step forward, not many, just enough to say that courage can move as well as stand.",local:""},
+      {img:"pages/leopard-and-ram/page15.jpg",text:"That small advance broke the leopard's certainty more than a charge might have done, because it turned doubt back against the hunter.",local:""},
+      {img:"pages/leopard-and-ram/page16.jpg",text:"At last the leopard muttered that he had no appetite for wool and rocks, and backed away with injured pride.",local:""},
+      {img:"pages/leopard-and-ram/page17.jpg",text:"Only when the spotted body disappeared into the long grass did the ram allow himself one slow breath of relief.",local:""},
+      {img:"pages/leopard-and-ram/page18.jpg",text:"He knew he had survived not by overpowering danger but by refusing to feed it with visible fear.",local:""},
+      {img:"pages/leopard-and-ram/page19.jpg",text:"When other animals heard the tale, they repeated it with admiration, each adding the wind, the meadow, and the sharp curve of the horns.",local:""},
+      {img:"pages/leopard-and-ram/page20.jpg",text:"And so the story endured, teaching that courage and self-possession can sometimes defeat an enemy who expects surrender before the struggle begins.",local:""}
+    ],
+    quiz:[{q:"What did the leopard expect from the ram?",opts:["A friendly greeting","A fierce fight","Easy prey to catch","Help crossing a river"],a:2},{q:"How did the ram protect himself?",opts:["By running away","By hiding in bushes","By refusing to show any fear","By calling other rams"],a:2},{q:"What is the lesson of this story?",opts:["Leopards always win","Rams are stronger than leopards","Courage and calm can be a powerful shield","Always run from danger"],a:2}]},
+
+  {id:22,title:"The Rooster and the Fox",local:"አውራ ዶሮውና ቀበሮው",lang:"Amharic",age:"3-6",cc:"c1",emo:"🐓",desc:"A sly fox tries to trick a rooster down from his tree — but the rooster is smarter than he looks.",status:"published",reads:0,
+    cover:"pages/rooster-and-fox/cover.jpg",
+    pages:[
+      {img:"pages/rooster-and-fox/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/rooster-and-fox/page01.jpg",text:"One morning, a rooster stood high in a tree.",local:""},
+      {img:"pages/rooster-and-fox/page02.jpg",text:"His red comb shone in the sun.",local:""},
+      {img:"pages/rooster-and-fox/page03.jpg",text:"Below the tree, a fox looked up and smiled.",local:""},
+      {img:"pages/rooster-and-fox/page04.jpg",text:"She wanted the rooster to come down.",local:""},
+      {img:"pages/rooster-and-fox/page05.jpg",text:"Good news! called the fox.",local:""},
+      {img:"pages/rooster-and-fox/page06.jpg",text:"Now all the animals are friends.",local:""},
+      {img:"pages/rooster-and-fox/page07.jpg",text:"Come down and celebrate with me, she said.",local:""},
+      {img:"pages/rooster-and-fox/page08.jpg",text:"The rooster stayed on his branch.",local:""},
+      {img:"pages/rooster-and-fox/page09.jpg",text:"He listened, but he did not believe her.",local:""},
+      {img:"pages/rooster-and-fox/page10.jpg",text:"Then he looked far down the path.",local:""},
+      {img:"pages/rooster-and-fox/page11.jpg",text:"How wonderful, said the rooster.",local:""},
+      {img:"pages/rooster-and-fox/page12.jpg",text:"I think I see some dogs coming too.",local:""},
+      {img:"pages/rooster-and-fox/page13.jpg",text:"The fox turned at once.",local:""},
+      {img:"pages/rooster-and-fox/page14.jpg",text:"Her tail gave a nervous twitch.",local:""},
+      {img:"pages/rooster-and-fox/page15.jpg",text:"Why worry? asked the rooster. The dogs are our friends now too.",local:""},
+      {img:"pages/rooster-and-fox/page16.jpg",text:"Perhaps they did not hear the news, said the fox.",local:""},
+      {img:"pages/rooster-and-fox/page17.jpg",text:"And away she ran as fast as she could.",local:""},
+      {img:"pages/rooster-and-fox/page18.jpg",text:"The rooster watched from the tree.",local:""},
+      {img:"pages/rooster-and-fox/page19.jpg",text:"Then he gave a loud, happy crow.",local:""},
+      {img:"pages/rooster-and-fox/page20.jpg",text:"He was safe because he stayed calm and thought clearly.",local:""}
+    ],
+    quiz:[{q:"Where was the clever rooster when the fox arrived?",opts:["In a nest on the ground","Safe up in a tree","Inside a barn","Behind a big rock"],a:1},{q:"Who tried to trick the rooster?",opts:["A wolf","A cat","The sly fox","A big dog"],a:2},{q:"How did the rooster stay safe?",opts:["He flew far away","He called loudly for help","He used his wits and stayed in the tree","He scared the fox with his feathers"],a:2}]},
+
+  {id:23,title:"The Man and the Mongoose",local:"ሰውዬው እና ጦጣው",lang:"Amharic",age:"6-9",cc:"c2",emo:"🦡",desc:"A man leaves his baby in the care of a loyal mongoose — and learns a painful lesson about trust.",status:"published",reads:0,
+    cover:"pages/man-and-mongoose/cover.jpg",
+    pages:[
+      {img:"pages/man-and-mongoose/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/man-and-mongoose/page01.jpg",text:"A man and his wife kept a mongoose as a trusted companion in their home.",local:""},
+      {img:"pages/man-and-mongoose/page02.jpg",text:"The mongoose was gentle and loyal, always staying close to the family.",local:""},
+      {img:"pages/man-and-mongoose/page03.jpg",text:"One day the wife went to fetch water, and the man had to leave on an errand.",local:""},
+      {img:"pages/man-and-mongoose/page04.jpg",text:"He left the mongoose to watch over their sleeping baby in the house.",local:""},
+      {img:"pages/man-and-mongoose/page05.jpg",text:"While the man was gone, a large cobra slipped silently through the doorway.",local:""},
+      {img:"pages/man-and-mongoose/page06.jpg",text:"The mongoose saw the danger and sprang to defend the sleeping child.",local:""},
+      {img:"pages/man-and-mongoose/page07.jpg",text:"A fierce battle broke out between the mongoose and the cobra.",local:""},
+      {img:"pages/man-and-mongoose/page08.jpg",text:"The mongoose fought with all its speed and courage.",local:""},
+      {img:"pages/man-and-mongoose/page09.jpg",text:"At last the mongoose killed the cobra and protected the baby.",local:""},
+      {img:"pages/man-and-mongoose/page10.jpg",text:"The mongoose ran to the door, proud and eager to show what it had done.",local:""},
+      {img:"pages/man-and-mongoose/page11.jpg",text:"When the man returned and saw blood on the mongoose's fur, he was filled with sudden fear.",local:""},
+      {img:"pages/man-and-mongoose/page12.jpg",text:"Without pausing to look or ask, he raised his hand and struck the mongoose.",local:""},
+      {img:"pages/man-and-mongoose/page13.jpg",text:"Only then did he rush inside and find his baby sleeping safely and the dead cobra on the floor.",local:""},
+      {img:"pages/man-and-mongoose/page14.jpg",text:"He understood at once what had truly happened, and grief filled his heart.",local:""},
+      {img:"pages/man-and-mongoose/page15.jpg",text:"He knelt beside the mongoose and saw the wounds from the long fight.",local:""},
+      {img:"pages/man-and-mongoose/page16.jpg",text:"The loyal mongoose had given everything to protect the child it loved.",local:""},
+      {img:"pages/man-and-mongoose/page17.jpg",text:"The man wept, knowing his haste had cost him a faithful friend.",local:""},
+      {img:"pages/man-and-mongoose/page18.jpg",text:"His wife returned and found him holding the mongoose with trembling hands.",local:""},
+      {img:"pages/man-and-mongoose/page19.jpg",text:"They buried the mongoose with great care, honoring its bravery and love.",local:""},
+      {img:"pages/man-and-mongoose/page20.jpg",text:"From that day he never forgot: act in haste, and you may grieve at leisure.",local:""}
+    ],
+    quiz:[{q:"What did the man ask the mongoose to guard?",opts:["His food store","His jar of gold","His baby","His home"],a:2},{q:"Why did the man hurt the loyal mongoose?",opts:["The mongoose bit him","He saw blood and thought the mongoose harmed the baby","The mongoose ate his food","He was always cruel"],a:1},{q:"What had the brave mongoose actually done?",opts:["It hurt the baby by mistake","It had run away from danger","It killed a snake to save the baby","It went to sleep"],a:2},{q:"What important lesson does this story teach?",opts:["Never keep animals as pets","Stop and think before acting in anger","Mongooses are more loyal than dogs","Snakes are the greatest danger"],a:1}]},
+
+  {id:24,title:"The Peasant and the Jar of Gold",local:"ገበሬው እና የወርቅ ጃር",lang:"Amharic",age:"6-9",cc:"c3",emo:"🏺",desc:"A poor peasant digs up a jar of gold — and his honesty leads to something richer than treasure.",status:"published",reads:0,
+    cover:"pages/peasant-jar-gold/cover.jpg",
+    pages:[
+      {img:"pages/peasant-jar-gold/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/peasant-jar-gold/page01.jpg",text:"In the Amhara highlands, a peasant named Tesfaye saved coins for years until he could finally buy a narrow field from a neighbor named Alemu.",local:""},
+      {img:"pages/peasant-jar-gold/page02.jpg",text:"The field was not large, but it curved around a slope where rain held well, and Tesfaye saw in it the chance to feed his family with dignity.",local:""},
+      {img:"pages/peasant-jar-gold/page03.jpg",text:"On the first week after the sale, he worked before sunrise, turning the soil with patient strokes while swallows skimmed low through the morning mist.",local:""},
+      {img:"pages/peasant-jar-gold/page04.jpg",text:"Then his hoe struck something hard beneath the earth, and he knelt to clear the dirt away by hand.",local:""},
+      {img:"pages/peasant-jar-gold/page05.jpg",text:"What emerged was an old clay jar, sealed and heavy, buried so long that roots had wrapped around it like fingers.",local:""},
+      {img:"pages/peasant-jar-gold/page06.jpg",text:"When Tesfaye opened it, gold coins flashed inside, bright as trapped sunlight, enough wealth to change a poor household in one glance.",local:""},
+      {img:"pages/peasant-jar-gold/page07.jpg",text:"Yet instead of shouting with joy, he sat very still, because the gold had not been part of the bargain he had made.",local:""},
+      {img:"pages/peasant-jar-gold/page08.jpg",text:"He covered the jar again and carried it straight to Alemu, saying the treasure must belong to the man who had owned the field before him.",local:""},
+      {img:"pages/peasant-jar-gold/page09.jpg",text:"Alemu stared in astonishment, then pushed the jar back, arguing that he had sold the land and everything hidden within it.",local:""},
+      {img:"pages/peasant-jar-gold/page10.jpg",text:"Tesfaye refused, saying he had bought soil for planting, not riches for which he had never worked and never paid.",local:""},
+      {img:"pages/peasant-jar-gold/page11.jpg",text:"Soon the two men found themselves arguing in the village lane, each trying to give the gold to the other while curious neighbors gathered around.",local:""},
+      {img:"pages/peasant-jar-gold/page12.jpg",text:"People shook their heads in wonder, for they had seen many quarrels over money but never one in which both sides refused to keep it.",local:""},
+      {img:"pages/peasant-jar-gold/page13.jpg",text:"At last the elders sent them to the local judge, a thoughtful man who listened without interrupting while the clay jar sat between them on a woven mat.",local:""},
+      {img:"pages/peasant-jar-gold/page14.jpg",text:"When he heard the full story, the judge smiled in a way that made the whole room lean closer instead of speaking too soon.",local:""},
+      {img:"pages/peasant-jar-gold/page15.jpg",text:"He asked Tesfaye whether he had a son and Alemu whether he had a daughter, and both men answered yes with visible confusion.",local:""},
+      {img:"pages/peasant-jar-gold/page16.jpg",text:"Then the judge declared that the gold should become a blessing that joined two honest households.",local:""},
+      {img:"pages/peasant-jar-gold/page17.jpg",text:"He proposed that Tesfaye's son and Alemu's daughter be married when they were of age, and that the jar of gold be kept for their new beginning.",local:""},
+      {img:"pages/peasant-jar-gold/page18.jpg",text:"The court filled with surprised laughter and then with agreement, because wisdom had turned a dispute into kinship instead of loss.",local:""},
+      {img:"pages/peasant-jar-gold/page19.jpg",text:"In time the families shared harvests, wedding songs, and the quiet pride of having chosen honesty before wealth.",local:""},
+      {img:"pages/peasant-jar-gold/page20.jpg",text:"Long after the coins were spent, people still told the story to remind their children that integrity can uncover treasures richer than gold itself.",local:""}
+    ],
+    quiz:[{q:"What did the poor peasant dig up in his field?",opts:["A treasure chest","A jar of gold","A magic lamp","An old clay pot"],a:1},{q:"What quality made the peasant special in this story?",opts:["He was very strong","He was very clever","He was honest about what he found","He was the fastest runner"],a:2},{q:"What did the peasant's honesty bring him in the end?",opts:["An even bigger jar of gold","Fame across the land","A good life richer than treasure","A large piece of land"],a:2}]},
+
+  {id:25,title:"The Two Goats on the Bridge",local:"ሁለቱ ፍየሎች በድልድዩ ላይ",lang:"Amharic",age:"0-3",cc:"c4",emo:"🐐",desc:"Two stubborn goats meet in the middle of a narrow bridge — and both fall in before learning to share.",status:"published",reads:0,
+    cover:"pages/two-goats-bridge/cover.jpg",
+    pages:[
+      {img:"pages/two-goats-bridge/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/two-goats-bridge/page01.jpg",text:"On a green hill, a cream goat walked toward a bridge.",local:"በአረንጓዴ ኮረብታ ላይ ክሬም ቀለም ፍየሏ ወደ ድልድዩ ሄደቺ።"},
+      {img:"pages/two-goats-bridge/page02.jpg",text:"From the other side, a brown goat walked too.",local:"ከሌላ ጠርዝ ቡናማ ፍየሏ ሄደቺ።"},
+      {img:"pages/two-goats-bridge/page03.jpg",text:"The bridge was narrow over a bubbling stream.",local:"ድልድዩ ጥርጥር ድምፅ ባለ ወንዝ ላይ ጠባብ ነበር።"},
+      {img:"pages/two-goats-bridge/page04.jpg",text:"Step by step, they both came closer.",local:"እርምጃ በእርምጃ ሁለቱም ቅርብ ቅርብ ሄዱ።"},
+      {img:"pages/two-goats-bridge/page05.jpg",text:"Soon they met in the middle.",local:"ብዙም ሳይቆዩ መሃሉ ላይ ተገናኙ።"},
+      {img:"pages/two-goats-bridge/page06.jpg",text:"There was not enough room to pass.",local:"ለማለፍ ቦታ አልነበረም።"},
+      {img:"pages/two-goats-bridge/page07.jpg",text:"Please move back, said the cream goat.",local:"ተመለሺ ባለቺ ክሬም ፍየሏ።"},
+      {img:"pages/two-goats-bridge/page08.jpg",text:"No, you move back, said the brown goat.",local:"አይ አንቺ ተመለሺ አለቺ ቡናማ ፍየሏ።"},
+      {img:"pages/two-goats-bridge/page09.jpg",text:"Both goats stood stiff and stubborn.",local:"ሁለቱ ፍየሎቹ ቀጥ ብለው ግትር ሆኑ።"},
+      {img:"pages/two-goats-bridge/page10.jpg",text:"They stamped their hooves on the wooden boards.",local:"ሰሌዳዎቹ ላይ ሰኮናቸውን አጮጩ።"},
+      {img:"pages/two-goats-bridge/page11.jpg",text:"Then they pushed head to head.",local:"ከዚያ ጭንቅላት ወደ ጭንቅላት ተጫኑ።"},
+      {img:"pages/two-goats-bridge/page12.jpg",text:"The bridge shook under their feet.",local:"ድልድዩ ስር ተንቀጠቀጠ።"},
+      {img:"pages/two-goats-bridge/page13.jpg",text:"Splash! Both goats slipped into the shallow water.",local:"ጭፍ! ሁለቱ ፍየሎቹ ጥልቀት ወደሌለው ውሃ ወደቁ።"},
+      {img:"pages/two-goats-bridge/page14.jpg",text:"They stood up, wet and surprised.",local:"ተነሱ፤ ርጥ ብለው ተደነቁ።"},
+      {img:"pages/two-goats-bridge/page15.jpg",text:"For a moment, they said nothing at all.",local:"ለጥቂት ጊዜ ምንም አላሉም።"},
+      {img:"pages/two-goats-bridge/page16.jpg",text:"Then both goats began to feel a little silly.",local:"ከዚያ ሁለቱ ፍየሎቹ ትንሽ ሞኝ ሆነው ተሰማቸው።"},
+      {img:"pages/two-goats-bridge/page17.jpg",text:"The cream goat bent low and made room.",local:"ክሬም ፍየሏ ዝቅ ብላ ቦታ ሰጠቺ።"},
+      {img:"pages/two-goats-bridge/page18.jpg",text:"The brown goat stepped gently across.",local:"ቡናማ ፍየሏ ቀስ ብላ አለፈቺ።"},
+      {img:"pages/two-goats-bridge/page19.jpg",text:"Then the cream goat crossed safely too.",local:"ከዚያ ክሬም ፍየሏ ደህና ሆና አለፈቺ።"},
+      {img:"pages/two-goats-bridge/page20.jpg",text:"After that, both goats remembered to share the bridge.",local:"ከዚያ ሁለቱ ፍየሎቹ ድልድዩን መካፈሉን አስታወሱ።"}
+    ],
+    quiz:[{q:"What happened when the two goats met in the middle of the bridge?",opts:["They became friends","They both fell into the river","One goat turned back"],a:1},{q:"Why did the goats fall into the river?",opts:["The bridge broke","They were both too stubborn to give way","A strong wind pushed them"],a:1},{q:"What did the goats learn?",opts:["Run faster next time","Share the bridge and take turns","Jump over each other"],a:1}]},
+];
 
 // ═══════════════════════════════════
 // STATE
@@ -2088,25 +2452,20 @@ function initPageFlip(b){
   // Remove keyboard handler from previous illustrated book
   if(window._illKeyHandler){ document.removeEventListener('keydown', window._illKeyHandler); window._illKeyHandler = null; }
 
-  // If any page has an image, use the portrait reader (image + text strip, no canvas)
-  const hasImages = b.pages.some(pg => pg.img);
-  if(hasImages){
-    // Hide pfWrap (text-book reader); portrait reader shows itself
-    document.getElementById('pfWrap').style.display = 'none';
-    initIllustratedReader(b);
-    return;
-  }
-
-  // Text-only books: hide portrait reader, show pfWrap
-  const _illRdr = document.getElementById('illReader');
-  if(_illRdr) _illRdr.style.display = 'none';
-
   // Always use a fresh child div as the StPageFlip target — never pass #pfBook
   // directly, because StPageFlip.destroy() can remove the element from the DOM
   const pfBook = document.getElementById('pfBook');
   pfBook.innerHTML = '';
   const container = document.createElement('div');
   pfBook.appendChild(container);
+
+  // If any page has an image, use the canvas-render path (same as PDF flow —
+  // avoids the display:flex!important conflict that breaks loadFromHTML flipping)
+  const hasImages = b.pages.some(pg => pg.img);
+  if(hasImages){
+    initPageFlipFromIllustrated(b, container);
+    return;
+  }
 
   // Text-only pages — build HTML divs and use loadFromHTML
   b.pages.forEach((pg, i)=>{
@@ -2171,9 +2530,18 @@ async function initPageFlipFromIllustrated(b, container){
     const hasCover = b.pages[0] && b.pages[0].isCover;
     const coverOffset = hasCover ? 1 : 0;
     const storyCount = b.pages.length - coverOffset;
-    // Portrait dimensions: height × 0.69 aspect ratio (children's book)
-    const pageH = Math.max(300, Math.min(availH, availW * 0.9));
-    const pageW = Math.max(200, Math.floor(pageH * 0.69));
+    // Portrait dimensions — fill available width first for a large book on mobile.
+    // Cap at 430px on desktop so it doesn't look over-sized on a wide screen.
+    const MAX_PAGE_W = 430;
+    let pageW = Math.min(MAX_PAGE_W, Math.max(200, availW - 8));
+    let pageH = Math.round(pageW * 1.45);
+    if (pageH > availH - 16) {
+      pageH = Math.max(300, availH - 16);
+      pageW = Math.max(200, Math.round(pageH / 1.45));
+    }
+    // Split into image zone (top) + text strip (bottom below the image, never overlaid)
+    const imgH = Math.round(pageH * 0.74);   // image portion
+    const txtH = pageH - imgH;               // text strip portion below image
 
     const _canvasDisplayLang = readerDisplayLang==='local' ? activeLang : 'English';
 
@@ -2189,95 +2557,10 @@ async function initPageFlipFromIllustrated(b, container){
       const _isEthiopic = ['Amharic','Tigrinya'].includes(_canvasDisplayLang);
       if(_isEthiopic) try{ await document.fonts.load(`16px 'Noto Sans Ethiopic'`); }catch(e){}
       if(pg.img){
-        await new Promise(resolve=>{
-          const imgEl = new Image();
-          // crossOrigin not needed — all images are same-origin; setting it on a
-          // server without CORS headers would taint the canvas and break toDataURL()
-          imgEl.onload = ()=>{
-            const cw=oc.width, ch=oc.height;
-            const pgText = _getPageText(pg,_canvasDisplayLang);
-            const hasText = !!pgText && !pg.isCover;
-            const textZoneH = hasText ? Math.round(ch*0.26) : 0;
-            const imgZoneH  = ch - textZoneH;
-
-            if(pg.isCover){
-              // Cover: contain (letterbox) — show full artwork without cropping.
-              // Fill letterbox areas with a zoomed/blurred version of the image,
-              // falling back to a warm dark gradient if ctx.filter isn't supported.
-              const scaleContain = Math.min(cw/imgEl.width, imgZoneH/imgEl.height);
-              const fw = Math.round(imgEl.width * scaleContain);
-              const fh = Math.round(imgEl.height * scaleContain);
-              const fx = Math.round((cw - fw) / 2);
-              const fy = Math.round((imgZoneH - fh) / 2);
-              // Background: zoomed cover fill + blur (graceful degradation if filter unsupported)
-              const bgScale = Math.max(cw/imgEl.width, imgZoneH/imgEl.height) * 1.05;
-              const bgW = Math.round(imgEl.width * bgScale), bgH = Math.round(imgEl.height * bgScale);
-              const bgX = Math.round((cw - bgW) / 2), bgY = Math.round((imgZoneH - bgH) / 2);
-              ctx.save();
-              try{
-                ctx.filter = 'blur(20px) brightness(0.55) saturate(0.8)';
-                ctx.drawImage(imgEl, bgX, bgY, bgW, bgH);
-              }catch(fe){
-                // ctx.filter unsupported or drawImage failed — fill with dark gradient
-                const gCover = ctx.createLinearGradient(0,0,0,imgZoneH);
-                gCover.addColorStop(0,'#1a1208'); gCover.addColorStop(1,'#2d1e0a');
-                ctx.fillStyle=gCover; ctx.fillRect(0,0,cw,imgZoneH);
-              }finally{
-                ctx.restore(); // always clears filter and any other state changes
-              }
-              // Draw full cover artwork on top (letterboxed)
-              ctx.drawImage(imgEl, fx, fy, fw, fh);
-            } else {
-              // Story page: cover-fill (zoom to fill image zone, center-top crop)
-              const scale = Math.max(cw/imgEl.width, imgZoneH/imgEl.height);
-              const dw=imgEl.width*scale, dh=imgEl.height*scale;
-              const dx=(cw-dw)/2, dy=Math.min(0,(imgZoneH-dh)/2);
-              ctx.save(); ctx.beginPath(); ctx.rect(0,0,cw,imgZoneH); ctx.clip();
-              ctx.drawImage(imgEl, dx,dy,dw,dh);
-              ctx.restore();
-            }
-
-            if(hasText){
-              // Cream text strip
-              ctx.fillStyle='#fffdf5'; ctx.fillRect(0,imgZoneH,cw,textZoneH);
-              ctx.strokeStyle='#e8e0d0'; ctx.lineWidth=2;
-              ctx.beginPath(); ctx.moveTo(0,imgZoneH); ctx.lineTo(cw,imgZoneH); ctx.stroke();
-              // Page text drawn on canvas — the HTML overlay (opacity:0 at rest) sits
-              // exactly over this zone and becomes opacity:1 only during TTS.
-              const basePx = Math.round(ch * 0.042);
-              const scaledPx = pgText.length > 70
-                ? Math.max(24, Math.round(basePx * Math.sqrt(65 / pgText.length)))
-                : basePx;
-              const fontFace = _isEthiopic ? "'Noto Sans Ethiopic'" : 'Georgia';
-              ctx.fillStyle = '#1a1a1a';
-              ctx.textAlign = 'center';
-              ctx.font = `${scaledPx}px ${fontFace}, serif`;
-              wrapCanvasText(ctx, pgText, cw/2, imgZoneH + Math.round(textZoneH*0.28), cw*0.88, Math.round(scaledPx*1.55));
-              // Page number (bottom-right, small)
-              ctx.fillStyle='#bbb';
-              ctx.font=`${Math.round(ch*0.025)}px Arial,sans-serif`;
-              ctx.textAlign='right';
-              ctx.fillText((i+1-coverOffset)+'/'+storyCount, cw-Math.round(cw*0.03), imgZoneH+textZoneH-Math.round(ch*0.018));
-            }
-            resolve();
-          };
-          imgEl.onerror = ()=>{
-            // Draw a warm placeholder so the page isn't blank
-            const cw=oc.width, ch=oc.height;
-            const g=ctx.createLinearGradient(0,0,0,ch);
-            g.addColorStop(0,'#2d4a1e'); g.addColorStop(1,'#1a2e11');
-            ctx.fillStyle=g; ctx.fillRect(0,0,cw,ch);
-            ctx.fillStyle='rgba(255,255,255,.15)';
-            ctx.font=`bold ${Math.round(ch*0.09)}px sans-serif`;
-            ctx.textAlign='center'; ctx.textBaseline='middle';
-            ctx.fillText('🖼️', cw/2, ch*0.42);
-            ctx.font=`${Math.round(ch*0.035)}px sans-serif`;
-            ctx.fillStyle='rgba(255,255,255,.4)';
-            ctx.fillText('Image unavailable', cw/2, ch*0.58);
-            resolve();
-          };
-          imgEl.src = pg.img;
-        });
+        // Return the raw image path directly — no canvas drawing, no toDataURL().
+        // This avoids the browser's "Tainted canvas" block (file:// images can't be
+        // exported via toDataURL). The text strip is shown by #illTextOverlay instead.
+        return pg.img;
       } else {
         // Text-only page: warm parchment background with centered story text
         const grd = ctx.createLinearGradient(0, 0, 0, oc.height);
@@ -2336,23 +2619,38 @@ async function initPageFlipFromIllustrated(b, container){
     // Works reliably on all devices, fully supports TTS word-highlight overlay.
     pfInstance = null;
     pfBook.innerHTML = '';
+
+    // ── Wrapper: image container on top, text strip below ───────────────────────
+    const bookWrapper = document.createElement('div');
+    bookWrapper.style.cssText = `display:flex;flex-direction:column;align-items:center;width:${pageW}px;`;
+    pfBook.appendChild(bookWrapper);
+
+    // Image zone — no text drawn here, image kept at natural proportions
     const newContainer = document.createElement('div');
     newContainer.style.cssText =
-      `width:${pageW}px;height:${pageH}px;position:relative;overflow:hidden;`+
-      `border-radius:8px;`+
-      // Layered shadow: deep drop shadow + right-edge book-spine shadow + warm glow
+      `width:${pageW}px;height:${imgH}px;position:relative;overflow:hidden;`+
+      `border-radius:8px 8px 0 0;`+
       `box-shadow:0 8px 40px rgba(0,0,0,.65),0 2px 8px rgba(0,0,0,.4),`+
               `-3px 0 12px rgba(0,0,0,.35),3px 0 20px rgba(0,0,0,.25);`;
-    pfBook.appendChild(newContainer);
+    bookWrapper.appendChild(newContainer);
+
+    // Text strip — plain HTML below the image, always visible, highlighted during TTS
+    const textStrip = document.createElement('div');
+    textStrip.id = 'illTextOverlay';
+    textStrip.style.cssText =
+      `width:${pageW}px;min-height:${txtH}px;`+
+      `font-size:${Math.max(14, Math.round(pageW * 0.052))}px;`;
+    bookWrapper.appendChild(textStrip);
 
     // Layer A = visible page, Layer B = waiting off-screen
+    // object-fit:cover preserves aspect ratio; object-position:top pins the illustration top
     const _imgA = document.createElement('img');
-    _imgA.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:block;user-select:none;';
+    _imgA.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:block;user-select:none;object-fit:cover;object-position:top center;';
     _imgA.src = dataUrls[0];
     newContainer.appendChild(_imgA);
 
     const _imgB = document.createElement('img');
-    _imgB.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:block;user-select:none;transform:translateX(100%);';
+    _imgB.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:block;user-select:none;object-fit:cover;object-position:top center;transform:translateX(100%);';
     newContainer.appendChild(_imgB);
 
     let _useA = true;   // which layer is currently the visible one
@@ -2397,8 +2695,8 @@ async function initPageFlipFromIllustrated(b, container){
       const perspWrap = document.createElement('div');
       perspWrap.style.cssText =
         `position:absolute;top:${relTop}px;left:${relLeft}px;`+
-        `width:${pageW}px;height:${pageH}px;perspective:2400px;z-index:30;`+
-        `pointer-events:none;border-radius:8px;`;
+        `width:${pageW}px;height:${imgH}px;perspective:2400px;z-index:30;`+
+        `pointer-events:none;border-radius:8px 8px 0 0;`;
       pfWrapEl.appendChild(perspWrap);
 
       // 3. The flipping page element (preserve-3d safe here — no overflow:hidden ancestor)
@@ -2416,7 +2714,7 @@ async function initPageFlipFromIllustrated(b, container){
       frontFace.style.cssText =
         `position:absolute;top:0;left:0;width:100%;height:100%;`+
         `backface-visibility:hidden;-webkit-backface-visibility:hidden;`+
-        `background:url('${dataUrls[currentPage]}') 0 0/100% 100% no-repeat;`+
+        `background:url('${dataUrls[currentPage]}') top center/cover no-repeat;`+
         `border-radius:8px;`+
         // Forward: page lifts at right edge (shadow on right). Backward: shadow on left.
         `box-shadow:${isForward ? 'inset -8px 0 18px rgba(0,0,0,.13)' : 'inset 8px 0 18px rgba(0,0,0,.13)'};`;
@@ -2427,7 +2725,7 @@ async function initPageFlipFromIllustrated(b, container){
         `position:absolute;top:0;left:0;width:100%;height:100%;`+
         `backface-visibility:hidden;-webkit-backface-visibility:hidden;`+
         `transform:rotateY(180deg);`+
-        `background:url('${dataUrls[idx]}') 0 0/100% 100% no-repeat;`+
+        `background:url('${dataUrls[idx]}') top center/cover no-repeat;`+
         `border-radius:8px;`+
         // Forward: newly-revealed page has spine shadow on left. Backward: shadow on right.
         `box-shadow:${isForward ? 'inset 8px 0 18px rgba(0,0,0,.08)' : 'inset -8px 0 18px rgba(0,0,0,.08)'};`;
@@ -2474,7 +2772,16 @@ async function initPageFlipFromIllustrated(b, container){
         if(typeof _playPageTurnSound==='function') _playPageTurnSound();
         _positionIllOverlay(); // restores illTextOverlay opacity via _illUpdateOverlay
         if(autoReadMode) setTimeout(()=>startAudio(), 300);
-        if(idx===b.pages.length-1 && typeof _showCompletion==='function') setTimeout(_showCompletion, 800);
+        if(idx===b.pages.length-1 && typeof _showCompletion==='function'){
+          // Only show completion if audio is NOT currently playing.
+          // When audio IS playing the user hit the last page — let it finish;
+          // stopAudio(true) / the EL onended path will call _showCompletion.
+          setTimeout(function(){
+            const audioActive = _audioEl && !_audioEl.paused;
+            const ttsActive   = ttsPlaying;
+            if(!audioActive && !ttsActive) _showCompletion();
+          }, 3000); // 3 s — enough for the user to see the last page illustration
+        }
       }, ms + 40);
     }
 
@@ -2520,34 +2827,9 @@ async function initPageFlipFromIllustrated(b, container){
     // Show "Cover" in indicator if book has a cover page, else page 1 dot
     if(typeof _renderPageDots==='function') _renderPageDots(coverOffset > 0 ? -1 : 0, storyCount);
 
-    // ── Position the text overlay EXACTLY over the canvas cream strip ──────────
-    // Uses getBoundingClientRect so the overlay pixel-matches the canvas text zone
-    // (bottom 26% of the page).  Called once after init and again after every flip.
+    // ── Update text strip content (strip is in normal DOM flow below image) ─────
     function _positionIllOverlay(){
-      const pfWrapEl = document.getElementById('pfWrap');
-      const pfBookEl = document.getElementById('pfBook');
-      const illo     = document.getElementById('illTextOverlay');
-      if(!illo || !pfWrapEl || !pfBookEl) return;
-      const bRect = pfBookEl.getBoundingClientRect();
-      const wRect = pfWrapEl.getBoundingClientRect();
-      const textH = Math.round(pageH * 0.26);
-      // top of overlay = top of pfBook + (pageH - textH), relative to pfWrap
-      illo.style.top       = Math.round(bRect.top  - wRect.top  + pageH - textH) + 'px';
-      illo.style.left      = Math.round(bRect.left - wRect.left) + 'px';
-      illo.style.bottom    = 'auto';
-      illo.style.transform = 'none';      // override any CSS translateX
-      illo.style.width     = pageW + 'px';
-      illo.style.height    = textH + 'px';
-      const _fsPx = Math.max(13, Math.round(pageH * 0.042));
-      illo.style.fontSize  = _fsPx + 'px';
-      // Align overlay text to same vertical position as canvas text.
-      // Canvas draws first line baseline at textH*0.28 from top of text zone.
-      // HTML top-of-text ≈ baseline - fontSize*0.78, so:
-      illo.style.paddingTop = Math.max(4, Math.round(textH * 0.28 - _fsPx * 0.78)) + 'px';
-      illo.style.transition = 'none';
-      illo.style.opacity    = '';   // clear any opacity:0 set during flip animation
-      // Do NOT force display here — _illUpdateOverlay sets display:block / none
-      // based on whether the page has text (cover pages have no text strip).
+      // No positioning math needed — strip is a flex child below newContainer.
       _illUpdateOverlay(currentPage);
     }
     if(window._illResizeHandler) window.removeEventListener('resize', window._illResizeHandler);
@@ -2613,171 +2895,6 @@ async function initPageFlipFromIllustrated(b, container){
     console.error('Illustrated StPageFlip error:', err);
     const pb = document.getElementById('pfBook');
     if(pb) pb.innerHTML='<div style="padding:24px;text-align:center;color:var(--text-mid);"><p style="font-weight:700;">Could not load book.</p><p style="font-size:13px;opacity:.7;">'+err.message+'</p></div>';
-  }
-}
-
-// ══════════════════════════════════════════════════════════════════════════════
-// PORTRAIT ILLUSTRATED READER  (single page: <img> + HTML text strip)
-// Replaces the canvas-render + overlay approach with direct image files + live HTML.
-// ══════════════════════════════════════════════════════════════════════════════
-
-function initIllustratedReader(b){
-  // Hide StPageFlip wrapper; show portrait reader
-  document.getElementById('pfWrap').style.display = 'none';
-  const reader = document.getElementById('illReader');
-  if(reader) reader.style.display = 'flex';
-
-  const hasCover  = b.pages[0] && b.pages[0].isCover;
-  const coverOffset = hasCover ? 1 : 0;
-  const storyCount  = b.pages.length - coverOffset;
-
-  // ── Navigation helpers ─────────────────────────────────────────────────────
-  window._illViewerNext  = () => { if(currentPage + 1 < b.pages.length) _illShowPage(b, currentPage + 1,  1); };
-  window._illViewerPrev  = () => { if(currentPage > 0)                  _illShowPage(b, currentPage - 1, -1); };
-  window._illViewerGoTo  = (idx) => _illShowPage(b, idx, idx > currentPage ? 1 : -1);
-
-  document.getElementById('prevBtn').onclick = () => window._illViewerPrev();
-  document.getElementById('nextBtn').onclick = () => window._illViewerNext();
-
-  // Keyboard nav
-  if(window._illKeyHandler) document.removeEventListener('keydown', window._illKeyHandler);
-  window._illKeyHandler = ev => {
-    if(!document.getElementById('readerOverlay')?.classList.contains('open')) return;
-    if(ev.key==='ArrowRight'||ev.key==='ArrowDown'){ ev.preventDefault(); window._illViewerNext(); }
-    else if(ev.key==='ArrowLeft'||ev.key==='ArrowUp'){ ev.preventDefault(); window._illViewerPrev(); }
-  };
-  document.addEventListener('keydown', window._illKeyHandler);
-
-  // Touch swipe on image zone
-  const imgZone = document.getElementById('illImgZone');
-  if(imgZone){
-    let _sX=0, _sY=0;
-    imgZone.addEventListener('touchstart', ev=>{ _sX=ev.touches[0].clientX; _sY=ev.touches[0].clientY; },{passive:true});
-    imgZone.addEventListener('touchend', ev=>{
-      const dx=ev.changedTouches[0].clientX-_sX, dy=ev.changedTouches[0].clientY-_sY;
-      if(Math.abs(dx)>Math.abs(dy)*1.2 && Math.abs(dx)>40){ if(dx<0) window._illViewerNext(); else window._illViewerPrev(); }
-    },{passive:true});
-    // Tap right half → next, tap left half → prev
-    imgZone.addEventListener('click', ev=>{
-      const halfW = imgZone.getBoundingClientRect().width / 2;
-      if(ev.clientX - imgZone.getBoundingClientRect().left > halfW) window._illViewerNext();
-      else window._illViewerPrev();
-    });
-  }
-
-  // Expose pfInstance stub so audio/nav code that calls pfInstance.flipNext() keeps working
-  pfInstance = {
-    flipNext: () => window._illViewerNext(),
-    flipPrev: () => window._illViewerPrev(),
-    flip:     (idx) => window._illViewerGoTo(idx),
-    destroy:  () => {}
-  };
-
-  // ── Determine start page ───────────────────────────────────────────────────
-  const prevProg  = readProgress[b.id] || 0;
-  const startPage = (prevProg > 0 && prevProg < 100)
-    ? Math.min(b.pages.length - 1, Math.max(hasCover ? 1 : 0, Math.floor((prevProg / 100) * b.pages.length)))
-    : 0;
-
-  currentPage = startPage;
-  _illShowPage(b, startPage, 0); // dir=0 → no animation on first load
-
-  const dotIdx0 = (coverOffset > 0 && startPage === 0) ? -1 : Math.max(0, startPage - coverOffset);
-  if(typeof _renderPageDots === 'function') _renderPageDots(dotIdx0, storyCount);
-
-  // Show read mode picker for fresh books
-  if(typeof _showReadModePicker === 'function' && prevProg < 5){
-    setTimeout(() => _showReadModePicker(b), 400);
-  }
-}
-
-// ── Show a specific page in the portrait reader ────────────────────────────
-function _illShowPage(b, idx, dir){
-  if(idx < 0 || idx >= b.pages.length) return;
-  stopAudio();
-  currentPage = idx;
-
-  const hasCover    = b.pages[0] && b.pages[0].isCover;
-  const coverOffset = hasCover ? 1 : 0;
-  const storyCount  = b.pages.length - coverOffset;
-  const pg          = b.pages[idx];
-
-  // ── Image ──
-  const imgEl = document.getElementById('illPageImg');
-  if(imgEl){
-    imgEl.classList.remove('page-in','page-in-prev');
-    imgEl.src = pg.img || '';
-    if(dir !== 0){
-      void imgEl.offsetWidth; // force reflow
-      imgEl.classList.add(dir > 0 ? 'page-in' : 'page-in-prev');
-    }
-  }
-
-  // ── Text strip ──
-  _illUpdateTextStrip(b, idx);
-
-  // ── Navigation button states ──
-  const pBtn=document.getElementById('prevBtn'), nBtn=document.getElementById('nextBtn');
-  if(pBtn) pBtn.disabled = (idx === 0);
-  if(nBtn) nBtn.disabled = (idx >= b.pages.length - 1);
-
-  // ── Page indicator dots ──
-  const dotIdx = (coverOffset > 0 && idx === 0) ? -1 : Math.max(0, idx - coverOffset);
-  if(typeof _renderPageDots === 'function') _renderPageDots(dotIdx, storyCount);
-  else {
-    const ind=document.getElementById('pageInd');
-    if(ind) ind.textContent = (idx===0&&coverOffset>0)?'Cover':(idx-coverOffset+1)+' / '+storyCount;
-  }
-
-  // ── Progress ──
-  readProgress[currentBookId] = Math.min(100, Math.round(((idx+1)/b.pages.length)*100));
-  _saveState(); _recordReadToday();
-
-  if(typeof _resetControlsTimer === 'function') _resetControlsTimer();
-  if(typeof _playPageTurnSound === 'function') _playPageTurnSound();
-
-  // Auto-read: start audio after page turn
-  if(autoReadMode) setTimeout(() => startAudio(), 300);
-
-  // Book completion
-  if(idx === b.pages.length - 1 && typeof _showCompletion === 'function'){
-    setTimeout(_showCompletion, 800);
-  }
-}
-
-// ── Populate #illTextStrip with pre-wrapped word spans ─────────────────────
-// Text is always visible; TTS just toggles .lit for highlighting.
-function _illUpdateTextStrip(b, pageIndex){
-  const strip = document.getElementById('illTextStrip');
-  if(!strip) return;
-  const pg = b.pages[pageIndex];
-
-  // Cover page: hide strip entirely
-  if(!pg || pg.isCover){ strip.innerHTML=''; strip.style.display='none'; return; }
-
-  const displayLang = readerDisplayLang==='local' ? activeLang : 'English';
-  const text = _getPageText(pg, displayLang);
-
-  strip.style.display = 'flex';
-  if(text){
-    // Wrap every word in a .tts-word span at render time.
-    // Audio highlight engine just toggles .lit — zero DOM mutation during playback.
-    let html='', offset=0;
-    text.split(/(\s+)/).forEach(tok => {
-      if(/^\s+$/.test(tok)){ html+=tok; offset+=tok.length; }
-      else{ html+=`<span class="tts-word" data-start="${offset}">${tok}</span>`; offset+=tok.length; }
-    });
-    strip.innerHTML = html;
-
-    // Scale font for long text
-    const basePx = 20;
-    const scaled = text.length > 70 ? Math.max(13, Math.round(basePx * Math.sqrt(65/text.length))) : basePx;
-    strip.style.fontSize = scaled+'px';
-
-    const isEthiopic = ['Amharic','Tigrinya'].includes(displayLang);
-    strip.style.fontFamily = isEthiopic ? "'Noto Sans Ethiopic',serif" : "Georgia,serif";
-  } else {
-    strip.innerHTML = '';
   }
 }
 
@@ -2866,9 +2983,8 @@ async function initPageFlipFromPdf(b){
     const availW = (wrap.clientWidth || window.innerWidth) - 16;
     const availH = (wrap.clientHeight || window.innerHeight) - 20;
     const aspect = pageDataUrls[0].aspect; // height/width
-    // Portrait / single-page mode: each PDF page fills the viewer width
-    const pageW  = Math.max(280, availW - 24);
-    const pageH  = Math.max(300, Math.min(Math.floor(pageW*aspect), availH));
+    const pageW  = Math.max(140, Math.floor(availW/2)-4);
+    const pageH  = Math.max(180, Math.min(Math.floor(pageW*aspect), availH));
 
     if(typeof St==='undefined'||!St.PageFlip) throw new Error('StPageFlip library not loaded');
 
@@ -2877,8 +2993,7 @@ async function initPageFlipFromPdf(b){
       height: pageH,
       size: 'fixed',
       maxShadowOpacity: 0.5,
-      showCover: true,
-      usePortrait: true,    // single page at a time (no double-page spread)
+      showCover: true,      // first page = single cover
       useMouseEvents: true,
       swipeDistance: 30,
       clickEventForward: true,
@@ -3019,8 +3134,6 @@ function closeReader(){
     if(window._illResizeHandler){ window.removeEventListener('resize', window._illResizeHandler); window._illResizeHandler = null; }
     document.getElementById('pfWrap').style.display='none';
     document.getElementById('pfBook').innerHTML='';
-    const illRdr=document.getElementById('illReader'); if(illRdr) illRdr.style.display='none';
-    const illStrip=document.getElementById('illTextStrip'); if(illStrip) illStrip.innerHTML='';
     const illo=document.getElementById('illTextOverlay'); if(illo) illo.style.display='none';
   }catch(e){ console.warn('closeReader cleanup error:', e); }
 }
@@ -3237,8 +3350,10 @@ const EL_VOICES = [
 ];
 const EL_MODEL   = 'eleven_turbo_v2_5'; // fast, high-quality
 
-// Default key/voice — declared BEFORE they are used below (avoids TDZ error)
-const _EL_DEFAULT_KEY   = 'sk_d13cf058b992f30a1c7398b5bf8d644b8d6eb5f0c21cfe75';
+// Default key — used when no personal key is saved in localStorage.
+// Testers get human voice automatically without any setup.
+// For public launch, replace with a Netlify proxy so the key stays server-side.
+const _EL_DEFAULT_KEY = 'sk_d13cf058b992f30a1c7398b5bf8d644b8d6eb5f0c21cfe75';
 const _EL_DEFAULT_VOICE = '21m00Tcm4TlvDq8ikWAM'; // Rachel — warm storyteller
 
 let _elSelectedVoice = localStorage.getItem('gugut_el_voice') || _EL_DEFAULT_VOICE;
@@ -3466,7 +3581,8 @@ async function _startELAudio(b, text, mySession){
   if(mySession !== _ttsSessionId){ if(pb) pb.textContent='▶'; return true; }
 
   if(!result){
-    showToast('⚠️ ElevenLabs unavailable — using browser voice');
+    // Key expired or quota exhausted — prompt user to update their key
+    showToast('🎙️ Human voice unavailable — tap Settings → Human Voice to update your key');
     if(pb) pb.textContent='▶';
     return false; // fall through to Web Speech
   }
@@ -3737,6 +3853,14 @@ function stopAudio(finished=false){
   }
   // Auto-read: advance to next page/spread when current page finishes
   _clearHighlights();
+  // If audio finished on the last page (manual play, not auto-read), mark complete
+  if(finished && !autoReadMode){
+    const _b=books.find(bk=>bk.id===currentBookId);
+    if(_b && _b.pages && currentPage>=_b.pages.length-1){
+      readProgress[currentBookId]=100; _saveState();
+      if(typeof _showCompletion==='function') setTimeout(_showCompletion, 600);
+    }
+  }
   if(finished && autoReadMode){
     const b=books.find(bk=>bk.id===currentBookId);
     if(!b){ autoReadMode=false; _updateAutoReadBtn(); return; }
@@ -3824,21 +3948,13 @@ function _illUpdateOverlay(pageIndex){
   const displayLang = readerDisplayLang==='local' ? activeLang : 'English';
   const text = _getPageText(pg, displayLang);
   if(text){
-    // Pre-wrap every word in a .tts-word span at render time — NOT at audio start.
-    // This means the DOM is stable: audio start/stop only toggle .lit, zero re-paint.
-    let _hw='', _hoff=0;
-    text.split(/(\s+)/).forEach(tok=>{
-      if(/^\s+$/.test(tok)){_hw+=tok;_hoff+=tok.length;}
-      else{_hw+=`<span class="tts-word" data-start="${_hoff}">${tok}</span>`;_hoff+=tok.length;}
-    });
-    overlay.innerHTML = _hw;
-    overlay.style.display = 'block';  // block layout keeps word-spans inline-flowing
-    // Overlay text is color:transparent — canvas text always shows through.
-    // Only .lit words get amber background + green text (no opacity toggling needed).
+    // Plain text — always visible as-is. TTS wraps words in spans at audio start.
+    overlay.textContent = text;
+    overlay.style.display = 'block';
+    overlay.style.opacity = '1';
     const _oEth = ['Amharic','Tigrinya'].includes(displayLang);
-    overlay.style.fontFamily = _oEth ? "'Noto Sans Ethiopic',serif" : "Georgia,serif";
-    // Auto-scale font size so long passages always fit in the strip without clipping.
-    // Base: pageH * 0.042 (set by _positionIllOverlay). Scale down for text > 70 chars.
+    overlay.style.fontFamily = _oEth ? "'Noto Sans Ethiopic',serif" : "'Nunito',Georgia,sans-serif";
+    // Auto-scale font size so long passages fit in the strip without clipping.
     const _basePx = parseFloat(overlay.style.fontSize) || Math.max(13, Math.round(window.innerHeight * 0.042));
     const _scaled = text.length > 70
       ? Math.max(12, Math.round(_basePx * Math.sqrt(65 / text.length)))
@@ -3846,7 +3962,7 @@ function _illUpdateOverlay(pageIndex){
     overlay.style.fontSize = _scaled + 'px';
   } else {
     overlay.style.display = 'none';
-    overlay.innerHTML = '';
+    overlay.textContent = '';
   }
 }
 
@@ -3881,22 +3997,28 @@ function toggleReaderLang(){
   }
   _updateLangBtn(langBtn, b);
   stopAudio();
-  // Update text strip (portrait reader) or legacy overlay
-  const _illRdr2 = document.getElementById('illReader');
-  if(_illRdr2 && _illRdr2.style.display !== 'none') _illUpdateTextStrip(b, currentPage);
-  else _illUpdateOverlay(currentPage);
+  _illUpdateOverlay(currentPage);
 }
 
 // ═══════════════════════════════════
 // WORD HIGHLIGHT HELPERS
 // ═══════════════════════════════════
 function _wrapTextForHighlight(fullText, book){
-  // Illustrated books — spans already in #illTextStrip (pre-wrapped by _illUpdateTextStrip)
+  // Illustrated books — populate floating overlay with word spans
   const hasImages = book.pages && book.pages.some(pg=>pg.img);
   if(!book.pdf_url && hasImages){
-    const strip = document.getElementById('illTextStrip');
-    if(!strip) return;
-    _ttsWordSpans = Array.from(strip.querySelectorAll('.tts-word'));
+    const overlay = document.getElementById('illTextOverlay');
+    if(!overlay) return;
+    // Wrap plain textContent in .tts-word spans now (at audio start, not at render time).
+    const currentText = overlay.textContent;
+    if(!currentText.trim()){ _ttsWordSpans=[]; _ttsWordIdx=0; return; }
+    let html='', offset=0;
+    currentText.split(/(\s+)/).forEach(tok=>{
+      if(/^\s+$/.test(tok)){html+=tok;offset+=tok.length;}
+      else{html+=`<span class="tts-word" data-start="${offset}">${tok}</span>`;offset+=tok.length;}
+    });
+    overlay.innerHTML = html;
+    _ttsWordSpans = Array.from(overlay.querySelectorAll('.tts-word'));
     _ttsWordIdx = 0;
     return;
   }
@@ -3926,13 +4048,14 @@ function _wrapTextForHighlight(fullText, book){
 
 function _clearHighlights(){
   clearTimeout(_ttsHighlightInterval); _ttsHighlightInterval = null;
-  // Spans stay permanently in DOM — just remove the .lit highlight class (zero re-paint).
+  // Illustrated books: spans are permanently in DOM — just remove the highlight class.
+  // No innerHTML/textContent mutation = no blink, no re-paint, no font jump.
   _ttsWordSpans.forEach(s => s.classList.remove('lit'));
   _ttsWordSpans = []; _ttsWordIdx = 0;
   // Text/emoji legacy books (leftText/rightText): spans were wrapped on demand, unwrap them.
-  const _cb  = books.find(bk=>bk.id===currentBookId);
-  const _cbi = _cb && _cb.pages && _cb.pages.some(pg=>pg.img);
-  if(!_cbi && !(_cb && _cb.pdf_url)){
+  const _cb = books.find(bk=>bk.id===currentBookId);
+  const _cbHasImg = _cb && _cb.pages && _cb.pages.some(pg=>pg.img);
+  if(!_cbHasImg && !(_cb && _cb.pdf_url)){
     ['leftText','rightText'].forEach(id=>{
       const el = document.getElementById(id);
       if(!el) return;
@@ -3941,6 +4064,10 @@ function _clearHighlights(){
       });
       el.normalize();
     });
+  }
+  // Illustrated books: restore plain text (remove the spans that were inserted at TTS start).
+  if(_cbHasImg){
+    _illUpdateOverlay(currentPage);
   }
 }
 
@@ -4798,6 +4925,52 @@ function gugutOwlSVG(pose = 'standard', opts = {}) {
 </svg>`;
 }
 
+// ──────────────────────────────────────────────────────────
+// GUGUT OWL ILLUSTRATED IMAGES
+// Maps pose names → PNG filenames in the gugut-deploy folder.
+// Falls back to the SVG owl if the image file isn't found.
+// ──────────────────────────────────────────────────────────
+const _OWL_IMG_MAP = {
+  // Sheet 1 — Core poses
+  'standard':    'owl-standard.png',
+  'waving':      'owl-waving.png',
+  'flying':      'owl-flying.png',
+  'pointing':    'owl-pointing.png',
+  'reading':     'owl-reading.png',
+  'thinking':    'owl-thinking.png',
+  'pencil':      'owl-pencil.png',
+  'presenting':  'owl-presenting.png',
+  'winking':     'owl-winking.png',
+  'celebrating': 'owl-celebrating.png',
+  // Sheet 2 — Achievement / activity
+  'trophy':      'owl-trophy.png',
+  'flag':        'owl-flag.png',
+  'readmore':    'owl-readmore.png',
+  'pilot':       'owl-pilot.png',
+  'books':       'owl-books.png',
+  'graduation':  'owl-graduation.png',
+  'medal':       'owl-medal.png',
+  'explorer':    'owl-explorer.png',
+  'cheerleader': 'owl-cheerleader.png',
+  'question':    'owl-question.png',
+  // Sheet 3 — Expressions
+  'surprised':   'owl-surprised.png',
+  'listening':   'owl-listening.png',
+  'tapping':     'owl-tapping.png',
+  'confused':    'owl-confused.png',
+  'sleeping':    'owl-sleeping.png',
+};
+function gugutOwlImg(pose, opts={}) {
+  const {width=90, height=100, style='', cls=''} = opts;
+  const file = _OWL_IMG_MAP[pose] || _OWL_IMG_MAP['standard'];
+  // SVG fallback pose mapping
+  const svgPose = (pose==='celebrating'||pose==='cheerleader'||pose==='trophy'||pose==='medal'||pose==='graduation') ? 'celebrate'
+                : (pose==='pilot'||pose==='flying') ? 'explore'
+                : (pose==='sleeping') ? 'sleep' : 'standard';
+  const fallback = gugutOwlSVG(svgPose,{width,height}).replace(/`/g,'\\`').replace(/\$/g,'\\$');
+  return `<img src="${file}" width="${width}" height="${height}" alt="Gugut" class="${cls}" style="display:block;object-fit:contain;${style}" onerror="this.outerHTML=gugutOwlSVG('${svgPose}',{width:${width},height:${height}})">`;
+}
+
 // ══════════════════════════════════════════════════════════
 // WORLD MAP — country state + name lookup
 // ══════════════════════════════════════════════════════════
@@ -4871,13 +5044,13 @@ const continentData = {
   africa: {
     title: 'Africa Reading Adventure',
     sub:   'Read books to travel all 54 countries!',
-    owl:   'explore',
+    owl:   'pilot',
     countries: []  // uses the existing D3 Africa map
   },
   asia: {
     title: 'Asia — Coming Soon!',
     sub:   'Gugut is writing stories from across the amazing continent of Asia.',
-    owl:   'sleep',
+    owl:   'sleeping',
     countries: [
       {flag:'🇯🇵', name:'Japan'}, {flag:'🇮🇳', name:'India'}, {flag:'🇨🇳', name:'China'},
       {flag:'🇰🇷', name:'Korea'}, {flag:'🇹🇭', name:'Thailand'}, {flag:'🇻🇳', name:'Vietnam'}
@@ -4886,7 +5059,7 @@ const continentData = {
   europe: {
     title: 'Europe — Coming Soon!',
     sub:   'Adventures from castles, fjords and sunflower fields are on their way!',
-    owl:   'sleep',
+    owl:   'sleeping',
     countries: [
       {flag:'🇫🇷', name:'France'}, {flag:'🇩🇪', name:'Germany'}, {flag:'🇮🇹', name:'Italy'},
       {flag:'🇬🇧', name:'UK'}, {flag:'🇳🇴', name:'Norway'}, {flag:'🇵🇹', name:'Portugal'}
@@ -4895,7 +5068,7 @@ const continentData = {
   americas: {
     title: 'Americas — Coming Soon!',
     sub:   'Stories from the Amazon rainforest to the icy north are coming soon!',
-    owl:   'sleep',
+    owl:   'sleeping',
     countries: [
       {flag:'🇧🇷', name:'Brazil'}, {flag:'🇲🇽', name:'Mexico'}, {flag:'🇨🇦', name:'Canada'},
       {flag:'🇵🇪', name:'Peru'}, {flag:'🇦🇷', name:'Argentina'}, {flag:'🇺🇸', name:'USA'}
@@ -4904,7 +5077,7 @@ const continentData = {
   mideast: {
     title: 'Middle East — Coming Soon!',
     sub:   'Tales from ancient lands of deserts, spice markets and starlit nights.',
-    owl:   'sleep',
+    owl:   'sleeping',
     countries: [
       {flag:'🇸🇦', name:'Saudi Arabia'}, {flag:'🇹🇷', name:'Türkiye'}, {flag:'🇮🇷', name:'Iran'},
       {flag:'🇪🇬', name:'Egypt'}, {flag:'🇮🇱', name:'Israel'}, {flag:'🇯🇴', name:'Jordan'}
@@ -4913,7 +5086,7 @@ const continentData = {
   oceania: {
     title: 'Oceania — Coming Soon!',
     sub:   'Kangaroos, kiwis and coral reefs — stories from the Pacific are brewing!',
-    owl:   'sleep',
+    owl:   'sleeping',
     countries: [
       {flag:'🇦🇺', name:'Australia'}, {flag:'🇳🇿', name:'New Zealand'}, {flag:'🇫🇯', name:'Fiji'},
       {flag:'🇵🇬', name:'Papua NG'}, {flag:'🇸🇧', name:'Solomon Is.'}, {flag:'🇼🇸', name:'Samoa'}
@@ -4941,7 +5114,7 @@ function switchContinent(cont) {
 
   // Update hero owl
   const iconEl = document.getElementById('exploreHeroIcon');
-  if (iconEl) iconEl.innerHTML = gugutOwlSVG(data.owl, {width:54, height:60});
+  if (iconEl) iconEl.innerHTML = gugutOwlImg(data.owl, {width:54, height:60});
 
   const africaMap    = document.getElementById('africaMapContainer');
   const comingPanel  = document.getElementById('comingSoonPanel');
@@ -4975,7 +5148,7 @@ function switchContinent(cont) {
 
     if (csTitle)    csTitle.textContent  = data.title;
     if (csDesc)     csDesc.textContent   = data.sub;
-    if (csOwlWrap)  csOwlWrap.innerHTML  = gugutOwlSVG('sleep', {width:90, height:95});
+    if (csOwlWrap)  csOwlWrap.innerHTML  = gugutOwlImg('sleeping', {width:90, height:95});
     if (csCountries) {
       csCountries.innerHTML = data.countries.map(c =>
         `<div class="cs-preview-flag"><span>${c.flag}</span>${c.name}</div>`
@@ -5033,7 +5206,7 @@ function renderJourneyPath() {
   const ropeFill = document.getElementById('journeyRopeFill');
   if (!stopsEl || !owlWrap) return;
 
-  owlWrap.innerHTML = gugutOwlSVG('explore', {width:34, height:38});
+  owlWrap.innerHTML = gugutOwlImg('pilot', {width:38, height:42});
 
   const totalBooks = AFRICA_COUNTRIES.reduce((s, c) => s + getLangProgress(c.lang).total, 0);
   const booksRead  = AFRICA_COUNTRIES.reduce((s, c) => s + getLangProgress(c.lang).completed, 0);
@@ -5429,7 +5602,8 @@ function filterByLanguage(lang) {
 const PP_KEY = 'gugut_profiles_v1';
 const PP_ACTIVE = 'gugut_active_profile';
 const PP_COLORS = ['#2D7030','#1565C0','#B71C1C','#7B1FA2','#E65100','#00695C'];
-const PP_OWL_POSES = ['standard','wave','read','explore','celebrate','standard'];
+// Profile avatar owl poses — use illustrated image names
+const PP_OWL_POSES = ['waving','reading','thinking','celebrating','pointing','winking'];
 
 function ppLoad() {
   try { return JSON.parse(localStorage.getItem(PP_KEY) || '[]'); } catch(e){ return []; }
@@ -5447,7 +5621,7 @@ function showProfilePicker() {
 
   // Logo owl
   const logoOwl = document.getElementById('ppLogoOwl');
-  if (logoOwl) logoOwl.innerHTML = gugutOwlSVG('wave', {width:70, height:78});
+  if (logoOwl) logoOwl.innerHTML = gugutOwlImg('waving', {width:70, height:78});
 
   renderProfileGrid();
 }
@@ -5471,7 +5645,7 @@ function renderProfileGrid() {
     card.style.borderColor = p.color + '60';
     const booksRead = Object.values(readProgress).filter(v => v >= 100).length;
     card.innerHTML =
-      '<div style="width:64px;height:72px;">' + gugutOwlSVG(PP_OWL_POSES[i % PP_OWL_POSES.length], {width:64, height:72}) + '</div>' +
+      '<div style="width:64px;height:72px;">' + gugutOwlImg(PP_OWL_POSES[i % PP_OWL_POSES.length], {width:64, height:72}) + '</div>' +
       '<div class="pp-card-name">' + escHtml(p.name) + '</div>';
     card.onclick = () => selectProfile(p, i);
     grid.appendChild(card);
@@ -5513,7 +5687,7 @@ function showAddProfileModal() {
 
   // Owl preview
   const owlEl = document.getElementById('ppModalOwl');
-  if (owlEl) owlEl.innerHTML = gugutOwlSVG('wave', {width:60, height:68});
+  if (owlEl) owlEl.innerHTML = gugutOwlImg('waving', {width:60, height:68});
 
   // Color row
   const colorRow = document.getElementById('ppColorRow');
@@ -5568,7 +5742,7 @@ function escHtml(s) {
       try {
         const ap = JSON.parse(localStorage.getItem(PP_ACTIVE) || 'null');
         if (ap && ap.name) {
-          pill.innerHTML = gugutOwlSVG('standard', {width:22, height:24}) + '<span class="active-reader-name">' + escHtml(ap.name) + '</span>';
+          pill.innerHTML = gugutOwlImg('standard', {width:22, height:24}) + '<span class="active-reader-name">' + escHtml(ap.name) + '</span>';
         } else {
           return; // guest mode, don't show pill
         }
@@ -5714,25 +5888,8 @@ closeReader = function() {
   });
   // Resume thumbnail queue if it paused for the reader
   _drainThumbQueue();
-  // Check if book just reached 100%
-  const book = books.find(b => b.id === currentBookId);
-  if (book && readProgress[currentBookId] >= 100 && book.quiz) {
-    const prevLevel = getLevel();
-    // Show owl celebration
-    showOwl('🎉 አንብበሃል! You finished a book!', 'Amazing reading! Keep going to light up the map.');
-    // Trigger level up check
-    setTimeout(() => {
-      const newLevel = getLevel();
-      if (newLevel.level > prevLevel.level) {
-        checkLevelUp(prevLevel);
-      }
-    }, 2500);
-    // Start quiz after owl
-    setTimeout(() => {
-      hideOwl();
-      startQuiz(currentBookId);
-    }, 5000);
-  }
+  // Quiz is now handled inline on the completion screen (🧠 Answer Questions button).
+  // No separate quiz trigger needed here.
 };
 
 // ═══════════════════════════════════
@@ -5946,8 +6103,8 @@ function _showCompletion(){
 
   // Inject the celebrating Gugut owl mascot
   const owlWrap = document.getElementById('celebOwlWrap');
-  if(owlWrap && typeof gugutOwlSVG === 'function') {
-    owlWrap.innerHTML = gugutOwlSVG('celebrate', {width:100, height:110});
+  if(owlWrap) {
+    owlWrap.innerHTML = gugutOwlImg('celebrating', {width:110, height:120});
     owlWrap.style.fontSize = '0';
     owlWrap.style.lineHeight = '1';
     owlWrap.style.marginBottom = '8px';
@@ -5973,7 +6130,7 @@ function _showCompletion(){
       (readProgress[bk.id]||0) < 100
     );
     if(next){
-      nextDiv.innerHTML = `<div class="celeb-next-card" onclick="document.getElementById('completionCelebration').classList.remove('open');openReader(${next.id})">
+      nextDiv.innerHTML = `<div class="celeb-next-card" onclick="_cqReset();document.getElementById('completionCelebration').classList.remove('open');openReader(${next.id})">
         <div class="celeb-next-emo">${next.emo}</div>
         <div class="celeb-next-info">
           <div class="celeb-next-label">Read Next</div>
@@ -5986,6 +6143,13 @@ function _showCompletion(){
       nextDiv.innerHTML = '';
     }
   }
+
+  // Reset to phase 1 (in case previous quiz left it on phase 2/3)
+  _cqReset();
+
+  // Show quiz button only if this book has quiz data
+  const quizBtn = document.getElementById('celebQuizBtn');
+  if(quizBtn) quizBtn.style.display = (b.quiz && b.quiz.length) ? 'block' : 'none';
 
   cel.classList.add('open');
   _launchConfetti();
@@ -6015,6 +6179,7 @@ function _launchConfetti(){
   }
 }
 function _celebReadAgain(){
+  _cqReset();
   document.getElementById('completionCelebration').classList.remove('open');
   // Return to first page — illustrated path
   if(typeof window._illViewerGoTo === 'function'){
@@ -6025,8 +6190,125 @@ function _celebReadAgain(){
   _resetControlsTimer();
 }
 function _celebBackToLibrary(){
+  _cqReset();
   document.getElementById('completionCelebration').classList.remove('open');
   closeReader();
+}
+// ─── INLINE QUIZ ENGINE (runs inside completion overlay) ───
+let _cqData=[], _cqIdx=0, _cqScore=0, _cqBookId=null;
+function _cqReset(){
+  // Restore phase 1 visibility for next time
+  const p1=document.getElementById('celebPhase1');
+  const p2=document.getElementById('celebPhase2');
+  const p3=document.getElementById('celebPhase3');
+  if(p1) p1.style.display='';
+  if(p2) p2.style.display='none';
+  if(p3) p3.style.display='none';
+}
+function _celebStartQuiz(){
+  const b = books.find(bk=>bk.id===currentBookId);
+  if(!b || !b.quiz || !b.quiz.length) return;
+  _cqBookId = currentBookId;
+  _cqData   = b.quiz;
+  _cqIdx    = 0;
+  _cqScore  = 0;
+  // Transition: hide celebration, reveal quiz panel
+  document.getElementById('celebPhase1').style.display='none';
+  document.getElementById('celebPhase2').style.display='block';
+  document.getElementById('celebPhase3').style.display='none';
+  document.getElementById('cqBookEmo').textContent = b.emo || '📖';
+  // Show question-mark owl during quiz
+  const cqOwl = document.getElementById('cqOwlWrap');
+  if(cqOwl) cqOwl.innerHTML = gugutOwlImg('question', {width:80, height:88});
+  _cqShowQ();
+}
+function _cqShowQ(){
+  const q = _cqData[_cqIdx];
+  document.getElementById('cqProgress').textContent = 'Question '+(_cqIdx+1)+' of '+_cqData.length;
+  document.getElementById('cqQuestion').textContent = q.q;
+  document.getElementById('cqResult').style.display='none';
+  const opts = document.getElementById('cqOptions');
+  opts.innerHTML='';
+  q.opts.forEach(function(opt,i){
+    const btn=document.createElement('button');
+    btn.textContent=opt;
+    btn.style='padding:14px 16px;border-radius:14px;border:2px solid rgba(255,255,255,0.25);background:rgba(255,255,255,0.12);font-size:15px;font-weight:600;cursor:pointer;text-align:left;color:#fff;width:100%;transition:all .15s;';
+    btn.onmouseenter=function(){if(!btn.disabled)btn.style.background='rgba(255,255,255,0.22)';};
+    btn.onmouseleave=function(){if(!btn.disabled&&btn.style.background==='rgba(255, 255, 255, 0.22)')btn.style.background='rgba(255,255,255,0.12)';};
+    btn.onclick=function(){_cqAnswer(i,q.a,btn);};
+    opts.appendChild(btn);
+  });
+}
+function _cqAnswer(chosen,correct,btn){
+  document.querySelectorAll('#cqOptions button').forEach(function(b){b.disabled=true;});
+  const isRight=(chosen===correct);
+  if(isRight){
+    _cqScore++;
+    btn.style.background='#4CAF50'; btn.style.borderColor='#4CAF50';
+  } else {
+    btn.style.background='#f44336'; btn.style.borderColor='#f44336';
+    const allBtns=document.querySelectorAll('#cqOptions button');
+    if(allBtns[correct]){ allBtns[correct].style.background='#4CAF50'; allBtns[correct].style.borderColor='#4CAF50'; }
+  }
+  // Swap quiz owl to match answer result
+  const cqOwl2 = document.getElementById('cqOwlWrap');
+  if(cqOwl2) cqOwl2.innerHTML = gugutOwlImg(isRight?'cheerleader':'confused', {width:80, height:88});
+  document.getElementById('cqResult').style.display='block';
+  document.getElementById('cqResultEmo').textContent=isRight?'🎉':'💪';
+  document.getElementById('cqResultMsg').textContent=isRight?'Correct! Well done!':'Not quite — but keep going!';
+  const isLast=(_cqIdx>=_cqData.length-1);
+  document.getElementById('cqNextBtn').textContent=isLast?'See Results 🏆':'Next →';
+}
+function _cqNext(){
+  const isLast=(_cqIdx>=_cqData.length-1);
+  if(isLast){ _cqShowScore(); }
+  else {
+    _cqIdx++;
+    // Restore question owl for next question
+    const cqOwl=document.getElementById('cqOwlWrap');
+    if(cqOwl) cqOwl.innerHTML=gugutOwlImg('question',{width:80,height:88});
+    _cqShowQ();
+  }
+}
+function _cqShowScore(){
+  document.getElementById('celebPhase2').style.display='none';
+  document.getElementById('celebPhase3').style.display='block';
+  const total=_cqData.length;
+  const pct=Math.round((_cqScore/total)*100);
+  // Score-based owl: trophy (100%), medal (67%+), readmore (below 67%)
+  const scoreOwlPose = pct===100?'trophy':pct>=67?'medal':'readmore';
+  const scoreOwlWrap = document.getElementById('cqScoreOwlWrap');
+  if(scoreOwlWrap) scoreOwlWrap.innerHTML = gugutOwlImg(scoreOwlPose, {width:110, height:120});
+  const emo=pct===100?'🏆':pct>=67?'⭐':'💪';
+  const msg=pct===100?'Perfect score!':_cqScore+' out of '+total+' — '+(pct>=67?'great job!':'keep reading!');
+  const sub=pct===100?'You understood every part of the story!':pct>=67?'Strong comprehension — you\'re a great reader!':'Read it again and try the quiz once more!';
+  document.getElementById('cqScoreEmo').textContent=emo;
+  document.getElementById('cqScoreMsg').textContent=msg;
+  document.getElementById('cqScoreSub').textContent=sub;
+  // Re-launch confetti for celebration
+  _launchConfetti();
+  // Build action buttons
+  const acts=document.getElementById('cqScoreActions');
+  acts.innerHTML='';
+  // Find next book for "Read Next"
+  const b=books.find(bk=>bk.id===_cqBookId);
+  let nextBook=null;
+  if(b){
+    nextBook=books.find(bk=>bk.status==='published'&&bk.id!==b.id&&bk.lang===b.lang&&(readProgress[bk.id]||0)<100);
+    if(!nextBook) nextBook=books.find(bk=>bk.status==='published'&&bk.id!==b.id&&(readProgress[bk.id]||0)<100);
+  }
+  if(nextBook){
+    const nb=document.createElement('button');
+    nb.textContent='📖 Read Next: '+nextBook.title+' →';
+    nb.style='background:var(--amber);color:var(--green-dark);border:none;border-radius:16px;padding:14px 20px;font-weight:800;font-size:15px;cursor:pointer;width:100%;';
+    nb.onclick=function(){_cqReset();document.getElementById('completionCelebration').classList.remove('open');openReader(nextBook.id);};
+    acts.appendChild(nb);
+  }
+  const lb=document.createElement('button');
+  lb.textContent='🏠 Back to Library';
+  lb.style='background:rgba(255,255,255,0.12);color:#fff;border:2px solid rgba(255,255,255,0.25);border-radius:16px;padding:12px 20px;font-weight:700;font-size:15px;cursor:pointer;width:100%;';
+  lb.onclick=function(){_cqReset();document.getElementById('completionCelebration').classList.remove('open');closeReader();};
+  acts.appendChild(lb);
 }
 </script>
 
