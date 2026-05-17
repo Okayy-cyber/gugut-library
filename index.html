@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Gugut Children's Library</title>
+<title>Gugut Library</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦉</text></svg>">
 <meta name="theme-color" content="#142B1A">
-<meta name="description" content="Gugut Montessori — multilingual children's books in Amharic, Oromiffa, Tigrinya, Somali &amp; Wolaytta">
+<meta name="description" content="Gugut Library by Savannah Printing Press — multilingual children's books in Amharic, Oromiffa, Tigrinya, Somali &amp; Wolaytta. From the makers of Felek notebooks (myfelek.com).">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+Ethiopic:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -136,6 +136,71 @@ body.night .section-title{color:var(--green-light);}
 .bcard:active{transform:translateY(-2px) scale(1.005);}
 .bcard::after{content:'▶ Open';position:absolute;inset:0 0 auto 0;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(14,38,20,.8);color:#fff;font-size:14px;font-weight:800;letter-spacing:.5px;border-radius:18px;opacity:0;transition:opacity .2s;pointer-events:none;backdrop-filter:blur(2px);}
 .bcard:hover::after{opacity:1;}
+/* ── PREMIUM / LOCK ── */
+.bcard.locked::after{content:'🔒 Premium';background:rgba(0,0,0,.72);}
+.lock-badge{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.62);color:#FFD700;font-size:10px;font-weight:800;padding:3px 8px;border-radius:20px;letter-spacing:.3px;backdrop-filter:blur(4px);z-index:2;pointer-events:none;}
+.premium-badge{position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#F5C020,#C9A010);color:#142B1A;font-size:9px;font-weight:900;padding:3px 8px;border-radius:20px;letter-spacing:.4px;z-index:2;pointer-events:none;text-transform:uppercase;}
+/* ── SUBSCRIBE MODAL ── */
+.sub-modal{position:fixed;inset:0;z-index:900;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);}
+.sub-modal.open{display:flex;}
+.sub-box{background:#fff;border-radius:28px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.35);}
+body.night .sub-box{background:#1A1D27;}
+.sub-hero{background:linear-gradient(135deg,#2D7030,#142B1A);padding:32px 28px 24px;text-align:center;color:#fff;}
+.sub-hero-icon{font-size:52px;margin-bottom:8px;}
+.sub-hero h2{font-size:22px;font-weight:900;margin-bottom:6px;}
+.sub-hero p{font-size:13px;opacity:.8;line-height:1.5;}
+.sub-body{padding:24px 24px 28px;}
+.sub-plans{display:flex;gap:12px;margin-bottom:20px;}
+.sub-plan{flex:1;border:2px solid var(--border);border-radius:16px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .18s;position:relative;}
+.sub-plan:hover{border-color:var(--green);}
+.sub-plan.selected{border-color:var(--amber);background:rgba(245,192,32,.08);}
+.sub-plan-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--amber);color:var(--green-dark);font-size:9px;font-weight:900;padding:2px 10px;border-radius:20px;white-space:nowrap;text-transform:uppercase;letter-spacing:.4px;}
+.sub-plan-price{font-size:22px;font-weight:900;color:var(--text);line-height:1;}
+.sub-plan-unit{font-size:11px;color:var(--text-light);margin-top:2px;}
+.sub-plan-label{font-size:12px;font-weight:700;color:var(--text-mid);margin-top:8px;}
+.sub-features{list-style:none;margin-bottom:20px;display:flex;flex-direction:column;gap:8px;}
+.sub-features li{font-size:13px;color:var(--text-mid);display:flex;align-items:center;gap:8px;}
+.sub-features li::before{content:'✓';color:var(--green);font-weight:900;font-size:14px;flex-shrink:0;}
+.sub-cta{width:100%;padding:15px;border:none;border-radius:14px;background:var(--green);color:#fff;font-size:15px;font-weight:900;cursor:pointer;transition:background .2s;letter-spacing:.2px;}
+.sub-cta:hover{background:var(--green-mid);}
+.sub-footer{text-align:center;margin-top:14px;font-size:11px;color:var(--text-light);}
+.sub-footer a{color:var(--green);text-decoration:none;font-weight:700;}
+.sub-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:18px;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.member-chip{background:linear-gradient(135deg,var(--amber),#C9A010);color:var(--green-dark);font-size:11px;font-weight:900;padding:4px 12px;border-radius:20px;cursor:pointer;letter-spacing:.3px;}
+/* ── AUTH MODAL ── */
+.auth-modal{position:fixed;inset:0;z-index:950;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);}
+.auth-modal.open{display:flex;}
+.auth-box{background:#fff;border-radius:28px;width:100%;max-width:400px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.35);position:relative;}
+body.night .auth-box{background:#1A1D27;color:var(--text);}
+.auth-hero{background:linear-gradient(135deg,#2D7030,#142B1A);padding:28px 24px 20px;text-align:center;color:#fff;position:relative;}
+.auth-hero-icon{font-size:42px;margin-bottom:6px;}
+.auth-hero h2{font-size:20px;font-weight:900;margin-bottom:4px;}
+.auth-hero p{font-size:12px;opacity:.85;line-height:1.5;}
+.auth-close{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);border:none;color:#fff;font-size:18px;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.auth-body{padding:22px 22px 24px;}
+.auth-field{margin-bottom:12px;}
+.auth-field label{display:block;font-size:12px;font-weight:700;color:var(--text-mid);margin-bottom:4px;}
+.auth-field input{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:12px;font-size:14px;background:transparent;color:var(--text);font-family:inherit;box-sizing:border-box;}
+.auth-field input:focus{outline:none;border-color:var(--green);}
+.auth-error{color:#B33;font-size:12px;margin:6px 0 10px;min-height:16px;font-weight:600;}
+.auth-cta{width:100%;padding:14px;border:none;border-radius:14px;background:var(--green);color:#fff;font-size:15px;font-weight:900;cursor:pointer;transition:background .2s;margin-top:6px;}
+.auth-cta:hover{background:var(--green-mid);}
+.auth-cta:disabled{opacity:.5;cursor:not-allowed;}
+.auth-toggle{text-align:center;margin-top:14px;font-size:12px;color:var(--text-light);}
+.auth-toggle a{color:var(--green);text-decoration:none;font-weight:700;cursor:pointer;}
+/* account chip + menu */
+.account-chip{background:var(--green);color:#fff;font-size:12px;font-weight:800;padding:6px 12px;border-radius:20px;cursor:pointer;letter-spacing:.2px;border:none;display:inline-flex;align-items:center;gap:6px;}
+.account-chip:hover{background:var(--green-mid);}
+.account-menu{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border-radius:14px;box-shadow:0 12px 36px rgba(0,0,0,.18);min-width:220px;padding:8px;z-index:80;display:none;}
+body.night .account-menu{background:#1A1D27;}
+.account-menu.open{display:block;}
+.account-menu-email{padding:8px 12px 10px;font-size:11px;color:var(--text-light);border-bottom:1px solid var(--border);margin-bottom:4px;word-break:break-all;}
+.account-menu button{width:100%;background:none;border:none;text-align:left;padding:10px 12px;font-size:13px;color:var(--text);cursor:pointer;border-radius:8px;font-family:inherit;}
+.account-menu button:hover{background:rgba(0,0,0,.05);}
+body.night .account-menu button:hover{background:rgba(255,255,255,.06);}
+.account-menu .status-row{padding:6px 12px 8px;font-size:11px;color:var(--text-mid);}
+.account-menu .status-active{color:var(--green);font-weight:800;}
+.account-wrap{position:relative;}
 .bcover{width:100%;aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;overflow:hidden;}
 /* Shimmer pulse while thumbnail is loading */
 .bcover.thumb-loading::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 30%,rgba(255,255,255,.25) 50%,transparent 70%);background-size:200% 100%;animation:thumbShimmer 1.6s ease-in-out infinite;}
@@ -283,19 +348,20 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 #pdfTextOverlay{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;
   display:flex;flex-wrap:wrap;align-content:flex-start;padding:12px;gap:0;z-index:3;
   font-family:'Nunito',sans-serif;font-size:16px;color:transparent;}
-/* Illustrated book text strip — anchored at bottom of the canvas,
-   same width as the book page. Always visible. Words highlight during TTS. */
+/* Illustrated book text strip — ALWAYS visible over the canvas cream zone.
+   This IS the static page text; canvas draws only image + empty cream strip.
+   TTS highlights individual words by adding .lit class to .tts-word spans. */
 #illTextOverlay{
   position:absolute;bottom:0;left:50%;transform:translateX(-50%);
   width:var(--ill-page-w,300px);background:#fffdf5;
-  border-top:2px solid #ddd5c5;
-  padding:10px 16px 12px;font-family:'Nunito',Georgia,sans-serif;
-  font-size:var(--ill-font-sz,16px);font-weight:700;
+  border-top:2px solid #e8e0d0;
+  padding:12px 18px 14px;font-family:Georgia,'Times New Roman',serif;
+  font-size:var(--ill-font-sz,16px);font-weight:400;
   line-height:1.55;color:#1a1208;text-align:center;pointer-events:none;
   z-index:20;display:none;box-sizing:border-box;overflow:hidden;
-  /* warm layered shadow gives depth above the page image */
-  box-shadow:0 -4px 16px rgba(0,0,0,.08),0 2px 12px rgba(0,0,0,.10);
-  border-radius:0 0 8px 8px;}
+  opacity:1;  /* always visible — this IS the page text, not an overlay */
+  -webkit-font-smoothing:antialiased;
+  letter-spacing:0.01em;}
 /* tts-word spans are always pre-wrapped at page render — no DOM mutation on audio start */
 .tts-word{display:inline;border-radius:3px;transition:background .13s ease,box-shadow .13s ease;}
 /* Karaoke highlight: background + glow only — no scale, no weight, no color change = zero layout shift */
@@ -898,9 +964,95 @@ if(location.protocol === 'file:') {
     <div class="topbar-actions">
       <button class="tbtn" onclick="toggleNight()" title="Night mode" id="nightBtn" aria-label="Toggle night mode">🌙</button>
       <button class="tbtn amber" id="addBookBtn" onclick="openUpload()" style="display:none">＋ Add Book</button>
+      <button class="tbtn amber" id="subscribeTopBtn" onclick="handleSubscribeClick()" title="Subscribe for full access">⭐ Subscribe</button>
+      <button class="tbtn" id="signInTopBtn" onclick="openAuthModal('signin')" title="Sign in">Sign In</button>
+      <span class="account-wrap" id="accountWrap" style="display:none;">
+        <button class="account-chip" id="accountChip" onclick="toggleAccountMenu(event)"><span id="accountInitial">👤</span><span id="accountLabel">Account</span></button>
+        <div class="account-menu" id="accountMenu">
+          <div class="account-menu-email" id="accountEmail">—</div>
+          <div class="status-row" id="accountStatus">Free account</div>
+          <button id="accountSubscribeBtn" onclick="closeAccountMenu();openSubModal();">⭐ Subscribe</button>
+          <button onclick="closeAccountMenu();signOut();">Sign out</button>
+        </div>
+      </span>
     </div>
   </div>
 </header>
+
+<!-- ══════════════════════════════════
+     SUBSCRIPTION MODAL
+══════════════════════════════════ -->
+<div class="sub-modal" id="subModal" onclick="if(event.target===this)closeSubModal()">
+  <div class="sub-box">
+    <div class="sub-hero" style="position:relative;">
+      <button class="sub-close" onclick="closeSubModal()">✕</button>
+      <div class="sub-hero-icon">🦉📚</div>
+      <h2>Gugut Full Library</h2>
+      <p>Unlock every book, every language, and every new story we add — for the whole family.</p>
+    </div>
+    <div class="sub-body">
+      <div class="sub-plans">
+        <div class="sub-plan" id="planMonthly" onclick="selectPlan('monthly')">
+          <div class="sub-plan-price">$4.99</div>
+          <div class="sub-plan-unit">/ month</div>
+          <div class="sub-plan-label">Monthly</div>
+        </div>
+        <div class="sub-plan selected" id="planYearly" onclick="selectPlan('yearly')">
+          <div class="sub-plan-badge">Best value · Save 33%</div>
+          <div class="sub-plan-price">$39.99</div>
+          <div class="sub-plan-unit">/ year</div>
+          <div class="sub-plan-label">Yearly</div>
+        </div>
+      </div>
+      <ul class="sub-features">
+        <li>All 15+ illustrated books, with new titles added regularly</li>
+        <li>Read-aloud with word-by-word highlighting</li>
+        <li>6 African languages — Amharic, Oromiffa, Tigrinya &amp; more</li>
+        <li>Reading streaks, quizzes &amp; progress tracking</li>
+        <li>Works offline after first load</li>
+      </ul>
+      <button class="sub-cta" id="subCtaBtn" onclick="initiateCheckout()">Start Reading — $39.99 / year</button>
+      <div class="sub-footer">
+        Already subscribed? <a href="#" onclick="restorePurchase();return false;">Restore access</a>
+        &nbsp;·&nbsp; <a href="#" onclick="closeSubModal();return false;">Maybe later</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     AUTH MODAL (Sign In / Sign Up)
+══════════════════════════════════ -->
+<div class="auth-modal" id="authModal" onclick="if(event.target===this)closeAuthModal()">
+  <div class="auth-box">
+    <div class="auth-hero">
+      <button class="auth-close" onclick="closeAuthModal()">✕</button>
+      <div class="auth-hero-icon">🦉</div>
+      <h2 id="authTitle">Welcome back</h2>
+      <p id="authSubtitle">Sign in to keep reading where you left off.</p>
+    </div>
+    <div class="auth-body">
+      <div class="auth-field">
+        <label for="authEmail">Email</label>
+        <input type="email" id="authEmail" autocomplete="email" placeholder="you@example.com"/>
+      </div>
+      <div class="auth-field">
+        <label for="authPassword">Password</label>
+        <input type="password" id="authPassword" autocomplete="current-password" placeholder="••••••••"/>
+      </div>
+      <div class="auth-field" id="authNameField" style="display:none;">
+        <label for="authName">Your name (optional)</label>
+        <input type="text" id="authName" autocomplete="name" placeholder="Hana"/>
+      </div>
+      <div class="auth-error" id="authError"></div>
+      <button class="auth-cta" id="authCtaBtn" onclick="submitAuth()">Sign In</button>
+      <div class="auth-toggle" id="authToggleRow">
+        <span id="authToggleText">New to Gugut?</span>
+        <a onclick="toggleAuthMode()" id="authToggleLink">Create an account</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ══════════════════════════════════
      LIBRARY VIEW
@@ -981,7 +1133,7 @@ if(location.protocol === 'file:') {
   <div class="scroll" style="padding:0;">
     <div class="admin-header">
       <h2>🛠 Admin Dashboard</h2>
-      <p>Manage your Gugut Children's Library</p>
+      <p>Manage your Gugut Library</p>
     </div>
     <div class="admin-stats">
       <div class="astat"><div class="astat-n" id="adminStatBooks">—</div><div class="astat-l">Total Books</div></div>
@@ -1126,9 +1278,9 @@ if(location.protocol === 'file:') {
         </div>
         <span style="font-size:13px;font-weight:600;color:var(--green-mid);" id="elSettingArrow">›</span>
       </div>
-      <div class="setting-row" onclick="showToast('📤 About Gugut Montessori')">
+      <div class="setting-row" onclick="openAboutModal()">
         <div class="setting-icon">🦉</div>
-        <div class="setting-info"><div class="setting-title">About Gugut</div><div class="setting-sub">gugutmontessori.com</div></div>
+        <div class="setting-info"><div class="setting-title">About Gugut</div><div class="setting-sub">Savannah Printing Press · Felek notebooks</div></div>
         <span style="font-size:13px;font-weight:600;color:var(--green-mid);">›</span>
       </div>
       <div class="setting-row" id="adminLoginRow" onclick="openAdminLogin()">
@@ -1174,6 +1326,7 @@ if(location.protocol === 'file:') {
     <div class="pp-logo-owl" id="ppLogoOwl"></div>
     <div class="pp-logo-title">Gugut Library</div>
     <div class="pp-logo-sub">Who's reading today?</div>
+    <div style="font-size:11px;color:rgba(255,255,255,.5);font-weight:600;margin-top:6px;letter-spacing:.3px;">by Savannah Printing Press · makers of Felek</div>
   </div>
   <div class="pp-grid" id="ppGrid"></div>
   <button class="pp-parent-btn" onclick="enterLibraryMode()">📚 Enter Library</button>
@@ -1282,12 +1435,14 @@ if(location.protocol === 'file:') {
         <button class="rmp-skip" onclick="_rmpChoose('skip')">Skip this choice</button>
       </div>
       <!-- Full-height tap zones: invisible hit areas. Arrows fade in on hover (Apple Books style) -->
-      <div class="reader-tap-zone" id="tapPrev" onclick="document.getElementById('prevBtn').click()" aria-label="Previous page" title="Previous page (← key)">
+      <div class="reader-tap-zone" id="tapPrev" onclick="_tapNav('prev')" aria-label="Previous page" title="Previous page (← key)">
         <span class="tap-arrow">‹</span>
       </div>
-      <div class="reader-tap-zone" id="tapNext" onclick="document.getElementById('nextBtn').click()" aria-label="Next page" title="Next page (→ key)">
+      <div class="reader-tap-zone" id="tapNext" onclick="_tapNav('next')" aria-label="Next page" title="Next page (→ key)">
         <span class="tap-arrow">›</span>
       </div>
+      <!-- Center tap zone: reveals controls when immersive, especially for Back button access -->
+      <div id="tapCenter" onclick="_tapNav('center')" style="position:absolute;top:0;left:20%;right:20%;height:25%;z-index:23;cursor:pointer;-webkit-tap-highlight-color:transparent;"></div>
     </div>
     <!-- Legacy spread (hidden — kept for DOM references) -->
     <div class="book-flip-wrap" style="display:none;">
@@ -1501,6 +1656,58 @@ if(location.protocol === 'file:') {
   </div>
 </div>
 
+<!-- ABOUT MODAL — Savannah Printing Press + Felek heritage -->
+<div class="modal-overlay" id="aboutModal" onclick="if(event.target===this)closeAboutModal()">
+  <div class="modal-sheet" style="max-width:460px;margin:0 auto;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+      <div style="font-size:38px;line-height:1;">🦉</div>
+      <div>
+        <h3 style="margin:0 0 2px;">About Gugut Library</h3>
+        <p style="margin:0;font-size:13px;color:var(--text-light);">From Savannah Printing Press — Ethiopia</p>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#fffef5 0%,#fff7d9 100%);border:1.5px solid #f3e8b8;border-radius:14px;padding:14px 16px;margin-bottom:14px;font-size:13.5px;color:var(--text-dark);line-height:1.6;">
+      <strong style="color:var(--green-dark);">Gugut Library</strong> is a home-grown reading program created by
+      <strong>Savannah Printing Press</strong>, the Ethiopian publisher behind
+      <a href="https://www.myfelek.com" target="_blank" rel="noopener" style="color:var(--green-mid);font-weight:700;text-decoration:none;border-bottom:1.5px dashed var(--green-mid);">Felek notebooks</a>.
+    </div>
+
+    <div style="font-size:13px;color:var(--text-mid);line-height:1.65;margin-bottom:14px;">
+      Through the <strong>Felek exercise-book donation program</strong>, we saw that while school enrollment in Ethiopia kept rising, learning materials were not keeping up. Children were arriving at school in greater numbers — but too many of them had nothing to read. Gugut Library grew directly from that gap.
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:14px;">
+      <div style="flex:1;background:var(--bg);border-radius:12px;padding:12px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:4px;">📒</div>
+        <div style="font-size:12px;font-weight:800;color:var(--green-dark);">Felek</div>
+        <div style="font-size:10.5px;color:var(--text-light);margin-top:2px;">Notebooks that land in real classrooms</div>
+      </div>
+      <div style="flex:1;background:var(--bg);border-radius:12px;padding:12px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:4px;">🧩</div>
+        <div style="font-size:12px;font-weight:800;color:var(--green-dark);">Montessori</div>
+        <div style="font-size:10.5px;color:var(--text-light);margin-top:2px;">Hands-on materials we print locally</div>
+      </div>
+      <div style="flex:1;background:var(--bg);border-radius:12px;padding:12px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:4px;">📚</div>
+        <div style="font-size:12px;font-weight:800;color:var(--green-dark);">Gugut</div>
+        <div style="font-size:10.5px;color:var(--text-light);margin-top:2px;">Stories children can hold and hear</div>
+      </div>
+    </div>
+
+    <div style="font-size:12.5px;color:var(--text-mid);line-height:1.55;margin-bottom:16px;">
+      We align with the Ethiopian government's growing priority on early-grade reading, and we extend our Montessori work into a library children can actually take home — in Amharic, Tigrinya, Oromiffa, Somali, Wolaytta, and English.
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+      <a href="https://www.myfelek.com" target="_blank" rel="noopener" style="flex:1;min-width:140px;background:var(--green-mid);color:#fff;text-decoration:none;text-align:center;padding:11px 14px;border-radius:12px;font-size:13px;font-weight:700;">🌐 myfelek.com</a>
+      <a href="https://gugutmontessori.com" target="_blank" rel="noopener" style="flex:1;min-width:140px;background:var(--amber);color:var(--green-dark);text-decoration:none;text-align:center;padding:11px 14px;border-radius:12px;font-size:13px;font-weight:800;">🦉 gugutmontessori.com</a>
+    </div>
+
+    <button class="btn-outline" onclick="closeAboutModal()" style="width:100%;">Close</button>
+  </div>
+</div>
+
 <style>
 .pin-dot{width:14px;height:14px;border-radius:50%;background:var(--border);transition:background .15s;}
 .pin-dot.filled{background:var(--green);}
@@ -1544,7 +1751,7 @@ if(location.protocol === 'file:') {
 // DATA
 // ═══════════════════════════════════
 const books = [
-  {id:9,title:"The King's Secret",local:"የንጉሱ ምስጢር",lang:"Amharic",age:"6-9",cc:"c2",emo:"👑",desc:"A king hides a funny secret under his crown — but secrets have a way of getting out.",status:"published",reads:0,
+  {id:9,free:true,title:"The King's Secret",local:"የንጉሱ ምስጢር",lang:"Amharic",age:"6-9",cc:"c2",emo:"👑",desc:"A king hides a funny secret under his crown — but secrets have a way of getting out.",status:"published",reads:0,
     cover:"pages/kings-secret/cover.jpg",
     pages:[
       {img:"pages/kings-secret/cover.jpg",text:"",local:"",isCover:true},
@@ -1572,7 +1779,7 @@ const books = [
     quiz:[{q:"What did the king have that was unusual?",opts:["A small nose 👃","Long ears like an ox 🫏","Green eyes 👁️","Tiny feet 🦶"],a:1},{q:"How did the king hide his secret?",opts:["With a scarf 🧣","Under water 💧","With a big crown 👑","In a cave 🏔️"],a:2},{q:"What grew from the spot where Mamo whispered?",opts:["A tree 🌳","Flowers 🌸","Tall green reeds 🌿","A mushroom 🍄"],a:2},{q:"What did the flute sing when the shepherd boy played it?",opts:["A lullaby 🎵","A war song ⚔️","The king's secret 🤫","Nothing at all 🤐"],a:2}]},
 
   // ── Illustrated books (canvas-rendered, image+text per page) ──
-  {id:12,title:"My Grandmother's Shawl",local:"የአያቴ ሻውል",lang:"Amharic",age:"0-3",cc:"c1",emo:"🧣",desc:"Little Hana discovers the magic of her grandmother's soft, warm shawl.",status:"published",reads:0,
+  {id:12,free:true,title:"My Grandmother's Shawl",local:"የአያቴ ሻውል",lang:"Amharic",age:"0-3",cc:"c1",emo:"🧣",desc:"Little Hana discovers the magic of her grandmother's soft, warm shawl.",status:"published",reads:0,
     cover:"pages/grandmothers-shawl/cover.jpg",
     pages:[
       {img:"pages/grandmothers-shawl/cover.jpg",text:"",local:"",isCover:true},
@@ -1653,7 +1860,7 @@ const books = [
     ],
     quiz:[{q:"Where did Mika go in this story?",opts:["To the river","To the market","To school"],a:1},{q:"What color were the tomatoes Mika saw?",opts:["Yellow","Green","Red"],a:2},{q:"What made Mika happy at the market?",opts:["All the colors","All the animals","All the children"],a:0}]},
 
-  {id:15,title:"Hana Washes Her Hands",local:"ሃና እጆቿን ትታጠባለች",lang:"Amharic",age:"0-3",cc:"c1",emo:"🤲",desc:"Hana plays until her hands grow dusty, then carefully washes them all by herself.",status:"published",reads:0,
+  {id:15,free:true,title:"Hana Washes Her Hands",local:"ሃና እጆቿን ትታጠባለች",lang:"Amharic",age:"0-3",cc:"c1",emo:"🤲",desc:"Hana plays until her hands grow dusty, then carefully washes them all by herself.",status:"published",reads:0,
     cover:"pages/hana-washes-hands-ill/cover.jpg",
     pages:[
       {img:"pages/hana-washes-hands-ill/cover.jpg",text:"",local:"",isCover:true},
@@ -1952,6 +2159,309 @@ const books = [
 ];
 
 // ═══════════════════════════════════
+// AUTH + SUBSCRIPTION STATE (Supabase-backed)
+// ═══════════════════════════════════
+let currentUser = null;       // supabase auth user
+let currentProfile = null;    // public.profiles row
+let userSubscribed = false;   // derived from profile.is_subscribed
+let _selectedPlan = 'yearly';
+let _authMode = 'signin';     // 'signin' | 'signup'
+let _pendingAfterAuth = null; // function to run after successful auth (e.g. re-open subscribe modal)
+const PLANS = {
+  monthly: { price: '$4.99', unit: '/ month', label: 'Monthly', cta: 'Start Reading — $4.99 / month' },
+  yearly:  { price: '$39.99', unit: '/ year',  label: 'Yearly',  cta: 'Start Reading — $39.99 / year'  }
+};
+
+// Dev override: ?sub=1 in URL simulates active subscription (no login required)
+if (location.search.includes('sub=1')) userSubscribed = true;
+
+function _updateSubUI(){
+  const subBtn       = document.getElementById('subscribeTopBtn');
+  const signInBtn    = document.getElementById('signInTopBtn');
+  const accountWrap  = document.getElementById('accountWrap');
+  const accountEmail = document.getElementById('accountEmail');
+  const accountLabel = document.getElementById('accountLabel');
+  const accountInit  = document.getElementById('accountInitial');
+  const accountStat  = document.getElementById('accountStatus');
+  const accountSubBtn= document.getElementById('accountSubscribeBtn');
+
+  if (currentUser) {
+    // Signed in — hide Sign In, show account chip
+    if (signInBtn)   signInBtn.style.display = 'none';
+    if (accountWrap) accountWrap.style.display = '';
+    const email = currentUser.email || '';
+    const name  = (currentProfile && currentProfile.full_name) || email.split('@')[0] || 'Account';
+    if (accountEmail) accountEmail.textContent = email;
+    if (accountLabel) accountLabel.textContent = name.length > 14 ? name.slice(0,12)+'…' : name;
+    if (accountInit)  accountInit.textContent  = (name[0] || '👤').toUpperCase();
+    // Subscription status
+    if (userSubscribed) {
+      if (subBtn) subBtn.style.display = 'none';
+      if (accountStat) { accountStat.textContent = '⭐ Premium member'; accountStat.classList.add('status-active'); }
+      if (accountSubBtn) accountSubBtn.style.display = 'none';
+    } else {
+      if (subBtn) subBtn.style.display = '';
+      if (accountStat) { accountStat.textContent = 'Free account — 3 free books'; accountStat.classList.remove('status-active'); }
+      if (accountSubBtn) accountSubBtn.style.display = '';
+    }
+  } else {
+    // Signed out
+    if (signInBtn)   signInBtn.style.display = '';
+    if (accountWrap) accountWrap.style.display = 'none';
+    if (subBtn)      subBtn.style.display = '';
+  }
+}
+
+// ── AUTH MODAL ──
+function openAuthModal(mode, pendingFn){
+  _authMode = mode || 'signin';
+  _pendingAfterAuth = pendingFn || null;
+  _applyAuthMode();
+  const m = document.getElementById('authModal');
+  if (m) m.classList.add('open');
+  setTimeout(()=>{ const e = document.getElementById('authEmail'); if(e) e.focus(); }, 80);
+}
+function closeAuthModal(){
+  const m = document.getElementById('authModal');
+  if (m) m.classList.remove('open');
+  const err = document.getElementById('authError'); if (err) err.textContent = '';
+}
+function toggleAuthMode(){
+  _authMode = _authMode === 'signin' ? 'signup' : 'signin';
+  _applyAuthMode();
+}
+function _applyAuthMode(){
+  const title  = document.getElementById('authTitle');
+  const sub    = document.getElementById('authSubtitle');
+  const cta    = document.getElementById('authCtaBtn');
+  const tText  = document.getElementById('authToggleText');
+  const tLink  = document.getElementById('authToggleLink');
+  const nField = document.getElementById('authNameField');
+  const pwd    = document.getElementById('authPassword');
+  const err    = document.getElementById('authError');
+  if (err) err.textContent = '';
+  if (_authMode === 'signup') {
+    if (title) title.textContent = 'Create your Gugut account';
+    if (sub)   sub.textContent   = 'Free forever — 3 books on the house, more with a subscription.';
+    if (cta)   cta.textContent   = 'Create account';
+    if (tText) tText.textContent = 'Already have an account?';
+    if (tLink) tLink.textContent = 'Sign in';
+    if (nField) nField.style.display = '';
+    if (pwd)    pwd.setAttribute('autocomplete','new-password');
+  } else {
+    if (title) title.textContent = 'Welcome back';
+    if (sub)   sub.textContent   = 'Sign in to keep reading where you left off.';
+    if (cta)   cta.textContent   = 'Sign In';
+    if (tText) tText.textContent = 'New to Gugut?';
+    if (tLink) tLink.textContent = 'Create an account';
+    if (nField) nField.style.display = 'none';
+    if (pwd)    pwd.setAttribute('autocomplete','current-password');
+  }
+}
+async function submitAuth(){
+  const email = (document.getElementById('authEmail')?.value || '').trim();
+  const pwd   = document.getElementById('authPassword')?.value || '';
+  const name  = (document.getElementById('authName')?.value || '').trim();
+  const errEl = document.getElementById('authError');
+  const btn   = document.getElementById('authCtaBtn');
+  if (errEl) errEl.textContent = '';
+  if (!email || !pwd) { if(errEl) errEl.textContent = 'Please enter your email and password.'; return; }
+  if (pwd.length < 6) { if(errEl) errEl.textContent = 'Password must be at least 6 characters.'; return; }
+  if (!sb) { if(errEl) errEl.textContent = 'Connecting… please try again in a moment.'; return; }
+  if (btn) { btn.disabled = true; btn.textContent = _authMode==='signup' ? 'Creating…' : 'Signing in…'; }
+  try {
+    if (_authMode === 'signup') {
+      const { data, error } = await sb.auth.signUp({
+        email, password: pwd,
+        options: { data: { full_name: name || null } }
+      });
+      if (error) throw error;
+      // If email confirmations are OFF, a session comes back immediately
+      if (data && data.session && data.user) {
+        currentUser = data.user;
+        await _loadProfile();
+        closeAuthModal();
+        showToast('🎉 Welcome to Gugut!');
+        _updateSubUI();
+        renderLibrary();
+        if (_pendingAfterAuth) { const fn = _pendingAfterAuth; _pendingAfterAuth = null; fn(); }
+      } else {
+        // Email confirmation required
+        closeAuthModal();
+        showToast('📧 Check your email to confirm your account.');
+      }
+    } else {
+      const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd });
+      if (error) throw error;
+      currentUser = data.user;
+      await _loadProfile();
+      closeAuthModal();
+      showToast('👋 Welcome back!');
+      _updateSubUI();
+      renderLibrary();
+      if (_pendingAfterAuth) { const fn = _pendingAfterAuth; _pendingAfterAuth = null; fn(); }
+    }
+  } catch(e) {
+    if (errEl) errEl.textContent = (e && e.message) ? e.message : 'Something went wrong. Please try again.';
+  } finally {
+    if (btn) { btn.disabled = false; _applyAuthMode(); }
+  }
+}
+
+async function signOut(){
+  try {
+    if (sb) await sb.auth.signOut();
+  } catch(e) { /* ignore */ }
+  currentUser = null;
+  currentProfile = null;
+  userSubscribed = false;
+  _updateSubUI();
+  renderLibrary();
+  showToast('👋 Signed out');
+}
+
+async function _loadProfile(){
+  if (!sb || !currentUser) { currentProfile = null; userSubscribed = false; return; }
+  try {
+    const { data, error } = await sb.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
+    if (error) throw error;
+    currentProfile = data || null;
+    // Subscription is active if is_subscribed=true AND (expires_at is null OR in the future)
+    const active = !!(currentProfile && currentProfile.is_subscribed &&
+      (!currentProfile.expires_at || new Date(currentProfile.expires_at) > new Date()));
+    userSubscribed = active;
+  } catch(e) {
+    console.warn('Profile load failed:', e);
+    currentProfile = null;
+    userSubscribed = false;
+  }
+}
+
+async function _restoreSession(){
+  if (!sb) return;
+  try {
+    const { data } = await sb.auth.getSession();
+    if (data && data.session && data.session.user) {
+      currentUser = data.session.user;
+      await _loadProfile();
+    }
+  } catch(e) { /* ignore */ }
+  _updateSubUI();
+
+  // React to future auth events
+  sb.auth.onAuthStateChange(async (_event, session) => {
+    currentUser = session ? session.user : null;
+    if (currentUser) { await _loadProfile(); } else { currentProfile = null; userSubscribed = false; }
+    _updateSubUI();
+    renderLibrary();
+  });
+}
+
+// ── ACCOUNT MENU ──
+function toggleAccountMenu(ev){
+  if (ev) ev.stopPropagation();
+  const menu = document.getElementById('accountMenu');
+  if (menu) menu.classList.toggle('open');
+}
+function closeAccountMenu(){
+  const menu = document.getElementById('accountMenu');
+  if (menu) menu.classList.remove('open');
+}
+document.addEventListener('click', function(e){
+  const wrap = document.getElementById('accountWrap');
+  if (!wrap) return;
+  if (!wrap.contains(e.target)) closeAccountMenu();
+});
+
+// ── SUBSCRIPTION MODAL ──
+function handleSubscribeClick(){
+  // Require sign-in before showing the subscription flow
+  if (!currentUser) {
+    openAuthModal('signup', () => openSubModal());
+    return;
+  }
+  openSubModal();
+}
+function openSubModal(bookTitle){
+  document.getElementById('subModal').classList.add('open');
+}
+function closeSubModal(){
+  document.getElementById('subModal').classList.remove('open');
+}
+function selectPlan(plan){
+  _selectedPlan = plan;
+  document.getElementById('planMonthly').classList.toggle('selected', plan==='monthly');
+  document.getElementById('planYearly').classList.toggle('selected', plan==='yearly');
+  const cta = document.getElementById('subCtaBtn');
+  if(cta) cta.textContent = PLANS[plan].cta;
+}
+
+async function initiateCheckout(){
+  // ── Require sign-in first ──
+  if (!currentUser) {
+    closeSubModal();
+    openAuthModal('signup', () => openSubModal());
+    return;
+  }
+  // ── STUB CHECKOUT (no real payments) ──
+  // When Stripe is wired, replace this block with a redirect to Stripe Checkout
+  // and flip is_subscribed=true via a webhook → profiles update.
+  const cta = document.getElementById('subCtaBtn');
+  if (cta) { cta.disabled = true; cta.textContent = 'Activating…'; }
+  const plan = _selectedPlan;
+  const expiry = plan==='yearly'
+    ? new Date(Date.now()+365*24*3600*1000).toISOString()
+    : new Date(Date.now()+31*24*3600*1000).toISOString();
+  try {
+    if (sb) {
+      const { error } = await sb.from('profiles').update({
+        is_subscribed: true,
+        plan: plan,
+        subscribed_at: new Date().toISOString(),
+        expires_at: expiry
+      }).eq('id', currentUser.id);
+      if (error) throw error;
+    }
+    await _loadProfile();
+  } catch(e) {
+    console.warn('Subscription update failed:', e);
+    // Fall back to in-memory flag so the user still sees the unlock
+    userSubscribed = true;
+  }
+  if (cta) { cta.disabled = false; cta.textContent = PLANS[plan].cta; }
+  _updateSubUI();
+  closeSubModal();
+  renderLibrary();
+  showToast('🎉 Welcome to Gugut Full Library!');
+  showOwl('🎉 You\'re in!','Every book is now unlocked. Happy reading!');
+}
+
+async function restorePurchase(){
+  // Restore = sign in with the account that owns the subscription
+  if (currentUser) {
+    await _loadProfile();
+    _updateSubUI();
+    closeSubModal();
+    if (userSubscribed) {
+      showToast('✅ Your subscription is active.');
+    } else {
+      showToast('No active subscription found on this account.');
+    }
+    return;
+  }
+  closeSubModal();
+  openAuthModal('signin', async () => {
+    await _loadProfile();
+    _updateSubUI();
+    renderLibrary();
+  });
+}
+
+function _isBookAccessible(b){
+  return b.free || userSubscribed;
+}
+
+// ═══════════════════════════════════
 // STATE
 // ═══════════════════════════════════
 let activeLang='all', activeAge='all', searchQ='';
@@ -2229,9 +2739,13 @@ function bCardHTML(b){
   const coverText = isNativeLang ? b.title : b.local;
   // Language badge
   const langBadge = activeLang==='all' ? b.lang : activeLang;
-  return `<div class="bcard" onclick="openReader(${b.id})">
+  const isPremium = !b.free;
+  const isLocked = isPremium && !userSubscribed;
+  return `<div class="bcard${isLocked?' locked':''}" onclick="openReader(${b.id})">
     <div class="bcover ${b.cc}" data-book-id="${b.id}">
       ${completedBadge}
+      ${isLocked?'<div class="lock-badge">🔒 Premium</div>':''}
+      ${!isLocked && isPremium && userSubscribed?'<div class="premium-badge">⭐ Premium</div>':''}
       <span style="font-size:44px">${b.emo}</span>
       <div class="cover-overlay">${coverText}</div>
       <div class="lang-badge">${langBadge}</div>
@@ -2372,6 +2886,12 @@ function updateFavReaderBtn(){
 let pdfDoc=null, pdfPageNum=1, pdfTotalPages=1, pdfRendering=false;
 
 function openReader(id){
+  // Gate: show subscribe modal for locked premium books
+  const _bk = books.find(bk=>bk.id===id);
+  if(_bk && !_isBookAccessible(_bk)){
+    openSubModal(_bk.title);
+    return;
+  }
   try {
     stopAudio();
     // Extra safety: ensure button always shows play state when entering a new book
@@ -2594,19 +3114,45 @@ async function initPageFlipFromIllustrated(b, container){
               // Draw full cover artwork on top (letterboxed)
               ctx.drawImage(imgEl, fx, fy, fw, fh);
             } else {
-              // Story page: cover-fill (zoom to fill image zone, center-top crop)
-              const scale = Math.max(cw/imgEl.width, imgZoneH/imgEl.height);
-              const dw=imgEl.width*scale, dh=imgEl.height*scale;
-              const dx=(cw-dw)/2, dy=Math.min(0,(imgZoneH-dh)/2);
-              ctx.save(); ctx.beginPath(); ctx.rect(0,0,cw,imgZoneH); ctx.clip();
-              ctx.drawImage(imgEl, dx,dy,dw,dh);
-              ctx.restore();
+              // Story page: contain (show full illustration, no cropping)
+              const scale = Math.min(cw/imgEl.width, imgZoneH/imgEl.height);
+              const dw=Math.round(imgEl.width*scale), dh=Math.round(imgEl.height*scale);
+              const dx=Math.round((cw-dw)/2), dy=Math.round((imgZoneH-dh)/2);
+              ctx.drawImage(imgEl, dx, dy, dw, dh);
             }
 
             if(hasText){
+              // Cream text zone background + STATIC TEXT drawn on canvas.
+              // This gives the "authentic book page" feel the user wants.
+              // During TTS an invisible HTML overlay fades in over this zone
+              // with word-span highlighting, then fades back out.
               ctx.fillStyle='#fffdf5'; ctx.fillRect(0,imgZoneH,cw,textZoneH);
               ctx.strokeStyle='#e8e0d0'; ctx.lineWidth=2;
               ctx.beginPath(); ctx.moveTo(0,imgZoneH); ctx.lineTo(cw,imgZoneH); ctx.stroke();
+
+              // Draw the page text on the canvas
+              const _pgText = _getPageText(pg, _canvasDisplayLang);
+              if(_pgText){
+                const _isEth = ['Amharic','Tigrinya'].includes(_canvasDisplayLang);
+                const _fontFam = _isEth ? "'Noto Sans Ethiopic',serif" : "Georgia,serif";
+                const _fontSize = Math.round(ch*0.042);
+                const _lineH = Math.round(ch*0.055);
+                // Scale down font for long text
+                const _adjSize = _pgText.length > 70
+                  ? Math.max(Math.round(ch*0.028), Math.round(_fontSize * Math.sqrt(65/_pgText.length)))
+                  : _fontSize;
+                const _adjLH = _pgText.length > 70
+                  ? Math.max(Math.round(ch*0.038), Math.round(_lineH * Math.sqrt(65/_pgText.length)))
+                  : _lineH;
+                ctx.fillStyle='#1a1a1a';
+                ctx.font=`${_adjSize}px ${_fontFam}`;
+                ctx.textAlign='center';
+                const _textY = imgZoneH + Math.round(textZoneH*0.15) + _adjLH;
+                const _maxW = cw * 0.88;
+                wrapCanvasText(ctx, _pgText, cw/2, _textY, _maxW, _adjLH);
+              }
+
+              // Page number (bottom-right, subtle)
               ctx.fillStyle='#bbb';
               ctx.font=`${Math.round(ch*0.025)}px Arial,sans-serif`;
               ctx.textAlign='right';
@@ -2663,7 +3209,14 @@ async function initPageFlipFromIllustrated(b, container){
           ctx.fillText(i + '/' + storyCount, oc.width - Math.round(oc.width * 0.04), oc.height - Math.round(oc.height * 0.025));
         }
       }
-      return oc.toDataURL('image/jpeg', 0.88);
+      try {
+        return oc.toDataURL('image/jpeg', 0.88);
+      } catch(taintErr){
+        // Tainted canvas — browser blocked toDataURL (file:// protocol or missing CORS headers).
+        // Fall back to the raw image path; the overlay handles text display anyway.
+        console.warn('Canvas tainted, using direct image URL for page', i);
+        return pg.img || '';
+      }
     }
 
     // ── Render all pages (parallel for speed) then hand to StPageFlip ─────────
@@ -3468,6 +4021,20 @@ function closeELModal(){
   document.body.style.overflow = '';
 }
 
+// ── About modal (Savannah Printing Press / Felek heritage) ──
+function openAboutModal(){
+  const m = document.getElementById('aboutModal');
+  if(!m) return;
+  m.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeAboutModal(){
+  const m = document.getElementById('aboutModal');
+  if(!m) return;
+  m.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
 function toggleELKeyVisibility(){
   const inp = document.getElementById('elKeyInput');
   if(!inp) return;
@@ -4004,8 +4571,9 @@ function cycleSpeed(){
 // ═══════════════════════════════════
 // ILLUSTRATED BOOK TEXT OVERLAY
 // ═══════════════════════════════════
-// Shows the current page text in the HTML overlay (plain text, no spans).
-// Called on page flip and on TTS clear so text is always visible.
+// Pre-wraps the current page's text in .tts-word spans inside the overlay.
+// Overlay stays INVISIBLE (opacity:0) at rest — canvas-drawn text shows through.
+// TTS fades the overlay in (opacity:1) for word highlighting, then fades it out.
 function _illUpdateOverlay(pageIndex){
   const b = books.find(bk=>bk.id===currentBookId);
   if(!b || !b.pages || !b.pages.some(pg=>pg.img)) return;
@@ -4015,8 +4583,9 @@ function _illUpdateOverlay(pageIndex){
   const displayLang = readerDisplayLang==='local' ? activeLang : 'English';
   const text = _getPageText(pg, displayLang);
   if(text){
-    // Pre-wrap every word in a .tts-word span at render time — NOT at audio start.
-    // This means the DOM is stable: audio start/stop only toggle .lit, zero re-paint.
+    // Pre-wrap every word in a .tts-word span — ready for TTS highlighting.
+    // The overlay IS the page text (canvas only draws the cream background).
+    // No fading in/out — text is always visible; TTS just adds .lit highlights.
     let _hw='', _hoff=0;
     text.split(/(\s+)/).forEach(tok=>{
       if(/^\s+$/.test(tok)){_hw+=tok;_hoff+=tok.length;}
@@ -4024,12 +4593,10 @@ function _illUpdateOverlay(pageIndex){
     });
     overlay.innerHTML = _hw;
     overlay.style.display = 'block';
-    overlay.style.opacity = '1';
-    overlay.style.transition = 'none';
+    overlay.style.opacity = '0';   // invisible — canvas text shows through; fades in during TTS
     const _oEth = ['Amharic','Tigrinya'].includes(displayLang);
-    overlay.style.fontFamily = _oEth ? "'Noto Sans Ethiopic',serif" : "'Nunito',Georgia,serif";
-    // Auto-scale font size so long passages always fit in the strip without clipping.
-    // Base: pageH * 0.042 (set by _positionIllOverlay). Scale down for text > 70 chars.
+    overlay.style.fontFamily = _oEth ? "'Noto Sans Ethiopic',serif" : "Georgia,serif";
+    // Match canvas font size (canvas used ch*0.042 = pageH*0.042 CSS px)
     const _basePx = parseFloat(overlay.style.fontSize) || Math.max(13, Math.round(window.innerHeight * 0.042));
     const _scaled = text.length > 70
       ? Math.max(12, Math.round(_basePx * Math.sqrt(65 / text.length)))
@@ -4084,8 +4651,10 @@ function _wrapTextForHighlight(fullText, book){
   if(!book.pdf_url && hasImages){
     const overlay = document.getElementById('illTextOverlay');
     if(!overlay) return;
-    // Spans are already in the DOM — pre-wrapped by _illUpdateOverlay at page render.
-    // Zero DOM mutation here. Just collect the spans; the highlight engine does the rest.
+    // Spans already pre-wrapped by _illUpdateOverlay. Collect them for highlighting.
+    // Fade in the overlay so highlighted text covers the static canvas text.
+    overlay.style.transition = 'opacity .15s';
+    overlay.style.opacity = '1';
     _ttsWordSpans = Array.from(overlay.querySelectorAll('.tts-word'));
     _ttsWordIdx = 0;
     return;
@@ -4116,13 +4685,16 @@ function _wrapTextForHighlight(fullText, book){
 
 function _clearHighlights(){
   clearTimeout(_ttsHighlightInterval); _ttsHighlightInterval = null;
-  // Illustrated books: spans are permanently in DOM — just remove the highlight class.
-  // No innerHTML/textContent mutation = no blink, no re-paint, no font jump.
   _ttsWordSpans.forEach(s => s.classList.remove('lit'));
   _ttsWordSpans = []; _ttsWordIdx = 0;
-  // Text/emoji legacy books (leftText/rightText): spans were wrapped on demand, unwrap them.
+  // Illustrated books: fade overlay back out — canvas text shows through again.
   const _cb = books.find(bk=>bk.id===currentBookId);
   const _cbHasImg = _cb && _cb.pages && _cb.pages.some(pg=>pg.img);
+  if(_cbHasImg){
+    const _illo = document.getElementById('illTextOverlay');
+    if(_illo){ _illo.style.transition='opacity .2s'; _illo.style.opacity='0'; }
+  }
+  // Text/emoji legacy books: unwrap spans from leftText/rightText.
   if(!_cbHasImg && !(_cb && _cb.pdf_url)){
     ['leftText','rightText'].forEach(id=>{
       const el = document.getElementById(id);
@@ -4133,7 +4705,6 @@ function _clearHighlights(){
       el.normalize();
     });
   }
-  // DO NOT call _illUpdateOverlay here — spans already live in the overlay, ready for the next play.
 }
 
 // ═══════════════════════════════════
@@ -4446,6 +5017,7 @@ let sb = null;
 async function initSupabase() {
   if (typeof window.supabase === 'undefined') return;
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  await _restoreSession();
   await loadBooksFromDB();
 }
 
@@ -4558,6 +5130,7 @@ async function uploadBookToSupabase() {
 // INIT
 // ═══════════════════════════════════
 renderLibrary(); // show sample books immediately
+_updateSubUI();   // show correct subscribe/member button based on saved state
 // initSupabase is called via onload on the Supabase script tag below
 </script>
 
@@ -6020,6 +6593,24 @@ function _rmpChoose(mode){
     _resetControlsTimer();
   }
   // 'skip' — do nothing, leave current state
+}
+
+// ═══════════════════════════════════════════════════════
+// TAP ZONE NAVIGATION — immersive-mode aware
+// ═══════════════════════════════════════════════════════
+function _tapNav(dir){
+  const overlay = document.getElementById('readerOverlay');
+  // If controls are hidden (immersive), FIRST reveal them — don't navigate.
+  // This ensures the Back button is always reachable.
+  if(overlay && overlay.classList.contains('immersive')){
+    _resetControlsTimer();
+    return; // swallow the tap — user needs to see controls first
+  }
+  // Controls are visible — navigate normally
+  if(dir==='prev') document.getElementById('prevBtn')?.click();
+  else if(dir==='next') document.getElementById('nextBtn')?.click();
+  // 'center' tap when controls are already visible — just reset timer
+  _resetControlsTimer();
 }
 
 // ═══════════════════════════════════════════════════════
