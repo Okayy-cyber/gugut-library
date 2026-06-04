@@ -1742,6 +1742,45 @@ if(location.protocol === 'file:') {
 .pstamp.stamped .pstamp-seal{opacity:1;}
 .pstamp.completed-all .pstamp-seal{background:var(--amber);color:#fff!important;border-color:var(--amber)!important;}
 .explore-tip{text-align:center;font-size:12px;color:var(--text-light);margin:4px 0 20px;}
+
+/* ── KG CURRICULUM KITS ── */
+.kg-section{margin:28px 0 8px;padding:0 16px;}
+.kg-section-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.kg-section-title{font-size:18px;font-weight:800;color:var(--green-dark);}
+.kg-section-sub{font-size:12px;color:var(--text-light);flex:1;min-width:200px;}
+.kg-cat-filters{display:flex;gap:6px;padding:0 16px 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.kg-cat-filters::-webkit-scrollbar{display:none;}
+.kg-cat-btn{white-space:nowrap;padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--card-bg);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;color:var(--text-mid);}
+.kg-cat-btn.active{border-color:var(--green);background:var(--green-pale);color:var(--green-dark);}
+.kg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;padding:0 16px 20px;}
+@media(max-width:600px){.kg-grid{grid-template-columns:1fr 1fr;gap:10px;}}
+.kg-card{background:var(--card-bg);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:transform .2s,box-shadow .2s;border:1px solid var(--border);}
+.kg-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.14);}
+.kg-card-img{width:100%;aspect-ratio:4/3;object-fit:cover;background:#f0f0f0;}
+.kg-card-body{padding:10px 12px 12px;}
+.kg-card-code{font-size:10px;font-weight:800;color:var(--text-light);letter-spacing:.5px;margin-bottom:2px;}
+.kg-card-name{font-size:14px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.kg-card-book{font-size:11px;color:var(--text-mid);display:flex;align-items:center;gap:4px;}
+.kg-card-cat{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:6px;}
+
+/* KG Kit Detail Modal */
+.kg-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
+.kg-modal-overlay.open{display:flex;}
+.kg-modal{background:var(--card-bg);border-radius:18px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.kg-modal-header{position:relative;padding:20px 20px 14px;}
+.kg-modal-close{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;border:none;background:rgba(0,0,0,.08);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+.kg-modal-gallery{display:flex;gap:6px;padding:0 20px 16px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;}
+.kg-modal-gallery::-webkit-scrollbar{display:none;}
+.kg-modal-gallery img{width:85%;min-width:280px;border-radius:12px;object-fit:cover;flex-shrink:0;scroll-snap-align:center;}
+.kg-modal-info{padding:0 20px 20px;}
+.kg-modal-info h3{font-size:18px;font-weight:800;margin-bottom:4px;}
+.kg-modal-info .theme{font-size:12px;color:var(--text-mid);margin-bottom:12px;}
+.kg-modal-info .desc{font-size:13px;line-height:1.6;color:var(--text);margin-bottom:14px;}
+.kg-includes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.kg-inc-item{background:var(--green-pale);border-radius:10px;padding:8px 10px;text-align:center;}
+body.night .kg-inc-item{background:rgba(255,255,255,.06);}
+.kg-inc-item .ico{font-size:20px;margin-bottom:2px;}
+.kg-inc-item .lbl{font-size:10px;font-weight:700;color:var(--text-mid);}
 </style>
 
 <div class="toast" id="toast"></div>
@@ -2156,7 +2195,304 @@ const books = [
       {img:"pages/two-goats-bridge/page20.jpg",text:"After that, both goats remembered to share the bridge.",local:"ከዚያ ሁለቱ ፍየሎቹ ድልድዩን መካፈሉን አስታወሱ።"}
     ],
     quiz:[{q:"What happened when the two goats met in the middle of the bridge?",opts:["They became friends","They both fell into the river","One goat turned back"],a:1},{q:"Why did the goats fall into the river?",opts:["The bridge broke","They were both too stubborn to give way","A strong wind pushed them"],a:1},{q:"What did the goats learn?",opts:["Run faster next time","Share the bridge and take turns","Jump over each other"],a:1}]},
+
+  // ── KG Curriculum Storybooks ──
+  {id:101,free:true,title:"Kuuree Counts Her Fingers",local:"",lang:"Amharic",age:"0-3",cc:"c3",emo:"🖐️",desc:"Little Kuuree learns to count from one to ten on her mother's lap — one finger at a time.",status:"published",reads:0,
+    cover:"pages/kuuree-counts/cover.jpg",
+    pages:[
+      {img:"pages/kuuree-counts/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/kuuree-counts/page01.jpg",text:"Kuuree sat on her mother's lap.",local:""},
+      {img:"pages/kuuree-counts/page02.jpg",text:"Mother held up one finger and smiled.",local:""},
+      {img:"pages/kuuree-counts/page03.jpg",text:"Kuuree looked at her own small hand.",local:""},
+      {img:"pages/kuuree-counts/page04.jpg",text:"She lifted one finger — one!",local:""},
+      {img:"pages/kuuree-counts/page05.jpg",text:"Mother showed two fingers side by side.",local:""},
+      {img:"pages/kuuree-counts/page06.jpg",text:"Kuuree tried two — it was tricky but she did it!",local:""},
+      {img:"pages/kuuree-counts/page07.jpg",text:"Three fingers went up next.",local:""},
+      {img:"pages/kuuree-counts/page08.jpg",text:"Kuuree giggled and showed three too.",local:""},
+      {img:"pages/kuuree-counts/page09.jpg",text:"Four fingers stood together like little friends.",local:""},
+      {img:"pages/kuuree-counts/page10.jpg",text:"Kuuree wiggled her four fingers proudly.",local:""},
+      {img:"pages/kuuree-counts/page11.jpg",text:"Mother opened her whole hand — all five!",local:""},
+      {img:"pages/kuuree-counts/page12.jpg",text:"Kuuree stretched her hand open wide.",local:""},
+      {img:"pages/kuuree-counts/page13.jpg",text:"Now the other hand began — six!",local:""},
+      {img:"pages/kuuree-counts/page14.jpg",text:"Kuuree laughed and counted with both hands.",local:""},
+      {img:"pages/kuuree-counts/page15.jpg",text:"Seven fingers, then eight fingers up.",local:""},
+      {img:"pages/kuuree-counts/page16.jpg",text:"Kuuree's eyes grew big with excitement.",local:""},
+      {img:"pages/kuuree-counts/page17.jpg",text:"Nine fingers stood tall and strong.",local:""},
+      {img:"pages/kuuree-counts/page18.jpg",text:"Then all ten fingers waved in the air!",local:""},
+      {img:"pages/kuuree-counts/page19.jpg",text:"Kuuree counted every one and clapped with joy.",local:""}
+    ],
+    quiz:[{q:"What did Kuuree learn to count?",opts:["Stars","Her fingers","Animals"],a:1},{q:"How many fingers did she count in total?",opts:["Five","Eight","Ten"],a:2},{q:"Who helped Kuuree count?",opts:["Her teacher","Her mother","Her friend"],a:1}]},
+
+  {id:102,free:true,title:"The Colors of My Village",local:"",lang:"Amharic",age:"0-3",cc:"c1",emo:"🎨",desc:"Tsehay discovers every color of the rainbow in her beautiful Ethiopian village.",status:"published",reads:0,
+    cover:"pages/colors-of-village/cover.jpg",
+    pages:[
+      {img:"pages/colors-of-village/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/colors-of-village/page01.jpg",text:"The path in the village was red with earth.",local:""},
+      {img:"pages/colors-of-village/page02.jpg",text:"Tsehay wiggled her toes in the warm red ground.",local:""},
+      {img:"pages/colors-of-village/page03.jpg",text:"The enset leaves were tall and strong green.",local:""},
+      {img:"pages/colors-of-village/page04.jpg",text:"Her mother stood beside her in the green shade.",local:""},
+      {img:"pages/colors-of-village/page05.jpg",text:"At the neighbor's door, yellow corn dried on a mat.",local:""},
+      {img:"pages/colors-of-village/page06.jpg",text:"Aunt Lelise held up one bright yellow piece.",local:""},
+      {img:"pages/colors-of-village/page07.jpg",text:"The highland sky was wide and clear blue.",local:""},
+      {img:"pages/colors-of-village/page08.jpg",text:"A small blue cloth fluttered on a fence.",local:""},
+      {img:"pages/colors-of-village/page09.jpg",text:"In the grove, brown coffee beans dried in the sun.",local:""},
+      {img:"pages/colors-of-village/page10.jpg",text:"Tsehay picked up one warm brown bean.",local:""},
+      {img:"pages/colors-of-village/page11.jpg",text:"At the well, a woman carried cool white milk.",local:""},
+      {img:"pages/colors-of-village/page12.jpg",text:"A single white drop fell into a waiting cup.",local:""},
+      {img:"pages/colors-of-village/page13.jpg",text:"At the market, an orange fruit was cut open.",local:""},
+      {img:"pages/colors-of-village/page14.jpg",text:"The bright orange inside made Tsehay laugh.",local:""},
+      {img:"pages/colors-of-village/page15.jpg",text:"A black bird hopped on a shaded branch.",local:""},
+      {img:"pages/colors-of-village/page16.jpg",text:"Tsehay watched its black feathers shine.",local:""},
+      {img:"pages/colors-of-village/page17.jpg",text:"A small purple flower grew by the path.",local:""},
+      {img:"pages/colors-of-village/page18.jpg",text:"Tsehay carried it gently to her mother.",local:""},
+      {img:"pages/colors-of-village/page19.jpg",text:"She remembered every color in her village.",local:""}
+    ],
+    quiz:[{q:"What color was the village path?",opts:["Green","Red","Yellow"],a:1},{q:"What was drying at the neighbor's door?",opts:["Coffee beans","Yellow corn","Clothes"],a:1},{q:"What did Tsehay carry to her mother?",opts:["A purple flower","A yellow fruit","A blue cloth"],a:0}]},
+
+  {id:103,free:true,title:"Clean Hands, Healthy Me",local:"",lang:"Amharic",age:"0-3",cc:"c2",emo:"🧼",desc:"Tigist learns why clean hands keep her family healthy, from morning wash to evening meal.",status:"published",reads:0,
+    cover:"pages/clean-hands-healthy/cover.jpg",
+    pages:[
+      {img:"pages/clean-hands-healthy/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/clean-hands-healthy/page01.jpg",text:"Early morning in the compound.",local:""},
+      {img:"pages/clean-hands-healthy/page02.jpg",text:"Tigist and mother walk together to the water collection point.",local:""},
+      {img:"pages/clean-hands-healthy/page03.jpg",text:"Tigist stands at the washing station.",local:""},
+      {img:"pages/clean-hands-healthy/page04.jpg",text:"Tigist has finished washing.",local:""},
+      {img:"pages/clean-hands-healthy/page05.jpg",text:"Tigist plays with other children in the compound yard.",local:""},
+      {img:"pages/clean-hands-healthy/page06.jpg",text:"Tigist and children finish playing.",local:""},
+      {img:"pages/clean-hands-healthy/page07.jpg",text:"Tigist helps mother sweep the compound yard with a local straw broom.",local:""},
+      {img:"pages/clean-hands-healthy/page08.jpg",text:"The health worker visits the compound.",local:""},
+      {img:"pages/clean-hands-healthy/page09.jpg",text:"Health worker shows Tigist how to examine her own clean fingernails.",local:""},
+      {img:"pages/clean-hands-healthy/page10.jpg",text:"End of day.",local:""},
+      {img:"pages/clean-hands-healthy/page11.jpg",text:"Midday meal preparation.",local:""},
+      {img:"pages/clean-hands-healthy/page12.jpg",text:"Tigist helps cover prepared food.",local:""},
+      {img:"pages/clean-hands-healthy/page13.jpg",text:"The family approaches the latrine area, set respectfully away from the main compound.",local:""},
+      {img:"pages/clean-hands-healthy/page14.jpg",text:"Tigist washes her hands after using the latrine.",local:""},
+      {img:"pages/clean-hands-healthy/page15.jpg",text:"Tigist's baby brother reaches for her.",local:""},
+      {img:"pages/clean-hands-healthy/page16.jpg",text:"Tigist demonstrates handwashing to her baby brother.",local:""},
+      {img:"pages/clean-hands-healthy/page17.jpg",text:"The compound at late afternoon.",local:""},
+      {img:"pages/clean-hands-healthy/page18.jpg",text:"Evening preparation.",local:""},
+      {img:"pages/clean-hands-healthy/page19.jpg",text:"The family sits together for the evening meal.",local:""}
+    ],
+    quiz:[{q:"What does Tigist do first in the morning?",opts:["Eat breakfast","Wash at the station","Play with friends"],a:1},{q:"Who visits the compound?",opts:["A teacher","A health worker","A farmer"],a:1},{q:"What does Tigist teach her baby brother?",opts:["How to walk","How to wash hands","How to eat"],a:1}]},
+
+  {id:104,free:true,title:"The Lion Who Went Away",local:"",lang:"Amharic",age:"3-6",cc:"c2",emo:"🦁",desc:"Young shepherd Yonas and his grandfather share the highlands with wild animals, learning respect for nature.",status:"published",reads:0,
+    cover:"pages/lion-who-went-away/cover.jpg",
+    pages:[
+      {img:"pages/lion-who-went-away/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/lion-who-went-away/page01.jpg",text:"Yonas stood on a grassy hill in the morning.",local:""},
+      {img:"pages/lion-who-went-away/page02.jpg",text:"His small flock of sheep stayed near him.",local:""},
+      {img:"pages/lion-who-went-away/page03.jpg",text:"Grandfather Kebede walked by his side.",local:""},
+      {img:"pages/lion-who-went-away/page04.jpg",text:"They saw a lion resting on a distant outcrop.",local:""},
+      {img:"pages/lion-who-went-away/page05.jpg",text:"Grandfather whispered to stay far away.",local:""},
+      {img:"pages/lion-who-went-away/page06.jpg",text:"They moved the flock to a safer hillside.",local:""},
+      {img:"pages/lion-who-went-away/page07.jpg",text:"Geladas sat in the grass, eating quietly.",local:""},
+      {img:"pages/lion-who-went-away/page08.jpg",text:"A highland bird circled in the open sky.",local:""},
+      {img:"pages/lion-who-went-away/page09.jpg",text:"Yonas rested on a rock while sheep grazed.",local:""},
+      {img:"pages/lion-who-went-away/page10.jpg",text:"He looked at the wide highland world.",local:""},
+      {img:"pages/lion-who-went-away/page11.jpg",text:"Later, he saw a Walia ibex on a cliff.",local:""},
+      {img:"pages/lion-who-went-away/page12.jpg",text:"Grandfather said it was a special animal.",local:""},
+      {img:"pages/lion-who-went-away/page13.jpg",text:"They watched the ibex walk the rocky edge.",local:""},
+      {img:"pages/lion-who-went-away/page14.jpg",text:"Two birds flew past, close but unafraid.",local:""},
+      {img:"pages/lion-who-went-away/page15.jpg",text:"Yonas counted each of his sheep carefully.",local:""},
+      {img:"pages/lion-who-went-away/page16.jpg",text:"Grandfather nodded proudly at his care.",local:""},
+      {img:"pages/lion-who-went-away/page17.jpg",text:"The lion had quietly gone from the outcrop.",local:""},
+      {img:"pages/lion-who-went-away/page18.jpg",text:"Wild animals shared the highlands with shepherds.",local:""},
+      {img:"pages/lion-who-went-away/page19.jpg",text:"Yonas felt a quiet, strong respect inside.",local:""}
+    ],
+    quiz:[{q:"What animal did Yonas and Grandfather see on the outcrop?",opts:["An elephant","A lion","A wolf"],a:1},{q:"What special animal did they see on a cliff?",opts:["A Walia ibex","A gelada baboon","An eagle"],a:0},{q:"What did the lion do at the end?",opts:["It attacked","It quietly went away","It fell asleep"],a:1}]},
+
+  {id:105,free:true,title:"Who Helps Our Village?",local:"",lang:"Amharic",age:"3-6",cc:"c1",emo:"👩‍⚕️",desc:"Tsion walks through her village and meets every community worker — from teachers to blacksmiths.",status:"published",reads:0,
+    cover:"pages/who-helps-village/cover.jpg",
+    pages:[
+      {img:"pages/who-helps-village/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/who-helps-village/page01.jpg",text:"Tsion walks through the village on a red path.",local:""},
+      {img:"pages/who-helps-village/page02.jpg",text:"A teacher stands in a classroom.",local:""},
+      {img:"pages/who-helps-village/page03.jpg",text:"A health worker helps at the health post.",local:""},
+      {img:"pages/who-helps-village/page04.jpg",text:"A farmer works in the field.",local:""},
+      {img:"pages/who-helps-village/page05.jpg",text:"A woman weaves cloth outdoors.",local:""},
+      {img:"pages/who-helps-village/page06.jpg",text:"A woman shapes clay into pots.",local:""},
+      {img:"pages/who-helps-village/page07.jpg",text:"A blacksmith works at his forge.",local:""},
+      {img:"pages/who-helps-village/page08.jpg",text:"A shepherd tends animals on the hillside.",local:""},
+      {img:"pages/who-helps-village/page09.jpg",text:"Merchants gather at the market.",local:""},
+      {img:"pages/who-helps-village/page10.jpg",text:"Women gather water at the water point.",local:""},
+      {img:"pages/who-helps-village/page11.jpg",text:"An elder shares wisdom under a tree.",local:""},
+      {img:"pages/who-helps-village/page12.jpg",text:"Tsion learns at school with the teacher.",local:""},
+      {img:"pages/who-helps-village/page13.jpg",text:"Tsion visits the health post.",local:""},
+      {img:"pages/who-helps-village/page14.jpg",text:"Tsion helps the farmer in the field.",local:""},
+      {img:"pages/who-helps-village/page15.jpg",text:"Tsion watches the weaver work.",local:""},
+      {img:"pages/who-helps-village/page16.jpg",text:"Tsion learns how to shape clay.",local:""},
+      {img:"pages/who-helps-village/page17.jpg",text:"Tsion watches the blacksmith safely.",local:""},
+      {img:"pages/who-helps-village/page18.jpg",text:"Tsion helps the shepherd on the hillside.",local:""},
+      {img:"pages/who-helps-village/page19.jpg",text:"Tsion shops with her mother at the market.",local:""}
+    ],
+    quiz:[{q:"Who does Tsion meet at the health post?",opts:["A teacher","A health worker","A farmer"],a:1},{q:"What does the blacksmith do?",opts:["Weaves cloth","Works at his forge","Tends animals"],a:1},{q:"What does Tsion do at the market?",opts:["She teaches","She shops with her mother","She plays"],a:1}]},
+
+  {id:106,free:true,title:"Planting Seeds with Grandmother",local:"",lang:"Amharic",age:"3-6",cc:"c3",emo:"🌱",desc:"Hanna and Grandmother plant seeds in the garden and watch life begin to grow.",status:"published",reads:0,
+    cover:"pages/planting-seeds/cover.jpg",
+    pages:[
+      {img:"pages/planting-seeds/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/planting-seeds/page01.jpg",text:"Grandmother called from the garden gate.",local:""},
+      {img:"pages/planting-seeds/page02.jpg",text:"Hanna ran to meet her in the morning sun.",local:""},
+      {img:"pages/planting-seeds/page03.jpg",text:"Grandmother showed her a handful of seeds.",local:""},
+      {img:"pages/planting-seeds/page04.jpg",text:"They knelt together in the soft brown earth.",local:""},
+      {img:"pages/planting-seeds/page05.jpg",text:"Grandmother dug a small hole with a stick.",local:""},
+      {img:"pages/planting-seeds/page06.jpg",text:"Hanna dropped a seed inside carefully.",local:""},
+      {img:"pages/planting-seeds/page07.jpg",text:"They covered it gently with soil.",local:""},
+      {img:"pages/planting-seeds/page08.jpg",text:"Grandmother poured water from a clay jug.",local:""},
+      {img:"pages/planting-seeds/page09.jpg",text:"Hanna watched the water sink into the ground.",local:""},
+      {img:"pages/planting-seeds/page10.jpg",text:"They planted row after row together.",local:""},
+      {img:"pages/planting-seeds/page11.jpg",text:"The sun moved high and warm above them.",local:""},
+      {img:"pages/planting-seeds/page12.jpg",text:"Grandmother pointed to a tiny green shoot nearby.",local:""},
+      {img:"pages/planting-seeds/page13.jpg",text:"Hanna bent down to look at it closely.",local:""},
+      {img:"pages/planting-seeds/page14.jpg",text:"A seedling was growing from a seed planted before.",local:""},
+      {img:"pages/planting-seeds/page15.jpg",text:"Grandmother smiled and held Hanna's hand.",local:""},
+      {img:"pages/planting-seeds/page16.jpg",text:"They walked along the rows they had planted.",local:""},
+      {img:"pages/planting-seeds/page17.jpg",text:"Hanna imagined the garden full of green.",local:""},
+      {img:"pages/planting-seeds/page18.jpg",text:"Grandmother said the rain would help them grow.",local:""},
+      {img:"pages/planting-seeds/page19.jpg",text:"Hanna promised to come back and watch them.",local:""}
+    ],
+    quiz:[{q:"What did Grandmother show Hanna?",opts:["A flower","A handful of seeds","A clay pot"],a:1},{q:"What did Hanna see growing?",opts:["A tiny green shoot","A big tree","A flower"],a:0},{q:"What did Grandmother say would help?",opts:["More seeds","The rain","The wind"],a:1}]},
+
+  {id:107,free:true,title:"The Coffee Ceremony",local:"",lang:"Amharic",age:"3-6",cc:"c2",emo:"☕",desc:"Grandmother leads the family through Ethiopia's beloved coffee ceremony — from roasting beans to blessing guests.",status:"published",reads:0,
+    cover:"pages/coffee-ceremony/cover.jpg",
+    pages:[
+      {img:"pages/coffee-ceremony/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/coffee-ceremony/page01.jpg",text:"Grandmother announces the coffee ceremony.",local:""},
+      {img:"pages/coffee-ceremony/page02.jpg",text:"Grandmother prepares the floor carefully.",local:""},
+      {img:"pages/coffee-ceremony/page03.jpg",text:"Green coffee beans are brought out.",local:""},
+      {img:"pages/coffee-ceremony/page04.jpg",text:"The beans are washed gently.",local:""},
+      {img:"pages/coffee-ceremony/page05.jpg",text:"The beans are roasted slowly.",local:""},
+      {img:"pages/coffee-ceremony/page06.jpg",text:"The beans turn dark and fragrant.",local:""},
+      {img:"pages/coffee-ceremony/page07.jpg",text:"The roasted beans are shared and smelled.",local:""},
+      {img:"pages/coffee-ceremony/page08.jpg",text:"The beans are ground into powder.",local:""},
+      {img:"pages/coffee-ceremony/page09.jpg",text:"Water is poured into the jebena.",local:""},
+      {img:"pages/coffee-ceremony/page10.jpg",text:"Coffee brews in the jebena.",local:""},
+      {img:"pages/coffee-ceremony/page11.jpg",text:"The first cup is poured carefully.",local:""},
+      {img:"pages/coffee-ceremony/page12.jpg",text:"Sugar is offered with the coffee.",local:""},
+      {img:"pages/coffee-ceremony/page13.jpg",text:"Coffee is served with respect.",local:""},
+      {img:"pages/coffee-ceremony/page14.jpg",text:"People talk and connect together.",local:""},
+      {img:"pages/coffee-ceremony/page15.jpg",text:"A second round of coffee is served.",local:""},
+      {img:"pages/coffee-ceremony/page16.jpg",text:"Liya tastes the coffee happily.",local:""},
+      {img:"pages/coffee-ceremony/page17.jpg",text:"A third round brings blessings.",local:""},
+      {img:"pages/coffee-ceremony/page18.jpg",text:"Popcorn and snacks are shared.",local:""},
+      {img:"pages/coffee-ceremony/page19.jpg",text:"Guests are blessed and thanked.",local:""}
+    ],
+    quiz:[{q:"How many rounds of coffee are served?",opts:["One","Two","Three"],a:2},{q:"What is the coffee pot called?",opts:["Mesob","Jebena","Injera"],a:1},{q:"What snack is shared with coffee?",opts:["Bread","Popcorn","Fruit"],a:1}]},
+
+  {id:108,free:true,title:"The Song of the Mortar",local:"",lang:"Amharic",age:"3-6",cc:"c1",emo:"🎵",desc:"Senait discovers the rhythm and song of community as women pound grain together at dawn.",status:"published",reads:0,
+    cover:"pages/song-of-mortar/cover.jpg",
+    pages:[
+      {img:"pages/song-of-mortar/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/song-of-mortar/page01.jpg",text:"The village wakes to the sound of pounding.",local:""},
+      {img:"pages/song-of-mortar/page02.jpg",text:"Grandmother lifts the heavy wooden pestle.",local:""},
+      {img:"pages/song-of-mortar/page03.jpg",text:"Senait watches from the doorway.",local:""},
+      {img:"pages/song-of-mortar/page04.jpg",text:"The mortar stands in the center of the yard.",local:""},
+      {img:"pages/song-of-mortar/page05.jpg",text:"Grandmother begins to pound the grain.",local:""},
+      {img:"pages/song-of-mortar/page06.jpg",text:"A steady rhythm fills the morning air.",local:""},
+      {img:"pages/song-of-mortar/page07.jpg",text:"Neighbors hear the beat and come outside.",local:""},
+      {img:"pages/song-of-mortar/page08.jpg",text:"Women gather and pound together.",local:""},
+      {img:"pages/song-of-mortar/page09.jpg",text:"The children clap along to the rhythm.",local:""},
+      {img:"pages/song-of-mortar/page10.jpg",text:"Senait tries to lift the pestle herself.",local:""},
+      {img:"pages/song-of-mortar/page11.jpg",text:"Grandmother guides her hands gently.",local:""},
+      {img:"pages/song-of-mortar/page12.jpg",text:"Together they pound in a shared beat.",local:""},
+      {img:"pages/song-of-mortar/page13.jpg",text:"The grain becomes fine and soft.",local:""},
+      {img:"pages/song-of-mortar/page14.jpg",text:"Grandmother sings a song while pounding.",local:""},
+      {img:"pages/song-of-mortar/page15.jpg",text:"Senait tries to sing along.",local:""},
+      {img:"pages/song-of-mortar/page16.jpg",text:"The song carries across the village.",local:""},
+      {img:"pages/song-of-mortar/page17.jpg",text:"Other voices join in from nearby homes.",local:""},
+      {img:"pages/song-of-mortar/page18.jpg",text:"The flour is ready for the day's bread.",local:""},
+      {img:"pages/song-of-mortar/page19.jpg",text:"Senait feels proud of the work they shared.",local:""}
+    ],
+    quiz:[{q:"What wakes the village?",opts:["A rooster","The sound of pounding","A bell"],a:1},{q:"What does Senait try to do?",opts:["Lift the pestle","Sing a song","Both!"],a:2},{q:"What is the grain turned into?",opts:["Porridge","Flour","Bread"],a:1}]},
+
+  {id:109,free:true,title:"Gifaataa — Our New Year",local:"",lang:"Amharic",age:"3-6",cc:"c3",emo:"🎉",desc:"The village prepares for Gifaataa — fresh grass, yellow flowers, songs, bonfires, and a joyful new beginning.",status:"published",reads:0,
+    cover:"pages/gifaataa-new-year/cover.jpg",
+    pages:[
+      {img:"pages/gifaataa-new-year/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/gifaataa-new-year/page01.jpg",text:"The village begins to prepare for Gifaataa.",local:""},
+      {img:"pages/gifaataa-new-year/page02.jpg",text:"Families clean their homes inside and out.",local:""},
+      {img:"pages/gifaataa-new-year/page03.jpg",text:"Children help sweep the compound yard.",local:""},
+      {img:"pages/gifaataa-new-year/page04.jpg",text:"Fresh green grass is spread on the floor.",local:""},
+      {img:"pages/gifaataa-new-year/page05.jpg",text:"Mother prepares special holiday food.",local:""},
+      {img:"pages/gifaataa-new-year/page06.jpg",text:"Grandmother braids the children's hair.",local:""},
+      {img:"pages/gifaataa-new-year/page07.jpg",text:"Everyone puts on their best white clothes.",local:""},
+      {img:"pages/gifaataa-new-year/page08.jpg",text:"Girls carry bundles of fresh yellow flowers.",local:""},
+      {img:"pages/gifaataa-new-year/page09.jpg",text:"They sing a special Gifaataa song together.",local:""},
+      {img:"pages/gifaataa-new-year/page10.jpg",text:"The children go from house to house singing.",local:""},
+      {img:"pages/gifaataa-new-year/page11.jpg",text:"Neighbors welcome them with food and blessings.",local:""},
+      {img:"pages/gifaataa-new-year/page12.jpg",text:"A bonfire is lit as the sun goes down.",local:""},
+      {img:"pages/gifaataa-new-year/page13.jpg",text:"Everyone gathers around the fire.",local:""},
+      {img:"pages/gifaataa-new-year/page14.jpg",text:"Elders share stories and blessings.",local:""},
+      {img:"pages/gifaataa-new-year/page15.jpg",text:"Children dance and sing around the flames.",local:""},
+      {img:"pages/gifaataa-new-year/page16.jpg",text:"The night sky fills with stars above.",local:""},
+      {img:"pages/gifaataa-new-year/page17.jpg",text:"Families share a feast together.",local:""},
+      {img:"pages/gifaataa-new-year/page18.jpg",text:"The children are tired but very happy.",local:""},
+      {img:"pages/gifaataa-new-year/page19.jpg",text:"A new year has begun with joy and togetherness.",local:""}
+    ],
+    quiz:[{q:"What is spread on the floor for Gifaataa?",opts:["Flowers","Fresh green grass","Cloth"],a:1},{q:"What do the girls carry?",opts:["Yellow flowers","Candles","Baskets"],a:0},{q:"What happens when the sun goes down?",opts:["Everyone sleeps","A bonfire is lit","It rains"],a:1}]},
+
+  {id:110,free:true,title:"Wild Animals of the Highlands and Beyond",local:"",lang:"Amharic",age:"3-6",cc:"c2",emo:"🐘",desc:"Discover Ethiopia's incredible wildlife — from Walia ibex on mountain cliffs to hippos by the river.",status:"published",reads:0,
+    cover:"pages/wild-animals-highlands/cover.jpg",
+    pages:[
+      {img:"pages/wild-animals-highlands/cover.jpg",text:"",local:"",isCover:true},
+      {img:"pages/wild-animals-highlands/page01.jpg",text:"High in the mountains, the Walia ibex stands on a rocky cliff.",local:""},
+      {img:"pages/wild-animals-highlands/page02.jpg",text:"Its long curved horns reach toward the sky.",local:""},
+      {img:"pages/wild-animals-highlands/page03.jpg",text:"The Ethiopian wolf walks across the highland meadow.",local:""},
+      {img:"pages/wild-animals-highlands/page04.jpg",text:"It hunts alone in the wide open grass.",local:""},
+      {img:"pages/wild-animals-highlands/page05.jpg",text:"Gelada baboons sit together on the cliff edge.",local:""},
+      {img:"pages/wild-animals-highlands/page06.jpg",text:"A baby gelada holds on to its mother.",local:""},
+      {img:"pages/wild-animals-highlands/page07.jpg",text:"The mountain nyala hides among the trees.",local:""},
+      {img:"pages/wild-animals-highlands/page08.jpg",text:"Its spiral horns are gentle and curved.",local:""},
+      {img:"pages/wild-animals-highlands/page09.jpg",text:"A giant lobelia plant stands tall on the mountaintop.",local:""},
+      {img:"pages/wild-animals-highlands/page10.jpg",text:"Nearby, a thick-billed raven calls from a rock.",local:""},
+      {img:"pages/wild-animals-highlands/page11.jpg",text:"Down in the valley, a colobus monkey leaps through trees.",local:""},
+      {img:"pages/wild-animals-highlands/page12.jpg",text:"Its long white tail streams behind it.",local:""},
+      {img:"pages/wild-animals-highlands/page13.jpg",text:"A bushbuck steps quietly through the forest.",local:""},
+      {img:"pages/wild-animals-highlands/page14.jpg",text:"It watches carefully before moving.",local:""},
+      {img:"pages/wild-animals-highlands/page15.jpg",text:"Near the river, a hippo opens its wide mouth.",local:""},
+      {img:"pages/wild-animals-highlands/page16.jpg",text:"Birds sit on its broad grey back.",local:""},
+      {img:"pages/wild-animals-highlands/page17.jpg",text:"A crocodile rests still by the water's edge.",local:""},
+      {img:"pages/wild-animals-highlands/page18.jpg",text:"Only its eyes show above the surface.",local:""},
+      {img:"pages/wild-animals-highlands/page19.jpg",text:"Ethiopia's wild animals are precious and protected.",local:""}
+    ],
+    quiz:[{q:"Where does the Walia ibex stand?",opts:["In the river","On a rocky cliff","In a tree"],a:1},{q:"What is special about the Ethiopian wolf?",opts:["It hunts alone","It swims","It flies"],a:0},{q:"What animal has a long white tail?",opts:["A bushbuck","A colobus monkey","A hippo"],a:1}]},
 ];
+
+// ═══════════════════════════════════
+// KG CURRICULUM KITS DATA
+// ═══════════════════════════════════
+const kgKits = [
+  {id:1,code:'T01',name:'Self-Awareness',cat:'me-family',catLabel:'Me, Family & Health',theme:'Who am I? My name, body, home',book:'I Know Myself',games:'Memory + ThreePart + Sequencing',desc:'Children explore who they are — their name, body, family, home — through a storybook and wooden pegs depicting their world.',imgs:['kg-kits/t1_img0.jpg','kg-kits/t1_img1.jpg','kg-kits/t1_img2.jpg','kg-kits/t1_img3.jpg']},
+  {id:2,code:'T02',name:'Family',cat:'me-family',catLabel:'Me, Family & Health',theme:'Family members and generations',book:'My Home, My Family',games:'Memory + Sorting',desc:'Through a warmly illustrated family story, children name family members and understand generations with sorting and matching activities.',imgs:['kg-kits/t2_img0.jpg','kg-kits/t2_img1.jpg','kg-kits/t2_img2.jpg','kg-kits/t2_img3.jpg']},
+  {id:3,code:'T03',name:'Community Workers',cat:'me-family',catLabel:'Me, Family & Health',theme:'Police, teachers, doctors, farmers',book:'Who Helps Our Village',games:'Memory + Sorting + Bingo',desc:'Meet the people who keep a community running — from teachers to farmers — with wooden figures, bingo, and matching games.',imgs:['kg-kits/t3_img0.jpg','kg-kits/t3_img1.jpg','kg-kits/t3_img2.jpg','kg-kits/t3_img3.jpg']},
+  {id:4,code:'T04',name:'Domestic Animals',cat:'nature',catLabel:'Nature & Animals',theme:'Cow, chicken, goat, donkey, dog, cat',book:'Our Farm Animals',games:'Memory + Sorting',desc:'Farm animals children see every day — cows, chickens, goats — brought to life with wooden models and vocabulary building games.',imgs:['kg-kits/t4_img0.jpg','kg-kits/t4_img1.jpg','kg-kits/t4_img2.jpg','kg-kits/t4_img3.jpg']},
+  {id:5,code:'T05',name:'Wild Animals',cat:'nature',catLabel:'Nature & Animals',theme:'Lion, elephant, giraffe, zebra, hippo',book:'Wild Animals of Ethiopia',games:'Memory + Sorting',desc:'Ethiopian wildlife in a tactile experience — lions, elephants, giraffes — as beautifully printed wooden figures with sorting games.',imgs:['kg-kits/t5_img0.jpg','kg-kits/t5_img1.jpg','kg-kits/t5_img2.jpg','kg-kits/t5_img3.jpg']},
+  {id:6,code:'T06',name:'Birds',cat:'nature',catLabel:'Nature & Animals',theme:'Ethiopian birds — ibis, starling, eagle',book:'Birds of Ethiopia',games:'Memory + Bingo',desc:'Ethiopian birds from ibis to starling explored through a colourful storybook, wooden models, and bingo games.',imgs:['kg-kits/t6_img0.jpg','kg-kits/t6_img1.jpg','kg-kits/t6_img2.jpg','kg-kits/t6_img3.jpg']},
+  {id:7,code:'T07',name:'Water Animals',cat:'nature',catLabel:'Nature & Animals',theme:'Fish, frog, crocodile, hippo',book:'Naod by the Water',games:'Memory + Sorting',desc:'Rivers, lakes, and the creatures that live in them — from fish to frogs — explored through Naod\'s waterside adventure.',imgs:['kg-kits/t7_img0.jpg','kg-kits/t7_img1.jpg','kg-kits/t7_img2.jpg','kg-kits/t7_img3.jpg']},
+  {id:8,code:'T08',name:'Insects',cat:'nature',catLabel:'Nature & Animals',theme:'Butterfly, bee, ant, spider, beetle',book:'Tiny Creatures All Around',games:'Memory + Sorting + Pattern',desc:'The fascinating miniature world of insects — butterflies, bees, ants — discovered through magnifying-glass curiosity and pattern games.',imgs:['kg-kits/t8_img0.jpg','kg-kits/t8_img1.jpg','kg-kits/t8_img2.jpg','kg-kits/t8_img3.jpg']},
+  {id:9,code:'T09',name:'Plants & Trees',cat:'nature',catLabel:'Nature & Animals',theme:'Seeds, flowers, trees, garden',book:'Planting Seeds with Grandmother',games:'Memory + Sorting + Sequencing',desc:'From seed to tree, children learn about plants through grandmother\'s garden story and sequencing cards showing growth stages.',imgs:['kg-kits/t9_img0.jpg','kg-kits/t9_img1.jpg','kg-kits/t9_img2.jpg','kg-kits/t9_img3.jpg']},
+  {id:10,code:'T10',name:'Vegetables & Fruits',cat:'nature',catLabel:'Nature & Animals',theme:'Tomato, mango, cabbage, banana',book:'Fruits and Vegetables from Our Garden',games:'Memory + ThreePart',desc:'Market-fresh learning — tomatoes, mangoes, cabbages — with three-part vocabulary cards connecting pictures, labels, and objects.',imgs:['kg-kits/t10_img0.jpg','kg-kits/t10_img1.jpg','kg-kits/t10_img2.jpg','kg-kits/t10_img3.jpg']},
+  {id:11,code:'T11',name:'Weather & Sky',cat:'nature',catLabel:'Nature & Animals',theme:'Sun, rain, clouds, rainbow, wind',book:'Rain Comes to Our Town',games:'Memory + Bingo + Pattern',desc:'Sun, rain, clouds, and rainbows — children track the weather through a storybook and pattern-matching bingo games.',imgs:['kg-kits/t11_img0.jpg','kg-kits/t11_img1.jpg','kg-kits/t11_img2.jpg','kg-kits/t11_img3.jpg']},
+  {id:12,code:'T12',name:'Numbers',cat:'learning',catLabel:'Learning & Language',theme:'Counting 1–10 with objects',book:'Ten Green Mangoes',games:'Memory + Dominoes',desc:'Count from one to ten with mangoes, stones, and birds — hands-on number sense through dominoes and matching games.',imgs:['kg-kits/t12_img0.jpg','kg-kits/t12_img1.jpg','kg-kits/t12_img2.jpg','kg-kits/t12_img3.jpg']},
+  {id:13,code:'T13',name:'Shapes & Colours',cat:'learning',catLabel:'Learning & Language',theme:'Circle, square, triangle, colours',book:'Colours of My Village',games:'Memory + ThreePart',desc:'Shapes and colours found in everyday Ethiopian village life — circles in injera, triangles in roofs — with three-part cards.',imgs:['kg-kits/t13_img0.jpg','kg-kits/t13_img1.jpg','kg-kits/t13_img2.jpg','kg-kits/t13_img3.jpg']},
+  {id:14,code:'T14',name:'Body & Self-Care',cat:'me-family',catLabel:'Me, Family & Health',theme:'Body parts, dressing, grooming',book:'My Wonderful Body',games:'Memory + ThreePart + Sequencing',desc:'Head, shoulders, hands, and feet — children learn body parts and self-care routines through sequencing and matching activities.',imgs:['kg-kits/t14_img0.jpg','kg-kits/t14_img1.jpg','kg-kits/t14_img2.jpg','kg-kits/t14_img3.jpg']},
+  {id:15,code:'T15',name:'Senses',cat:'me-family',catLabel:'Me, Family & Health',theme:'See, hear, smell, taste, touch',book:'My Five Senses in the Village',games:'Memory + Sorting',desc:'Explore the five senses through village experiences — the smell of coffee, the sound of birds — with sorting and matching games.',imgs:['kg-kits/t15_img0.jpg','kg-kits/t15_img1.jpg','kg-kits/t15_img2.jpg','kg-kits/t15_img3.jpg']},
+  {id:16,code:'T16',name:'Emotions',cat:'me-family',catLabel:'Me, Family & Health',theme:'Happy, sad, angry, calm',book:"Hanna's Feelings",games:'Memory + Sorting',desc:"Through Hanna's day, children learn to recognise and name their emotions with wooden emotion face discs and sorting games.",imgs:['kg-kits/t16_img0.jpg','kg-kits/t16_img1.jpg','kg-kits/t16_img2.jpg','kg-kits/t16_img3.jpg']},
+  {id:17,code:'T17',name:'Transport — Land',cat:'world',catLabel:'Our World',theme:'Bajaj, minibus, donkey cart, car',book:'Selam Travels Wolayta',games:'Memory + Bingo + Sorting',desc:'From bajajs to donkey carts — children discover vehicles that move people across Ethiopian towns and countryside.',imgs:['kg-kits/t17_img0.jpg','kg-kits/t17_img1.jpg','kg-kits/t17_img2.jpg','kg-kits/t17_img3.jpg']},
+  {id:18,code:'T18',name:'Transport — Air & Water',cat:'world',catLabel:'Our World',theme:'Airplane, helicopter, ship, boat',book:"Solomon's Sky and River Journey",games:'Memory + Bingo + Sorting',desc:'Take to the skies and rivers! Children explore aeroplanes, helicopters, boats, and ships through an adventurous storybook.',imgs:['kg-kits/t18_img0.jpg','kg-kits/t18_img1.jpg','kg-kits/t18_img2.jpg','kg-kits/t18_img3.jpg']},
+  {id:19,code:'T19',name:'Construction',cat:'world',catLabel:'Our World',theme:'Tools, blocks, building',book:"Let's Build Together",games:'Memory + Bingo + Sequencing',desc:'Hammers, saws, and building blocks — children learn about construction tools and the building process through sequencing games.',imgs:['kg-kits/t19_img0.jpg','kg-kits/t19_img1.jpg','kg-kits/t19_img2.jpg','kg-kits/t19_img3.jpg']},
+  {id:20,code:'T20',name:'Coffee Ceremony',cat:'culture',catLabel:'Ethiopian Culture',theme:'Mesob, jebena, traditional kitchen',book:'The Coffee Ceremony',games:'Memory + Sequencing + Sorting',desc:"Ethiopia's beloved coffee ceremony with beautifully crafted wooden jebena and mesob models and sequencing cards.",imgs:['kg-kits/t20_img0.jpg','kg-kits/t20_img1.jpg','kg-kits/t20_img2.jpg','kg-kits/t20_img3.jpg']},
+  {id:21,code:'T21',name:'Music & Rhythm',cat:'culture',catLabel:'Ethiopian Culture',theme:'Cultural instruments, songs, beat',book:'Song of the Mortar',games:'Memory + Pattern + Sorting',desc:'Ethiopian musical traditions — drums, masinko, washint — explored through wooden instrument models and rhythmic pattern games.',imgs:['kg-kits/t21_img0.jpg','kg-kits/t21_img1.jpg','kg-kits/t21_img2.jpg','kg-kits/t21_img3.jpg']},
+  {id:22,code:'T22',name:'Festivals',cat:'culture',catLabel:'Ethiopian Culture',theme:'Gifaataa and cultural celebrations',book:'Gifaataa',games:'Memory + Lotto + Sequencing',desc:'Celebrate Ethiopian festivals and cultural traditions through colourful storybooks, festive wooden models, and lotto games.',imgs:['kg-kits/t22_img0.jpg','kg-kits/t22_img1.jpg','kg-kits/t22_img2.jpg','kg-kits/t22_img3.jpg']},
+  {id:23,code:'T23',name:'Time & Routines',cat:'learning',catLabel:'Learning & Language',theme:'Days of the week, daily routine',book:'Seven Days with Ayyo',games:'Memory + Sequencing + Bingo',desc:"From Monday to Sunday, children learn about days, routines, and time through Ayyo's weekly adventures and sequencing cards.",imgs:['kg-kits/t23_img0.jpg','kg-kits/t23_img1.jpg','kg-kits/t23_img2.jpg','kg-kits/t23_img3.jpg']},
+  {id:24,code:'T24',name:'First Sounds',cat:'learning',catLabel:'Learning & Language',theme:'English alphabet and letter sounds',book:'First Sounds: An English Alphabet Book',games:'Memory + ThreePart',desc:'A phonics-first approach to the English alphabet with each letter paired with familiar objects, reinforced through Montessori cards.',imgs:['kg-kits/t24_img0.jpg','kg-kits/t24_img1.jpg','kg-kits/t24_img2.jpg','kg-kits/t24_img3.jpg']},
+  {id:25,code:'T25',name:'Hygiene & Health',cat:'me-family',catLabel:'Me, Family & Health',theme:'Handwashing, dental care, clean water',book:'Clean Hands, Healthy Me',games:'Memory + Sequencing + ThreePart',desc:'Essential health habits — handwashing, teeth brushing, clean water — taught through a practical storybook and hygiene sequencing cards.',imgs:['kg-kits/t25_img0.jpg','kg-kits/t25_img1.jpg','kg-kits/t25_img2.jpg','kg-kits/t25_img3.jpg']},
+  {id:26,code:'T26',name:'Crafts & Weaving',cat:'culture',catLabel:'Ethiopian Culture',theme:'Traditional weaving, pottery, basketry',book:"The Weaver's Craft",games:'Memory + Pattern + Sequencing',desc:'Ethiopian craft traditions — weaving, pottery, and basketry — celebrated through a cultural storybook and pattern-matching games.',imgs:['kg-kits/t26_img0.jpg','kg-kits/t26_img1.jpg','kg-kits/t26_img2.jpg','kg-kits/t26_img3.jpg']},
+  {id:27,code:'T27',name:'Construction Vehicles',cat:'world',catLabel:'Our World',theme:'Excavator, bulldozer, crane, dump truck',book:'Keno at the Construction Site',games:'Memory + Sorting + Bingo',desc:'Big machines at work! Children explore excavators, bulldozers, cranes, and dump trucks through a storybook and sorting games.',imgs:['kg-kits/t27_img0.jpg','kg-kits/t27_img1.jpg','kg-kits/t27_img2.jpg','kg-kits/t27_img3.jpg']}
+];
+const kgCatColors = {'me-family':'#E65100','nature':'#2E7D32','learning':'#1565C0','culture':'#6A1B9A','world':'#00838F'};
+const kgCatBgs = {'me-family':'#FFF3E0','nature':'#E8F5E9','learning':'#E3F2FD','culture':'#F3E5F5','world':'#E0F7FA'};
+const kgCatEmoji = {'me-family':'👨‍👩‍👧','nature':'🌿','learning':'📐','culture':'🎭','world':'🌍'};
 
 // ═══════════════════════════════════
 // AUTH + SUBSCRIPTION STATE (Supabase-backed)
@@ -2632,7 +2968,7 @@ function renderLibrary(){
         const r=24,cx=30,cy=30,circ=2*Math.PI*r,arc=circ*prog/100;
         const arcSvg=`<svg class="continue-arc" viewBox="0 0 60 60"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="4"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--amber)" stroke-width="4" stroke-dasharray="${arc.toFixed(2)} ${circ.toFixed(2)}" stroke-dashoffset="${(circ*0.25).toFixed(2)}" stroke-linecap="round"/></svg>`;
         return `<div class="continue-card" onclick="openReader(${b.id})">
-          <div class="continue-cover ${b.cc}">${arcSvg}<span style="font-size:36px;position:relative;z-index:1;">${b.emo}</span></div>
+          <div class="continue-cover ${b.cc}" style="${b.cover?'background-image:url('+b.cover+');background-size:cover;background-position:center top;':''}">${arcSvg}${b.cover?'':'<span style="font-size:36px;position:relative;z-index:1;">'+b.emo+'</span>'}</div>
           <div class="continue-meta"><div class="continue-title">${b.title}</div><div class="continue-pct">${prog}% read</div></div>
           <button class="continue-resume-btn" onclick="event.stopPropagation();openReader(${b.id})">▶ Resume</button>
         </div>`;
@@ -2697,12 +3033,85 @@ function renderLibrary(){
       html+=`<div class="book-grid">${f.filter(b=>b.status==='published').map(bCardHTML).join('')}</div>`;
     }
   }
+
+  // ── KG CURRICULUM KITS SECTION ──────────────────────────────────
+  if(showHero || currentLang==='All'){
+    const catOrder=['me-family','nature','learning','culture','world'];
+    const catNames={'me-family':'Me, Family & Health','nature':'Nature & Animals','learning':'Learning & Language','culture':'Ethiopian Culture','world':'Our World'};
+    html+=`<div class="kg-section">
+      <div class="kg-section-hdr">
+        <span class="kg-section-title">🧩 KG Curriculum Kits</span>
+        <span class="kg-section-sub">27 Montessori topic kits — each with a storybook, wooden models, puzzle, games & teacher guide</span>
+      </div>
+    </div>
+    <div class="kg-cat-filters" id="kgCatFilters">
+      <button class="kg-cat-btn active" onclick="filterKgKits('all')">All 27</button>
+      ${catOrder.map(c=>`<button class="kg-cat-btn" onclick="filterKgKits('${c}')">${kgCatEmoji[c]} ${catNames[c]}</button>`).join('')}
+    </div>
+    <div class="kg-grid" id="kgGrid">
+      ${kgKits.map(k=>`<div class="kg-card" data-cat="${k.cat}" onclick="openKgKit(${k.id})">
+        <img class="kg-card-img" src="${k.imgs[0]}" alt="${k.name}" loading="lazy">
+        <div class="kg-card-body">
+          <div class="kg-card-code">${k.code}</div>
+          <div class="kg-card-name">${k.name}</div>
+          <div class="kg-card-book">📖 ${k.book}</div>
+          <span class="kg-card-cat" style="background:${kgCatBgs[k.cat]};color:${kgCatColors[k.cat]};">${k.catLabel}</span>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }
+
   container.innerHTML=html;
+}
+
+// ── KG Kit filter & modal functions ──
+function filterKgKits(cat){
+  document.querySelectorAll('.kg-cat-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.kg-card').forEach(c=>{
+    c.style.display=(cat==='all'||c.dataset.cat===cat)?'':'none';
+  });
+}
+function openKgKit(id){
+  const k=kgKits.find(x=>x.id===id);
+  if(!k) return;
+  let overlay=document.getElementById('kgModalOverlay');
+  if(!overlay){
+    overlay=document.createElement('div');
+    overlay.id='kgModalOverlay';
+    overlay.className='kg-modal-overlay';
+    overlay.onclick=e=>{if(e.target===overlay)overlay.classList.remove('open');};
+    document.body.appendChild(overlay);
+  }
+  overlay.innerHTML=`<div class="kg-modal">
+    <div class="kg-modal-header">
+      <button class="kg-modal-close" onclick="document.getElementById('kgModalOverlay').classList.remove('open')">✕</button>
+      <span class="kg-card-cat" style="background:${kgCatBgs[k.cat]};color:${kgCatColors[k.cat]};font-size:10px;padding:3px 10px;">${kgCatEmoji[k.cat]} ${k.catLabel}</span>
+      <h2 style="font-size:22px;font-weight:800;margin:8px 0 2px;">${k.code}: ${k.name}</h2>
+      <p style="font-size:12px;color:var(--text-mid);">${k.theme}</p>
+    </div>
+    <div class="kg-modal-gallery">${k.imgs.map(i=>`<img src="${i}" alt="${k.name}" loading="lazy">`).join('')}</div>
+    <div class="kg-modal-info">
+      <p class="desc">${k.desc}</p>
+      <h4 style="font-size:12px;font-weight:800;color:var(--text-mid);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">What's in the kit</h4>
+      <div class="kg-includes">
+        <div class="kg-inc-item"><div class="ico">📖</div><div class="lbl">${k.book}</div></div>
+        <div class="kg-inc-item"><div class="ico">🪵</div><div class="lbl">Wooden Models</div></div>
+        <div class="kg-inc-item"><div class="ico">🧩</div><div class="lbl">Puzzle Board</div></div>
+        <div class="kg-inc-item"><div class="ico">🃏</div><div class="lbl">${k.games}</div></div>
+        <div class="kg-inc-item"><div class="ico">📋</div><div class="lbl">Teacher Guide</div></div>
+        <div class="kg-inc-item"><div class="ico">👜</div><div class="lbl">Kit Bag</div></div>
+      </div>
+    </div>
+  </div>`;
+  overlay.classList.add('open');
 }
 
 function _readTime(b){
   if(b.pdf_url) return '📄 PDF';
-  const mins=Math.max(1,Math.round(((b.pages||[]).length)*1.5));
+  const pp=(b.pages||[]).length;
+  const rate=b.age==='0-3'?0.5:b.age==='3-6'?0.75:1.0;
+  const mins=Math.max(2,Math.round(pp*rate));
   return '~'+mins+' min';
 }
 function _diffLabel(age){
