@@ -1,0 +1,12 @@
+# Netlify configuration for Gugut Library
+# https://gugut-childrens-library.netlify.app
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# Serve index.html for all routes (single-page app)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

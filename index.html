@@ -1586,28 +1586,15 @@ if(location.protocol === 'file:') {
     </div>
 
     <div style="background:var(--bg);border-radius:12px;padding:14px;margin-bottom:16px;font-size:13px;color:var(--text-mid);line-height:1.6;">
-      ElevenLabs offers <strong>10,000 free characters/month</strong> — enough for many books.
-      <a href="https://elevenlabs.io" target="_blank" rel="noopener" style="color:var(--green-mid);font-weight:700;margin-left:4px;">Sign up free ›</a><br>
-      Then copy your API key from <em>Profile → API Key</em>.
+      ✅ Human voice is built in — no API key needed. Choose a voice and test it below.
     </div>
-
-    <label style="display:block;font-size:12px;font-weight:700;color:var(--text-mid);margin-bottom:6px;letter-spacing:.5px;">API KEY</label>
-    <div style="display:flex;gap:8px;margin-bottom:4px;">
-      <input id="elKeyInput" type="password" placeholder="sk-..." autocomplete="off"
-        style="flex:1;border:2px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;background:var(--card-bg);color:var(--text-main);outline:none;transition:border .18s;"
-        onfocus="this.style.borderColor='var(--green-mid)'" onblur="this.style.borderColor='var(--border)'"
-        onkeydown="if(event.key==='Enter') saveELKey()">
-      <button onclick="toggleELKeyVisibility()" title="Show/hide key"
-        style="background:var(--border);border:none;border-radius:10px;padding:0 12px;cursor:pointer;font-size:16px;" id="elKeyEye">👁</button>
-    </div>
-    <p style="font-size:11px;color:var(--text-light);margin-bottom:20px;">Stored locally on this device only — never sent anywhere except ElevenLabs.</p>
 
     <label style="display:block;font-size:12px;font-weight:700;color:var(--text-mid);margin-bottom:8px;letter-spacing:.5px;">VOICE</label>
     <div id="elVoiceList" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;">
       <!-- Populated by JS -->
     </div>
 
-    <div id="elTestArea" style="display:none;margin-bottom:16px;">
+    <div id="elTestArea" style="margin-bottom:16px;">
       <button onclick="testELVoice()" style="width:100%;background:var(--green-mid);color:#fff;border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;">
         ▶ Test Voice
       </button>
@@ -1615,13 +1602,7 @@ if(location.protocol === 'file:') {
     </div>
 
     <div style="display:flex;gap:10px;">
-      <button class="btn-outline" onclick="closeELModal()" style="flex:1;">Cancel</button>
-      <button class="btn-green" onclick="saveELKey()" style="flex:2;">💾 Save & Enable</button>
-    </div>
-    <div id="elRemoveRow" style="display:none;margin-top:12px;text-align:center;">
-      <button onclick="removeELKey()" style="background:none;border:none;color:var(--text-light);font-size:13px;cursor:pointer;text-decoration:underline;">
-        Remove API key & use browser voice
-      </button>
+      <button class="btn-green" onclick="closeELModal()" style="flex:1;">✓ Done</button>
     </div>
   </div>
 </div>
@@ -1743,44 +1724,6 @@ if(location.protocol === 'file:') {
 .pstamp.completed-all .pstamp-seal{background:var(--amber);color:#fff!important;border-color:var(--amber)!important;}
 .explore-tip{text-align:center;font-size:12px;color:var(--text-light);margin:4px 0 20px;}
 
-/* ── KG CURRICULUM KITS ── */
-.kg-section{margin:28px 0 8px;padding:0 16px;}
-.kg-section-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
-.kg-section-title{font-size:18px;font-weight:800;color:var(--green-dark);}
-.kg-section-sub{font-size:12px;color:var(--text-light);flex:1;min-width:200px;}
-.kg-cat-filters{display:flex;gap:6px;padding:0 16px 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
-.kg-cat-filters::-webkit-scrollbar{display:none;}
-.kg-cat-btn{white-space:nowrap;padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--card-bg);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;color:var(--text-mid);}
-.kg-cat-btn.active{border-color:var(--green);background:var(--green-pale);color:var(--green-dark);}
-.kg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;padding:0 16px 20px;}
-@media(max-width:600px){.kg-grid{grid-template-columns:1fr 1fr;gap:10px;}}
-.kg-card{background:var(--card-bg);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:transform .2s,box-shadow .2s;border:1px solid var(--border);}
-.kg-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,.14);}
-.kg-card-img{width:100%;aspect-ratio:4/3;object-fit:cover;background:#f0f0f0;}
-.kg-card-body{padding:10px 12px 12px;}
-.kg-card-code{font-size:10px;font-weight:800;color:var(--text-light);letter-spacing:.5px;margin-bottom:2px;}
-.kg-card-name{font-size:14px;font-weight:800;color:var(--text);margin-bottom:4px;}
-.kg-card-book{font-size:11px;color:var(--text-mid);display:flex;align-items:center;gap:4px;}
-.kg-card-cat{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:6px;}
-
-/* KG Kit Detail Modal */
-.kg-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;}
-.kg-modal-overlay.open{display:flex;}
-.kg-modal{background:var(--card-bg);border-radius:18px;max-width:520px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);}
-.kg-modal-header{position:relative;padding:20px 20px 14px;}
-.kg-modal-close{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;border:none;background:rgba(0,0,0,.08);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
-.kg-modal-gallery{display:flex;gap:6px;padding:0 20px 16px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;}
-.kg-modal-gallery::-webkit-scrollbar{display:none;}
-.kg-modal-gallery img{width:85%;min-width:280px;border-radius:12px;object-fit:cover;flex-shrink:0;scroll-snap-align:center;}
-.kg-modal-info{padding:0 20px 20px;}
-.kg-modal-info h3{font-size:18px;font-weight:800;margin-bottom:4px;}
-.kg-modal-info .theme{font-size:12px;color:var(--text-mid);margin-bottom:12px;}
-.kg-modal-info .desc{font-size:13px;line-height:1.6;color:var(--text);margin-bottom:14px;}
-.kg-includes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
-.kg-inc-item{background:var(--green-pale);border-radius:10px;padding:8px 10px;text-align:center;}
-body.night .kg-inc-item{background:rgba(255,255,255,.06);}
-.kg-inc-item .ico{font-size:20px;margin-bottom:2px;}
-.kg-inc-item .lbl{font-size:10px;font-weight:700;color:var(--text-mid);}
 </style>
 
 <div class="toast" id="toast"></div>
@@ -2459,42 +2402,6 @@ const books = [
 ];
 
 // ═══════════════════════════════════
-// KG CURRICULUM KITS DATA
-// ═══════════════════════════════════
-const kgKits = [
-  {id:1,code:'T01',name:'Self-Awareness',cat:'me-family',catLabel:'Me, Family & Health',theme:'Who am I? My name, body, home',book:'I Know Myself',games:'Memory + ThreePart + Sequencing',desc:'Children explore who they are — their name, body, family, home — through a storybook and wooden pegs depicting their world.',imgs:['kg-kits/t1_img0.jpg','kg-kits/t1_img1.jpg','kg-kits/t1_img2.jpg','kg-kits/t1_img3.jpg']},
-  {id:2,code:'T02',name:'Family',cat:'me-family',catLabel:'Me, Family & Health',theme:'Family members and generations',book:'My Home, My Family',games:'Memory + Sorting',desc:'Through a warmly illustrated family story, children name family members and understand generations with sorting and matching activities.',imgs:['kg-kits/t2_img0.jpg','kg-kits/t2_img1.jpg','kg-kits/t2_img2.jpg','kg-kits/t2_img3.jpg']},
-  {id:3,code:'T03',name:'Community Workers',cat:'me-family',catLabel:'Me, Family & Health',theme:'Police, teachers, doctors, farmers',book:'Who Helps Our Village',games:'Memory + Sorting + Bingo',desc:'Meet the people who keep a community running — from teachers to farmers — with wooden figures, bingo, and matching games.',imgs:['kg-kits/t3_img0.jpg','kg-kits/t3_img1.jpg','kg-kits/t3_img2.jpg','kg-kits/t3_img3.jpg']},
-  {id:4,code:'T04',name:'Domestic Animals',cat:'nature',catLabel:'Nature & Animals',theme:'Cow, chicken, goat, donkey, dog, cat',book:'Our Farm Animals',games:'Memory + Sorting',desc:'Farm animals children see every day — cows, chickens, goats — brought to life with wooden models and vocabulary building games.',imgs:['kg-kits/t4_img0.jpg','kg-kits/t4_img1.jpg','kg-kits/t4_img2.jpg','kg-kits/t4_img3.jpg']},
-  {id:5,code:'T05',name:'Wild Animals',cat:'nature',catLabel:'Nature & Animals',theme:'Lion, elephant, giraffe, zebra, hippo',book:'Wild Animals of Ethiopia',games:'Memory + Sorting',desc:'Ethiopian wildlife in a tactile experience — lions, elephants, giraffes — as beautifully printed wooden figures with sorting games.',imgs:['kg-kits/t5_img0.jpg','kg-kits/t5_img1.jpg','kg-kits/t5_img2.jpg','kg-kits/t5_img3.jpg']},
-  {id:6,code:'T06',name:'Birds',cat:'nature',catLabel:'Nature & Animals',theme:'Ethiopian birds — ibis, starling, eagle',book:'Birds of Ethiopia',games:'Memory + Bingo',desc:'Ethiopian birds from ibis to starling explored through a colourful storybook, wooden models, and bingo games.',imgs:['kg-kits/t6_img0.jpg','kg-kits/t6_img1.jpg','kg-kits/t6_img2.jpg','kg-kits/t6_img3.jpg']},
-  {id:7,code:'T07',name:'Water Animals',cat:'nature',catLabel:'Nature & Animals',theme:'Fish, frog, crocodile, hippo',book:'Naod by the Water',games:'Memory + Sorting',desc:'Rivers, lakes, and the creatures that live in them — from fish to frogs — explored through Naod\'s waterside adventure.',imgs:['kg-kits/t7_img0.jpg','kg-kits/t7_img1.jpg','kg-kits/t7_img2.jpg','kg-kits/t7_img3.jpg']},
-  {id:8,code:'T08',name:'Insects',cat:'nature',catLabel:'Nature & Animals',theme:'Butterfly, bee, ant, spider, beetle',book:'Tiny Creatures All Around',games:'Memory + Sorting + Pattern',desc:'The fascinating miniature world of insects — butterflies, bees, ants — discovered through magnifying-glass curiosity and pattern games.',imgs:['kg-kits/t8_img0.jpg','kg-kits/t8_img1.jpg','kg-kits/t8_img2.jpg','kg-kits/t8_img3.jpg']},
-  {id:9,code:'T09',name:'Plants & Trees',cat:'nature',catLabel:'Nature & Animals',theme:'Seeds, flowers, trees, garden',book:'Planting Seeds with Grandmother',games:'Memory + Sorting + Sequencing',desc:'From seed to tree, children learn about plants through grandmother\'s garden story and sequencing cards showing growth stages.',imgs:['kg-kits/t9_img0.jpg','kg-kits/t9_img1.jpg','kg-kits/t9_img2.jpg','kg-kits/t9_img3.jpg']},
-  {id:10,code:'T10',name:'Vegetables & Fruits',cat:'nature',catLabel:'Nature & Animals',theme:'Tomato, mango, cabbage, banana',book:'Fruits and Vegetables from Our Garden',games:'Memory + ThreePart',desc:'Market-fresh learning — tomatoes, mangoes, cabbages — with three-part vocabulary cards connecting pictures, labels, and objects.',imgs:['kg-kits/t10_img0.jpg','kg-kits/t10_img1.jpg','kg-kits/t10_img2.jpg','kg-kits/t10_img3.jpg']},
-  {id:11,code:'T11',name:'Weather & Sky',cat:'nature',catLabel:'Nature & Animals',theme:'Sun, rain, clouds, rainbow, wind',book:'Rain Comes to Our Town',games:'Memory + Bingo + Pattern',desc:'Sun, rain, clouds, and rainbows — children track the weather through a storybook and pattern-matching bingo games.',imgs:['kg-kits/t11_img0.jpg','kg-kits/t11_img1.jpg','kg-kits/t11_img2.jpg','kg-kits/t11_img3.jpg']},
-  {id:12,code:'T12',name:'Numbers',cat:'learning',catLabel:'Learning & Language',theme:'Counting 1–10 with objects',book:'Ten Green Mangoes',games:'Memory + Dominoes',desc:'Count from one to ten with mangoes, stones, and birds — hands-on number sense through dominoes and matching games.',imgs:['kg-kits/t12_img0.jpg','kg-kits/t12_img1.jpg','kg-kits/t12_img2.jpg','kg-kits/t12_img3.jpg']},
-  {id:13,code:'T13',name:'Shapes & Colours',cat:'learning',catLabel:'Learning & Language',theme:'Circle, square, triangle, colours',book:'Colours of My Village',games:'Memory + ThreePart',desc:'Shapes and colours found in everyday Ethiopian village life — circles in injera, triangles in roofs — with three-part cards.',imgs:['kg-kits/t13_img0.jpg','kg-kits/t13_img1.jpg','kg-kits/t13_img2.jpg','kg-kits/t13_img3.jpg']},
-  {id:14,code:'T14',name:'Body & Self-Care',cat:'me-family',catLabel:'Me, Family & Health',theme:'Body parts, dressing, grooming',book:'My Wonderful Body',games:'Memory + ThreePart + Sequencing',desc:'Head, shoulders, hands, and feet — children learn body parts and self-care routines through sequencing and matching activities.',imgs:['kg-kits/t14_img0.jpg','kg-kits/t14_img1.jpg','kg-kits/t14_img2.jpg','kg-kits/t14_img3.jpg']},
-  {id:15,code:'T15',name:'Senses',cat:'me-family',catLabel:'Me, Family & Health',theme:'See, hear, smell, taste, touch',book:'My Five Senses in the Village',games:'Memory + Sorting',desc:'Explore the five senses through village experiences — the smell of coffee, the sound of birds — with sorting and matching games.',imgs:['kg-kits/t15_img0.jpg','kg-kits/t15_img1.jpg','kg-kits/t15_img2.jpg','kg-kits/t15_img3.jpg']},
-  {id:16,code:'T16',name:'Emotions',cat:'me-family',catLabel:'Me, Family & Health',theme:'Happy, sad, angry, calm',book:"Hanna's Feelings",games:'Memory + Sorting',desc:"Through Hanna's day, children learn to recognise and name their emotions with wooden emotion face discs and sorting games.",imgs:['kg-kits/t16_img0.jpg','kg-kits/t16_img1.jpg','kg-kits/t16_img2.jpg','kg-kits/t16_img3.jpg']},
-  {id:17,code:'T17',name:'Transport — Land',cat:'world',catLabel:'Our World',theme:'Bajaj, minibus, donkey cart, car',book:'Selam Travels Wolayta',games:'Memory + Bingo + Sorting',desc:'From bajajs to donkey carts — children discover vehicles that move people across Ethiopian towns and countryside.',imgs:['kg-kits/t17_img0.jpg','kg-kits/t17_img1.jpg','kg-kits/t17_img2.jpg','kg-kits/t17_img3.jpg']},
-  {id:18,code:'T18',name:'Transport — Air & Water',cat:'world',catLabel:'Our World',theme:'Airplane, helicopter, ship, boat',book:"Solomon's Sky and River Journey",games:'Memory + Bingo + Sorting',desc:'Take to the skies and rivers! Children explore aeroplanes, helicopters, boats, and ships through an adventurous storybook.',imgs:['kg-kits/t18_img0.jpg','kg-kits/t18_img1.jpg','kg-kits/t18_img2.jpg','kg-kits/t18_img3.jpg']},
-  {id:19,code:'T19',name:'Construction',cat:'world',catLabel:'Our World',theme:'Tools, blocks, building',book:"Let's Build Together",games:'Memory + Bingo + Sequencing',desc:'Hammers, saws, and building blocks — children learn about construction tools and the building process through sequencing games.',imgs:['kg-kits/t19_img0.jpg','kg-kits/t19_img1.jpg','kg-kits/t19_img2.jpg','kg-kits/t19_img3.jpg']},
-  {id:20,code:'T20',name:'Coffee Ceremony',cat:'culture',catLabel:'Ethiopian Culture',theme:'Mesob, jebena, traditional kitchen',book:'The Coffee Ceremony',games:'Memory + Sequencing + Sorting',desc:"Ethiopia's beloved coffee ceremony with beautifully crafted wooden jebena and mesob models and sequencing cards.",imgs:['kg-kits/t20_img0.jpg','kg-kits/t20_img1.jpg','kg-kits/t20_img2.jpg','kg-kits/t20_img3.jpg']},
-  {id:21,code:'T21',name:'Music & Rhythm',cat:'culture',catLabel:'Ethiopian Culture',theme:'Cultural instruments, songs, beat',book:'Song of the Mortar',games:'Memory + Pattern + Sorting',desc:'Ethiopian musical traditions — drums, masinko, washint — explored through wooden instrument models and rhythmic pattern games.',imgs:['kg-kits/t21_img0.jpg','kg-kits/t21_img1.jpg','kg-kits/t21_img2.jpg','kg-kits/t21_img3.jpg']},
-  {id:22,code:'T22',name:'Festivals',cat:'culture',catLabel:'Ethiopian Culture',theme:'Gifaataa and cultural celebrations',book:'Gifaataa',games:'Memory + Lotto + Sequencing',desc:'Celebrate Ethiopian festivals and cultural traditions through colourful storybooks, festive wooden models, and lotto games.',imgs:['kg-kits/t22_img0.jpg','kg-kits/t22_img1.jpg','kg-kits/t22_img2.jpg','kg-kits/t22_img3.jpg']},
-  {id:23,code:'T23',name:'Time & Routines',cat:'learning',catLabel:'Learning & Language',theme:'Days of the week, daily routine',book:'Seven Days with Ayyo',games:'Memory + Sequencing + Bingo',desc:"From Monday to Sunday, children learn about days, routines, and time through Ayyo's weekly adventures and sequencing cards.",imgs:['kg-kits/t23_img0.jpg','kg-kits/t23_img1.jpg','kg-kits/t23_img2.jpg','kg-kits/t23_img3.jpg']},
-  {id:24,code:'T24',name:'First Sounds',cat:'learning',catLabel:'Learning & Language',theme:'English alphabet and letter sounds',book:'First Sounds: An English Alphabet Book',games:'Memory + ThreePart',desc:'A phonics-first approach to the English alphabet with each letter paired with familiar objects, reinforced through Montessori cards.',imgs:['kg-kits/t24_img0.jpg','kg-kits/t24_img1.jpg','kg-kits/t24_img2.jpg','kg-kits/t24_img3.jpg']},
-  {id:25,code:'T25',name:'Hygiene & Health',cat:'me-family',catLabel:'Me, Family & Health',theme:'Handwashing, dental care, clean water',book:'Clean Hands, Healthy Me',games:'Memory + Sequencing + ThreePart',desc:'Essential health habits — handwashing, teeth brushing, clean water — taught through a practical storybook and hygiene sequencing cards.',imgs:['kg-kits/t25_img0.jpg','kg-kits/t25_img1.jpg','kg-kits/t25_img2.jpg','kg-kits/t25_img3.jpg']},
-  {id:26,code:'T26',name:'Crafts & Weaving',cat:'culture',catLabel:'Ethiopian Culture',theme:'Traditional weaving, pottery, basketry',book:"The Weaver's Craft",games:'Memory + Pattern + Sequencing',desc:'Ethiopian craft traditions — weaving, pottery, and basketry — celebrated through a cultural storybook and pattern-matching games.',imgs:['kg-kits/t26_img0.jpg','kg-kits/t26_img1.jpg','kg-kits/t26_img2.jpg','kg-kits/t26_img3.jpg']},
-  {id:27,code:'T27',name:'Construction Vehicles',cat:'world',catLabel:'Our World',theme:'Excavator, bulldozer, crane, dump truck',book:'Keno at the Construction Site',games:'Memory + Sorting + Bingo',desc:'Big machines at work! Children explore excavators, bulldozers, cranes, and dump trucks through a storybook and sorting games.',imgs:['kg-kits/t27_img0.jpg','kg-kits/t27_img1.jpg','kg-kits/t27_img2.jpg','kg-kits/t27_img3.jpg']}
-];
-const kgCatColors = {'me-family':'#E65100','nature':'#2E7D32','learning':'#1565C0','culture':'#6A1B9A','world':'#00838F'};
-const kgCatBgs = {'me-family':'#FFF3E0','nature':'#E8F5E9','learning':'#E3F2FD','culture':'#F3E5F5','world':'#E0F7FA'};
-const kgCatEmoji = {'me-family':'👨‍👩‍👧','nature':'🌿','learning':'📐','culture':'🎭','world':'🌍'};
-
-// ═══════════════════════════════════
 // AUTH + SUBSCRIPTION STATE (Supabase-backed)
 // ═══════════════════════════════════
 let currentUser = null;       // supabase auth user
@@ -3034,77 +2941,8 @@ function renderLibrary(){
     }
   }
 
-  // ── KG CURRICULUM KITS SECTION ──────────────────────────────────
-  if(showHero || currentLang==='All'){
-    const catOrder=['me-family','nature','learning','culture','world'];
-    const catNames={'me-family':'Me, Family & Health','nature':'Nature & Animals','learning':'Learning & Language','culture':'Ethiopian Culture','world':'Our World'};
-    html+=`<div class="kg-section">
-      <div class="kg-section-hdr">
-        <span class="kg-section-title">🧩 KG Curriculum Kits</span>
-        <span class="kg-section-sub">27 Montessori topic kits — each with a storybook, wooden models, puzzle, games & teacher guide</span>
-      </div>
-    </div>
-    <div class="kg-cat-filters" id="kgCatFilters">
-      <button class="kg-cat-btn active" onclick="filterKgKits('all')">All 27</button>
-      ${catOrder.map(c=>`<button class="kg-cat-btn" onclick="filterKgKits('${c}')">${kgCatEmoji[c]} ${catNames[c]}</button>`).join('')}
-    </div>
-    <div class="kg-grid" id="kgGrid">
-      ${kgKits.map(k=>`<div class="kg-card" data-cat="${k.cat}" onclick="openKgKit(${k.id})">
-        <img class="kg-card-img" src="${k.imgs[0]}" alt="${k.name}" loading="lazy">
-        <div class="kg-card-body">
-          <div class="kg-card-code">${k.code}</div>
-          <div class="kg-card-name">${k.name}</div>
-          <div class="kg-card-book">📖 ${k.book}</div>
-          <span class="kg-card-cat" style="background:${kgCatBgs[k.cat]};color:${kgCatColors[k.cat]};">${k.catLabel}</span>
-        </div>
-      </div>`).join('')}
-    </div>`;
-  }
 
   container.innerHTML=html;
-}
-
-// ── KG Kit filter & modal functions ──
-function filterKgKits(cat){
-  document.querySelectorAll('.kg-cat-btn').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
-  document.querySelectorAll('.kg-card').forEach(c=>{
-    c.style.display=(cat==='all'||c.dataset.cat===cat)?'':'none';
-  });
-}
-function openKgKit(id){
-  const k=kgKits.find(x=>x.id===id);
-  if(!k) return;
-  let overlay=document.getElementById('kgModalOverlay');
-  if(!overlay){
-    overlay=document.createElement('div');
-    overlay.id='kgModalOverlay';
-    overlay.className='kg-modal-overlay';
-    overlay.onclick=e=>{if(e.target===overlay)overlay.classList.remove('open');};
-    document.body.appendChild(overlay);
-  }
-  overlay.innerHTML=`<div class="kg-modal">
-    <div class="kg-modal-header">
-      <button class="kg-modal-close" onclick="document.getElementById('kgModalOverlay').classList.remove('open')">✕</button>
-      <span class="kg-card-cat" style="background:${kgCatBgs[k.cat]};color:${kgCatColors[k.cat]};font-size:10px;padding:3px 10px;">${kgCatEmoji[k.cat]} ${k.catLabel}</span>
-      <h2 style="font-size:22px;font-weight:800;margin:8px 0 2px;">${k.code}: ${k.name}</h2>
-      <p style="font-size:12px;color:var(--text-mid);">${k.theme}</p>
-    </div>
-    <div class="kg-modal-gallery">${k.imgs.map(i=>`<img src="${i}" alt="${k.name}" loading="lazy">`).join('')}</div>
-    <div class="kg-modal-info">
-      <p class="desc">${k.desc}</p>
-      <h4 style="font-size:12px;font-weight:800;color:var(--text-mid);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">What's in the kit</h4>
-      <div class="kg-includes">
-        <div class="kg-inc-item"><div class="ico">📖</div><div class="lbl">${k.book}</div></div>
-        <div class="kg-inc-item"><div class="ico">🪵</div><div class="lbl">Wooden Models</div></div>
-        <div class="kg-inc-item"><div class="ico">🧩</div><div class="lbl">Puzzle Board</div></div>
-        <div class="kg-inc-item"><div class="ico">🃏</div><div class="lbl">${k.games}</div></div>
-        <div class="kg-inc-item"><div class="ico">📋</div><div class="lbl">Teacher Guide</div></div>
-        <div class="kg-inc-item"><div class="ico">👜</div><div class="lbl">Kit Bag</div></div>
-      </div>
-    </div>
-  </div>`;
-  overlay.classList.add('open');
 }
 
 function _readTime(b){
@@ -4380,25 +4218,18 @@ const EL_VOICES = [
 ];
 const EL_MODEL   = 'eleven_turbo_v2_5'; // fast, high-quality
 
-// Default key — used when no personal key is saved in localStorage.
-// Testers get human voice automatically without any setup.
-// For public launch, replace with a Netlify proxy so the key stays server-side.
-const _EL_DEFAULT_KEY = 'sk_d13cf058b992f30a1c7398b5bf8d644b8d6eb5f0c21cfe75';
+// TTS is handled by /.netlify/functions/tts — the API key lives server-side only.
 const _EL_DEFAULT_VOICE = '21m00Tcm4TlvDq8ikWAM'; // Rachel — warm storyteller
 
 let _elSelectedVoice = localStorage.getItem('gugut_el_voice') || _EL_DEFAULT_VOICE;
 let _elAudioCache    = new Map(); // key: `${voiceId}::${text}` → {url, alignment}
 let _elWordTimers    = [];        // active setTimeout IDs for highlight schedule
 
-function _elKey(){ return localStorage.getItem('gugut_el_key') || _EL_DEFAULT_KEY; }
-
-function _elEnabled(){ return !!_elKey(); }
+// _elEnabled: always true — voice is always available via the server-side proxy.
+function _elEnabled(){ return true; }
 
 // ── Settings modal ────────────────────────────────────────────────────────────
 function openELSettings(){
-  const key = _elKey();
-  const inp = document.getElementById('elKeyInput');
-  if(inp){ inp.value = key; inp.type = 'password'; }
   // Populate voice cards
   const list = document.getElementById('elVoiceList');
   if(list){
@@ -4412,12 +4243,10 @@ function openELSettings(){
         ${_elSelectedVoice===v.id?'<div style="font-size:10px;color:var(--green-mid);margin-top:4px;font-weight:700;">✓ Selected</div>':''}
       </div>`).join('');
   }
-  // Show/hide remove row and test button
-  const removeRow = document.getElementById('elRemoveRow');
+  // Always show test area — no key required, voice is via server-side proxy
   const testArea  = document.getElementById('elTestArea');
   const testStatus= document.getElementById('elTestStatus');
-  if(removeRow) removeRow.style.display = key ? 'block' : 'none';
-  if(testArea)  testArea.style.display  = key ? 'block' : 'none';
+  if(testArea)  testArea.style.display  = 'block';
   if(testStatus) testStatus.textContent = '';
   // Update setting row status
   _updateELSettingRow();
@@ -4444,12 +4273,6 @@ function closeAboutModal(){
   document.body.style.overflow = '';
 }
 
-function toggleELKeyVisibility(){
-  const inp = document.getElementById('elKeyInput');
-  if(!inp) return;
-  inp.type = inp.type==='password' ? 'text' : 'password';
-}
-
 function selectELVoice(id){
   _elSelectedVoice = id;
   localStorage.setItem('gugut_el_voice', id);
@@ -4466,49 +4289,22 @@ function selectELVoice(id){
   });
 }
 
-function saveELKey(){
-  const inp = document.getElementById('elKeyInput');
-  const key = inp ? inp.value.trim() : '';
-  if(!key){ showToast('⚠️ Paste your ElevenLabs API key first'); return; }
-  localStorage.setItem('gugut_el_key', key);
-  _elAudioCache.clear();
-  _updateELSettingRow();
-  closeELModal();
-  showToast('🎙️ Human voice enabled! Open a book and tap Read.');
-}
-
-function removeELKey(){
-  localStorage.removeItem('gugut_el_key');
-  _elAudioCache.clear();
-  _updateELSettingRow();
-  closeELModal();
-  showToast('Switched back to browser voice.');
-}
-
 function _updateELSettingRow(){
   const status = document.getElementById('elSettingStatus');
   const arrow  = document.getElementById('elSettingArrow');
   if(!status) return;
-  if(_elEnabled()){
-    const v = EL_VOICES.find(x=>x.id===_elSelectedVoice) || EL_VOICES[0];
-    status.textContent = `✓ Active · ${v.label} voice`;
-    status.style.color = 'var(--green-mid)';
-    if(arrow){ arrow.textContent='✏️'; arrow.style.fontSize='18px'; }
-  } else {
-    status.textContent = 'Tap to set up — sounds like a real storyteller';
-    status.style.color = '';
-    if(arrow){ arrow.textContent='›'; arrow.style.fontSize='13px'; }
-  }
+  const v = EL_VOICES.find(x=>x.id===_elSelectedVoice) || EL_VOICES[0];
+  status.textContent = `✓ Active · ${v.label} voice`;
+  status.style.color = 'var(--green-mid)';
+  if(arrow){ arrow.textContent='✏️'; arrow.style.fontSize='18px'; }
 }
 
 async function testELVoice(){
-  const key = _elKey();
-  if(!key){ showToast('⚠️ Save your API key first'); return; }
   const st = document.getElementById('elTestStatus');
   if(st) st.textContent = '⏳ Generating…';
   const sample = 'Once upon a time, in a land of colours and stories, a brave little owl set off on an adventure.';
-  const result = await _elFetch(sample, _elSelectedVoice, key);
-  if(!result){ if(st) st.textContent = '❌ Could not connect. Check your API key.'; return; }
+  const result = await _elFetch(sample, _elSelectedVoice);
+  if(!result){ if(st) st.textContent = '❌ Could not reach voice server — check Netlify function logs.'; return; }
   const audio = new Audio(result.url);
   audio.play().catch(()=>{});
   if(st) st.textContent = '🎙️ Playing sample…';
@@ -4518,25 +4314,27 @@ document.getElementById('elModal').addEventListener('click', function(e){
   if(e.target===this) closeELModal();
 });
 
-// ── Core ElevenLabs fetch ─────────────────────────────────────────────────────
+// ── Core TTS fetch via server-side proxy ─────────────────────────────────────
+// POSTs to /.netlify/functions/tts — the ElevenLabs key stays on the server.
 // Returns { url: objectURL, alignment } or null on failure.
-async function _elFetch(text, voiceId, apiKey){
+async function _elFetch(text, voiceId){
   const cacheKey = `${voiceId}::${text}`;
   if(_elAudioCache.has(cacheKey)) return _elAudioCache.get(cacheKey);
   try {
     const resp = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}/with-timestamps`,
+      '/.netlify/functions/tts',
       {
         method:'POST',
-        headers:{ 'xi-api-key': apiKey, 'Content-Type':'application/json' },
+        headers:{ 'Content-Type':'application/json' },
         body: JSON.stringify({
           text,
+          voice_id: voiceId,
           model_id: EL_MODEL,
           voice_settings:{ stability:0.50, similarity_boost:0.78, style:0.28, use_speaker_boost:true }
         })
       }
     );
-    if(!resp.ok){ console.warn('ElevenLabs error', resp.status, await resp.text()); return null; }
+    if(!resp.ok){ console.warn('TTS proxy error', resp.status, await resp.text()); return null; }
     const data = await resp.json();
     if(!data.audio_base64) return null;
     // Convert base64 → Blob → Object URL
@@ -4548,7 +4346,7 @@ async function _elFetch(text, voiceId, apiKey){
     const result = { url, alignment: data.alignment || null };
     _elAudioCache.set(cacheKey, result);
     return result;
-  } catch(err){ console.warn('ElevenLabs fetch failed:', err); return null; }
+  } catch(err){ console.warn('TTS proxy fetch failed:', err); return null; }
 }
 
 // ── Alignment → word highlight schedule ─────────────────────────────────────
@@ -4612,14 +4410,11 @@ function _elClearHighlightTimers(){
 // ── Start ElevenLabs audio for current page ───────────────────────────────────
 // Returns true if ElevenLabs was used, false to signal fallback to Web Speech.
 async function _startELAudio(b, text, mySession){
-  const key = _elKey();
-  if(!key) return false;
-
   // Show loading indicator in the play button
   const pb = document.getElementById('playBtn');
   if(pb) pb.textContent = '⏳';
 
-  const result = await _elFetch(text, _elSelectedVoice, key);
+  const result = await _elFetch(text, _elSelectedVoice);
 
   // Session guard: if stopAudio() was called while we were fetching, bail out
   if(mySession !== _ttsSessionId){ if(pb) pb.textContent='▶'; return true; }
