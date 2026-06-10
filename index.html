@@ -389,9 +389,12 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 #pfBook{overflow:visible;}
 
 /* ── Illustrated book StPageFlip HTML pages (image top + text bottom) ── */
+/* ── Single-page reader leaf: square art on top, text in its own calm cream
+      area below — one idea per screen for ages 3–6 (design decision 2026-06-11) ── */
 .ill-stpf-page{
   position:relative;display:flex;flex-direction:column;
-  background:#f0ece0;overflow:hidden;box-sizing:border-box;
+  background:#FFFDF6;overflow:hidden;box-sizing:border-box;
+  border-radius:10px;
 }
 .ill-stpf-img{
   flex-shrink:0;width:100%;
@@ -399,21 +402,24 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
   background-repeat:no-repeat;
 }
 .ill-stpf-text{
-  flex:1;background:#fffdf5;
-  border-top:2px solid #e8e0d0;
-  padding:6px 14px 4px;
-  font-family:Georgia,serif;
-  font-size:clamp(11px,2.6vh,15px);
-  line-height:1.4;color:#1a1a1a;text-align:center;
+  flex:1;background:#FFFDF6;
+  padding:3% 7% 4%;
+  line-height:1.7;color:#2b2417;text-align:center;
   overflow:hidden;display:flex;align-items:center;
-  justify-content:center;flex-wrap:wrap;
-  gap:0;box-sizing:border-box;
-  box-shadow:inset 14px 0 14px -8px rgba(0,0,0,0.09);
+  justify-content:center;
+  box-sizing:border-box;
+}
+.ill-stpf-text .ill-text-inner{
+  font-family:'Nunito',system-ui,sans-serif;font-weight:700;
+  line-height:1.65;color:#2b2417;
+}
+.ill-stpf-text .ill-text-inner.ethiopic{
+  font-family:'Noto Sans Ethiopic','Nunito',sans-serif;line-height:1.85;
 }
 .ill-stpf-pgnum{
-  position:absolute;bottom:4px;right:8px;
-  font-size:10px;color:#bbb;
-  font-family:Arial,sans-serif;pointer-events:none;
+  position:absolute;bottom:5px;left:0;right:0;text-align:center;
+  font-size:10px;color:#b8ab92;letter-spacing:.5px;
+  font-family:'Nunito',Arial,sans-serif;pointer-events:none;
 }
 
 /* ── Illustrated book: DOM two-page spread (Boukili-style) ──
@@ -3452,17 +3458,20 @@ function initPageFlipFromIllustrated(b, container, startBp){
     const storyCount = N - coverOffset;
 
     // ── Layout mode + page dimensions ────────────────────────────────────────
-    const isNarrow = availW < 560;           // phones → single combined leaf
-    const PAGE_RATIO = 1.45;                 // portrait page w:h
-    const MAX_PAGE_W = 430;
-    let pageW = isNarrow
-      ? Math.min(MAX_PAGE_W, Math.max(200, availW - 8))
-      : Math.min(MAX_PAGE_W, Math.max(180, Math.floor(availW/2) - 10));
+    // Single-page mode EVERYWHERE (Sule, 2026-06-11): one idea per screen for
+    // ages 3–6 — square art untouched on top, text in its own cream area below.
+    // (The old two-page spread left empty bands around the square RISE art and
+    // pulled the child's eye to the next picture.)
+    const isNarrow = true;
+    const PAGE_RATIO = 1.38;                 // square image + ~28% text area
+    const MAX_PAGE_W = 520;
+    let pageW = Math.min(MAX_PAGE_W, Math.max(200, availW - 8));
     let pageH = Math.round(pageW * PAGE_RATIO);
     if(pageH > availH - 12){
       pageH = Math.max(300, availH - 12);
       pageW = Math.max(180, Math.round(pageH / PAGE_RATIO));
     }
+    const IMG_PCT = (pageW / pageH * 100).toFixed(2) + '%';  // exact square image zone
 
     // Reading language: in 'local' mode fall back to the BOOK's language when
     // no specific language filter is active (activeLang 'all'/'English').
@@ -3528,10 +3537,10 @@ function initPageFlipFromIllustrated(b, container, startBp){
       if(pg.isCover) d.dataset.density = 'hard';
       const imgZone = document.createElement('div');
       imgZone.className = 'ill-stpf-img';
-      imgZone.style.height = pg.isCover ? '100%' : '72%';
+      imgZone.style.height = pg.isCover ? '100%' : IMG_PCT;
       if(pg.img){
         imgZone.style.background =
-          `url('${pg.img}') center/contain no-repeat,linear-gradient(160deg,${pg.isCover?'#1a1208,#2d1e0a':'#f6f1e7,#ece4d4'})`;
+          `url('${pg.img}') center/${pg.isCover?'contain':'cover'} no-repeat,linear-gradient(160deg,${pg.isCover?'#1a1208,#2d1e0a':'#f6f1e7,#ece4d4'})`;
       } else if(pg.emo){
         imgZone.style.cssText += 'display:flex;align-items:center;justify-content:center;font-size:56px;';
         imgZone.textContent = pg.emo;
@@ -3578,7 +3587,7 @@ function initPageFlipFromIllustrated(b, container, startBp){
         h.inner.classList.toggle('ethiopic', isEth);
         if(txt){
           h.inner.innerHTML = _wrapWords(txt);
-          const base = isNarrow ? Math.max(13, Math.round(pageH*0.034)) : Math.max(16, Math.round(pageH*0.044));
+          const base = isNarrow ? Math.max(14, Math.round(pageH*0.036)) : Math.max(16, Math.round(pageH*0.044));
           const sz = txt.length > 110 ? Math.max(12, Math.round(base*Math.sqrt(100/txt.length))) : base;
           h.inner.style.fontSize = sz + 'px';
         } else {
@@ -3680,7 +3689,7 @@ function initPageFlipFromIllustrated(b, container, startBp){
       window._illResizeT = setTimeout(()=>{
         if(!document.getElementById('readerOverlay')?.classList.contains('open')) return;
         const nowW = (wrap.clientWidth || window.innerWidth) - 16;
-        if(((nowW < 560) !== isNarrow) || Math.abs(nowW - availW) > 80){
+        if(Math.abs(nowW - availW) > 80){
           try{ if(pfInstance) pfInstance.destroy(); }catch(e){}
           pfInstance = null;
           initPageFlipFromIllustrated(b, null, currentPage);
