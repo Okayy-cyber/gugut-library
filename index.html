@@ -82,9 +82,10 @@ body.night .bnav-item.active .bico svg{stroke:var(--green-light);}
 body.night .bnav-item.active::before{background:rgba(45,112,48,.25);}
 
 /* ── FILTERS ── */
-.filters{background:var(--bar-bg);border-bottom:1px solid var(--border);padding:0 16px;flex-shrink:0;z-index:90;overflow-x:auto;-webkit-overflow-scrolling:touch;}
-.filters::-webkit-scrollbar{display:none;}
-.filters-inner{display:flex;align-items:center;gap:8px;padding:10px 0;white-space:nowrap;min-width:max-content;}
+.filters{background:var(--bar-bg);border-bottom:1px solid var(--border);padding:6px 16px;flex-shrink:0;z-index:90;}
+.filters-row{display:flex;align-items:center;gap:8px;padding:4px 0;white-space:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.filters-row::-webkit-scrollbar{display:none;}
+.filters-row .flabel{min-width:52px;flex-shrink:0;}
 .flabel{font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-right:2px;}
 .fdiv{width:1px;height:20px;background:var(--border);flex-shrink:0;margin:0 4px;}
 .pill{padding:6px 14px;border-radius:24px;border:1.5px solid var(--border);background:var(--card-bg);font-size:12px;font-weight:700;cursor:pointer;color:var(--text-mid);transition:all .18s;white-space:nowrap;}
@@ -1006,16 +1007,21 @@ if(location.protocol === 'file:') {
       </div>
     </a>
     <script>
-    // Ensure fallback shows if image fails to load within 2s (handles cached 404s)
+    // Show fallback only on real load errors; if the image loads late (slow
+    // connection), swap back to the official logo as soon as it arrives.
     (function(){
       var img = document.getElementById('logoImg');
       var fb  = document.getElementById('logoFallback');
+      if(!img) return;
       function showFallback(){ img.style.display='none'; fb.style.display='flex'; }
-      if(img){ img.addEventListener('error', showFallback, {once:true}); }
-      // If image hasn't loaded after 2s, show fallback
+      function showLogo(){ img.style.display='block'; fb.style.display='none'; }
+      img.addEventListener('error', showFallback, {once:true});
+      img.addEventListener('load', showLogo);
+      // Temporary fallback while a slow connection fetches the logo
       setTimeout(function(){
-        if(img && img.naturalWidth === 0){ showFallback(); }
+        if(img.naturalWidth === 0){ showFallback(); }
       }, 2000);
+      if(img.complete && img.naturalWidth > 0) showLogo();
     })();
     </script>
     <div class="topbar-search" id="searchWrap">
@@ -1120,7 +1126,7 @@ if(location.protocol === 'file:') {
 ══════════════════════════════════ -->
 <div class="view active" id="view-library">
   <div class="filters">
-    <div class="filters-inner">
+    <div class="filters-row">
       <span class="flabel">Read in</span>
       <button class="pill active" data-lang="all" onclick="setLang(this,'all')" title="Show all books">All</button>
       <button class="pill" data-lang="English" onclick="setLang(this,'English')" title="Read all books in English">English</button>
@@ -1129,13 +1135,14 @@ if(location.protocol === 'file:') {
       <button class="pill" data-lang="Tigrinya" onclick="setLang(this,'Tigrinya')" title="Read all books in Tigrinya · ሁሎም መጻሕፍቲ ብትግርኛ ኣንብብ">ትግርኛ</button>
       <button class="pill" data-lang="Somali" onclick="setLang(this,'Somali')" title="Read all books in Somali">Soomaali</button>
       <button class="pill" data-lang="Wolaytta" onclick="setLang(this,'Wolaytta')" title="Read all books in Wolaytta">Wolaytta</button>
-      <div class="fdiv"></div>
+    </div>
+    <div class="filters-row">
       <span class="flabel">Topic</span>
       <button class="pill active" data-cat="all" onclick="setCat(this,'all')">All</button>
-      <button class="pill level-pill lv0" data-cat="mfh" onclick="setCat(this,'mfh')" title="Who I am, my family, my body, my feelings, staying healthy">🧒 <span class="lp-name">Me, Family &amp; Health</span></button>
+      <button class="pill level-pill lv0" data-cat="mfh" onclick="setCat(this,'mfh')" title="Who I am, my family, my body, my feelings, staying healthy">🧒 <span class="lp-name">Me &amp; Family</span></button>
       <button class="pill level-pill lv1" data-cat="nat" onclick="setCat(this,'nat')" title="Animals, birds, insects, plants, weather and the seasons">🦒 <span class="lp-name">Nature &amp; Animals</span></button>
-      <button class="pill level-pill lv2" data-cat="learn" onclick="setCat(this,'learn')" title="Numbers, shapes, colors, letters, days of the week">🔤 <span class="lp-name">Learning &amp; Language</span></button>
-      <button class="pill level-pill lv3" data-cat="cult" onclick="setCat(this,'cult')" title="Coffee ceremony, music, festivals and crafts of Ethiopia">☕ <span class="lp-name">Ethiopian Culture</span></button>
+      <button class="pill level-pill lv2" data-cat="learn" onclick="setCat(this,'learn')" title="Numbers, shapes, colors, letters, days of the week">🔤 <span class="lp-name">Learning</span></button>
+      <button class="pill level-pill lv3" data-cat="cult" onclick="setCat(this,'cult')" title="Coffee ceremony, music, festivals and crafts of Ethiopia">☕ <span class="lp-name">Culture</span></button>
       <button class="pill level-pill lv4" data-cat="world" onclick="setCat(this,'world')" title="Our community, helpers, transport and building together">🌍 <span class="lp-name">Our World</span></button>
     </div>
   </div>
@@ -3767,6 +3774,10 @@ function initPageFlipFromIllustrated(b, container, startBp){
     // ── Initial UI state ──────────────────────────────────────────────────────
     currentPage = startB;
     _syncUI(startB);
+    // Warm the TTS serverless function (cold start ≈ 1–2s) and pre-generate
+    // the first story page's audio so Read-to-Me starts almost instantly
+    try{ fetch('/.netlify/functions/tts', {method:'OPTIONS'}).catch(()=>{}); }catch(e){}
+    setTimeout(()=>{ try{ _elPrefetchNext(); }catch(e){} }, 500);
     const prevProg = readProgress[b.id]||0;
     if(typeof _showReadModePicker==='function' && prevProg<5 && startBp===undefined){
       setTimeout(()=>_showReadModePicker(b), 350);
@@ -4350,6 +4361,21 @@ async function _elFetch(text, voiceId){
   } catch(err){ console.warn('TTS proxy fetch failed:', err); return null; }
 }
 
+// ── Background prefetch of the next page's audio (fills _elAudioCache) ──────
+function _elPrefetchNext(){
+  try{
+    const b=books.find(bk=>bk.id===currentBookId);
+    if(!b || b.audio_url || b.pdf_url || !b.pages) return;
+    const np=b.pages[currentPage+1];
+    if(!np) return;
+    const displayLang = readerDisplayLang==='local'
+      ? ((activeLang==='all'||activeLang==='English') ? b.lang : activeLang)
+      : 'English';
+    const txt=_getPageText(np, displayLang);
+    if(txt) _elFetch(txt, _elSelectedVoice); // result lands in the cache
+  }catch(e){}
+}
+
 // ── Alignment → word highlight schedule ─────────────────────────────────────
 // ElevenLabs returns character-level timing. We aggregate into word-level
 // and use setTimeout to highlight each .tts-word span at the right moment.
@@ -4425,6 +4451,10 @@ async function _startELAudio(b, text, mySession){
     if(pb) pb.textContent='▶';
     return false; // fall through to Web Speech
   }
+
+  // While this page plays, quietly generate the NEXT page's audio so the
+  // flip → audio gap disappears (was ~7s per page on cold requests)
+  _elPrefetchNext();
 
   // Hand off to the existing _audioEl pipeline
   const el = _getAudioEl();
