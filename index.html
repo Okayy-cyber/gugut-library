@@ -421,26 +421,24 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
   font-size:10px;color:#b8ab92;letter-spacing:.5px;
   font-family:'Nunito',Arial,sans-serif;pointer-events:none;
 }
-/* Cover title block — pasted over the bottom of the cover art */
-.ill-cover-titleblock{
-  position:absolute;left:0;right:0;bottom:0;
-  padding:7% 8% 9%;text-align:center;pointer-events:none;
-  background:linear-gradient(to top,rgba(16,10,2,.88) 0%,rgba(16,10,2,.62) 62%,transparent 100%);
+/* Cover title zone — cream area below the cover art, matching inside pages */
+.ill-cover-titlezone{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:#FFFDF6;text-align:center;padding:2% 8% 0;box-sizing:border-box;
+  pointer-events:none;
 }
 .ill-cover-title{
   font-family:'Nunito',system-ui,sans-serif;font-weight:900;
-  line-height:1.2;color:#FFF7E6;
-  text-shadow:0 2px 8px rgba(0,0,0,.5);
+  line-height:1.22;color:#1B6B3A;
 }
 .ill-cover-title-local{
   font-family:'Noto Sans Ethiopic','Nunito',sans-serif;font-weight:700;
-  color:#F5C020;margin-top:5px;
-  text-shadow:0 2px 6px rgba(0,0,0,.5);
+  color:#A87908;margin-top:6px;
 }
 .ill-cover-series{
   font-family:'Nunito',sans-serif;font-weight:700;font-size:10px;
-  letter-spacing:2.2px;text-transform:uppercase;color:rgba(255,247,230,.75);
-  margin-top:9px;
+  letter-spacing:2.2px;text-transform:uppercase;color:#b8ab92;
+  margin-top:10px;
 }
 
 /* ── Illustrated book: DOM two-page spread (Boukili-style) ──
@@ -1804,7 +1802,7 @@ const books = [
   // local = Amharic (Claude draft) · translations:{ti,om,so,wal} (Claude drafts —
   //      ⚠️ ALL need native review; WOLAYTTA (wal) IS THE ROUGHEST — real Wolaytta
   //      translation underway on the kit side, swap in when ready.)
-  {id:201,free:true,kit:"T01",cat:"mfh",title:"I Know Myself",local:"ራሴን አውቃለሁ",lang:"Amharic",age:"3-6",cc:"c1",emo:"🙋",desc:"Tana introduces herself — her name, her age, her feelings, her favourite things, and the family who loves her. A RISE Topic 01 (Self-Awareness) storybook.",status:"published",reads:0,
+  {id:201,free:true,kit:"T01",cat:"mfh",title:"I Know Myself",local:"ራሴን አውቃለሁ",titles:{om:"Ani Of Beeka",ti:"ነብሰይ እፈልጥ",so:"Waan Is Aqaan",wal:"Taani Tana Erays"},lang:"Amharic",age:"3-6",cc:"c1",emo:"🙋",desc:"Tana introduces herself — her name, her age, her feelings, her favourite things, and the family who loves her. A RISE Topic 01 (Self-Awareness) storybook.",status:"published",reads:0,
     cover:"pages/i-know-myself/cover.jpg",
     pages:[
       {img:"pages/i-know-myself/cover.jpg",text:"",local:"",isCover:true},
@@ -1831,7 +1829,7 @@ const books = [
     ],
     quiz:[{q:"What is the girl's name?",opts:["Tana 👧", "Saron 🎀", "Liya 🌸"],a:0},{q:"What is Tana's favourite colour?",opts:["Red ❤️", "Blue 💙", "Green 💚"],a:1},{q:"What does Tana do when she feels happy?",opts:["She sleeps 😴", "She cries 😢", "She dances 💃"],a:2}]},
 
-  {id:202,free:true,kit:"T02",cat:"mfh",title:"My Home, My Family",local:"ቤቴ፣ ቤተሰቤ",lang:"Amharic",age:"3-6",cc:"c2",emo:"🏠",desc:"Mesfin welcomes us into his home and introduces the eight people who fill it with stories, fresh bread, helping hands, and love. A RISE Topic 02 (Family) storybook.",status:"published",reads:0,
+  {id:202,free:true,kit:"T02",cat:"mfh",title:"My Home, My Family",local:"ቤቴ፣ ቤተሰቤ",titles:{om:"Mana Koo, Maatii Koo",ti:"ቤተይን ስድራይን",so:"Gurigayga, Qoyskayga",wal:"Ta Keettaa, Ta So Asaa"},lang:"Amharic",age:"3-6",cc:"c2",emo:"🏠",desc:"Mesfin welcomes us into his home and introduces the eight people who fill it with stories, fresh bread, helping hands, and love. A RISE Topic 02 (Family) storybook.",status:"published",reads:0,
     cover:"pages/my-home-my-family/cover.jpg",
     pages:[
       {img:"pages/my-home-my-family/cover.jpg",text:"",local:"",isCover:true},
@@ -1858,7 +1856,7 @@ const books = [
     ],
     quiz:[{q:"What is the boy's name?",opts:["Nati 👶", "Mesfin 👦", "Abel 🧒"],a:1},{q:"Who tells the best stories?",opts:["Grandfather 👴", "Saron 🎀", "Mother 👩"],a:0},{q:"What does Father teach Mesfin to do?",opts:["Fly a plane ✈️", "Drive a car 🚗", "Milk the goat 🐐"],a:2}]},
 
-  {id:203,free:true,kit:"T03",cat:"world",title:"Who Helps Our Village",local:"መንደራችንን ማን ይረዳል",lang:"Amharic",age:"3-6",cc:"c3",emo:"🤝",desc:"Tsion meets the helpers of her village — teacher, doctor, farmer, weaver, engineer, mechanic, pilot, and more — and dreams of helping too one day. A RISE Topic 03 (Community Workers) storybook.",status:"published",reads:0,
+  {id:203,free:true,kit:"T03",cat:"world",title:"Who Helps Our Village",local:"መንደራችንን ማን ይረዳል",titles:{om:"Ganda Keenya Eenyutu Gargaara?",ti:"ንዓድና መን ይሕግዝ?",so:"Yaa Caawiya Tuuladayada?",wal:"Nu Qachaa Oonee Maaddii?"},lang:"Amharic",age:"3-6",cc:"c3",emo:"🤝",desc:"Tsion meets the helpers of her village — teacher, doctor, farmer, weaver, engineer, mechanic, pilot, and more — and dreams of helping too one day. A RISE Topic 03 (Community Workers) storybook.",status:"published",reads:0,
     cover:"pages/who-helps-our-village/cover.jpg",
     pages:[
       {img:"pages/who-helps-our-village/cover.jpg",text:"",local:"",isCover:true},
@@ -1885,7 +1883,7 @@ const books = [
     ],
     quiz:[{q:"Who keeps us healthy?",opts:["The doctor 🩺", "The pilot ✈️", "The weaver 🧵"],a:0},{q:"What does the farmer do?",opts:["He flies planes ✈️", "He grows our food 🌽", "He fixes cars 🚗"],a:1},{q:"Who helps us cross the road safely?",opts:["The shopkeeper 🏪", "The teacher 📚", "The traffic police 🚦"],a:2}]},
 
-  {id:204,free:true,kit:"T04",cat:"nat",title:"Our Farm Animals",local:"የእርሻ እንስሶቻችን",lang:"Amharic",age:"3-6",cc:"c1",emo:"🐄",desc:"Abel spends a day with his family's animals — the noisy rooster, the gentle cow and her calf, the hungry goat, tiny chicks, a fast dog, a sleepy cat, and the patient donkey. A RISE Topic 04 (Domestic Animals) storybook.",status:"published",reads:0,
+  {id:204,free:true,kit:"T04",cat:"nat",title:"Our Farm Animals",local:"የእርሻ እንስሶቻችን",titles:{om:"Horii Mana Keenyaa",ti:"እንስሳት ሕርሻና",so:"Xayawaanka Beerteenna",wal:"Nu Goshsha Mehiyaa"},lang:"Amharic",age:"3-6",cc:"c1",emo:"🐄",desc:"Abel spends a day with his family's animals — the noisy rooster, the gentle cow and her calf, the hungry goat, tiny chicks, a fast dog, a sleepy cat, and the patient donkey. A RISE Topic 04 (Domestic Animals) storybook.",status:"published",reads:0,
     cover:"pages/our-farm-animals/cover.jpg",
     pages:[
       {img:"pages/our-farm-animals/cover.jpg",text:"",local:"",isCover:true},
@@ -1910,7 +1908,7 @@ const books = [
     ],
     quiz:[{q:"Who wakes the whole village?",opts:["The cat 🐱", "The rooster 🐓", "The donkey 🫏"],a:1},{q:"What does the cow give us?",opts:["Milk 🥛", "Eggs 🥚", "Wool 🧶"],a:0},{q:"What do we load on the donkey?",opts:["Stones 🪨", "Water 💧", "Wood 🪵"],a:2}]},
 
-  {id:205,free:true,kit:"T05",cat:"nat",title:"Wild Animals of the Highlands",local:"የደጋው የዱር እንስሳት",lang:"Amharic",age:"3-6",cc:"c2",emo:"🦁",desc:"Kidus and his grandfather walk through the Ethiopian highlands and meet the wild animals that share the land — baboons, colobus monkeys, hyenas, lions, elephants, and more. A RISE Topic 05 (Wild Animals) storybook.",status:"published",reads:0,
+  {id:205,free:true,kit:"T05",cat:"nat",title:"Wild Animals of the Highlands",local:"የደጋው የዱር እንስሳት",titles:{om:"Bineensota Gaarran Olka'oo",ti:"ኣራዊት ደጋ",so:"Dugaagga Buuraleyda",wal:"Dere Do7ata"},lang:"Amharic",age:"3-6",cc:"c2",emo:"🦁",desc:"Kidus and his grandfather walk through the Ethiopian highlands and meet the wild animals that share the land — baboons, colobus monkeys, hyenas, lions, elephants, and more. A RISE Topic 05 (Wild Animals) storybook.",status:"published",reads:0,
     cover:"pages/wild-animals-highlands/cover.jpg",
     pages:[
       {img:"pages/wild-animals-highlands/cover.jpg",text:"",local:"",isCover:true},
@@ -1937,7 +1935,7 @@ const books = [
     ],
     quiz:[{q:"Who walks into the forest with Kidus?",opts:["Grandfather 👴", "A lion 🦁", "A teacher 👩‍🏫"],a:0},{q:"Which animal slowly changes its color?",opts:["The zebra 🦓", "The chameleon 🦎", "The hare 🐇"],a:1},{q:"What does Kidus do at the end of the walk?",opts:["He goes to sleep 😴", "He swims in the river 🏊", "He draws all the animals ✏️"],a:2}]},
 
-  {id:206,free:true,kit:"T06",cat:"nat",title:"Birds of Ethiopia",local:"የኢትዮጵያ ወፎች",lang:"Amharic",age:"3-6",cc:"c3",emo:"🐦",desc:"From the proud rooster at dawn to the owl at dusk, Ayana watches the wonderful birds of Ethiopia — eagles, weaver birds, kingfishers, hoopoes, and more. A RISE Topic 06 (Birds) storybook.",status:"published",reads:0,
+  {id:206,free:true,kit:"T06",cat:"nat",title:"Birds of Ethiopia",local:"የኢትዮጵያ ወፎች",titles:{om:"Simbirroota Itoophiyaa",ti:"ኣዕዋፍ ኢትዮጵያ",so:"Shimbiraha Itoobiya",wal:"Toophiyaa Kafota"},lang:"Amharic",age:"3-6",cc:"c3",emo:"🐦",desc:"From the proud rooster at dawn to the owl at dusk, Ayana watches the wonderful birds of Ethiopia — eagles, weaver birds, kingfishers, hoopoes, and more. A RISE Topic 06 (Birds) storybook.",status:"published",reads:0,
     cover:"pages/birds-of-ethiopia/cover.jpg",
     pages:[
       {img:"pages/birds-of-ethiopia/cover.jpg",text:"",local:"",isCover:true},
@@ -1964,7 +1962,7 @@ const books = [
     ],
     quiz:[{q:"Which bird builds its nest?",opts:["The weaver bird 🐦", "The owl 🦉", "The rooster 🐓"],a:0},{q:"When does the owl hoot?",opts:["In the morning 🌅", "At dusk 🌙", "At lunchtime 🍽️"],a:1},{q:"What does Ayana draw in her book?",opts:["Fish 🐟", "Flowers 🌸", "Birds 🐦"],a:2}]},
 
-  {id:207,free:true,kit:"T07",cat:"nat",title:"Naod by the Water",local:"ናኦድ በውሃው ዳር",lang:"Amharic",age:"3-6",cc:"c1",emo:"🐟",desc:"Naod spends a happy day at the lake, greeting the frog, the hippo, the turtle, the kingfisher, and all the swimming creatures of the water. A RISE Topic 07 (Water Animals) storybook.",status:"published",reads:0,
+  {id:207,free:true,kit:"T07",cat:"nat",title:"Naod by the Water",local:"ናኦድ በውሃው ዳር",titles:{om:"Naa'od Bishaan Bira",ti:"ናኦድ ኣብ ጥቓ ማይ",so:"Naod iyo Biyaha",wal:"Naodi Haattaa Matan"},lang:"Amharic",age:"3-6",cc:"c1",emo:"🐟",desc:"Naod spends a happy day at the lake, greeting the frog, the hippo, the turtle, the kingfisher, and all the swimming creatures of the water. A RISE Topic 07 (Water Animals) storybook.",status:"published",reads:0,
     cover:"pages/naod-by-the-water/cover.jpg",
     pages:[
       {img:"pages/naod-by-the-water/cover.jpg",text:"",local:"",isCover:true},
@@ -1991,7 +1989,7 @@ const books = [
     ],
     quiz:[{q:"Where does Naod walk to?",opts:["The market 🧺", "The lake 🌊", "The school 🏫"],a:1},{q:"Who sits on a lily pad?",opts:["The frog 🐸", "The crocodile 🐊", "The pelican 🦩"],a:0},{q:"What is the tadpole growing?",opts:["Wings 🪶", "A long tail 🦎", "Tiny legs 🦵"],a:2}]},
 
-  {id:208,free:true,kit:"T08",cat:"nat",title:"Tiny Creatures All Around",local:"በዙሪያችን ያሉ ትንንሽ ፍጥረታት",lang:"Amharic",age:"3-6",cc:"c2",emo:"🐞",desc:"Kaleb explores the garden and discovers the tiny creatures living all around — butterflies, bees, marching ants, glowing fireflies, and a spider in her web. A RISE Topic 08 (Insects) storybook.",status:"published",reads:0,
+  {id:208,free:true,kit:"T08",cat:"nat",title:"Tiny Creatures All Around",local:"በዙሪያችን ያሉ ትንንሽ ፍጥረታት",titles:{om:"Uumamawwan Xixiqqoo Naannoo Keenyaa",ti:"ናእሽቱ ፍጥረታት ኣብ ከባቢና",so:"Xayawaannada Yaryar ee Nagu Wareegsan",wal:"Guutha Medhetata Nu Matan"},lang:"Amharic",age:"3-6",cc:"c2",emo:"🐞",desc:"Kaleb explores the garden and discovers the tiny creatures living all around — butterflies, bees, marching ants, glowing fireflies, and a spider in her web. A RISE Topic 08 (Insects) storybook.",status:"published",reads:0,
     cover:"pages/tiny-creatures-all-around/cover.jpg",
     pages:[
       {img:"pages/tiny-creatures-all-around/cover.jpg",text:"",local:"",isCover:true},
@@ -2018,7 +2016,7 @@ const books = [
     ],
     quiz:[{q:"Who marches in a long line?",opts:["The ants 🐜", "The butterflies 🦋", "The snails 🐌"],a:0},{q:"What glows in the night?",opts:["The ladybugs 🐞", "The fireflies ✨", "The bees 🐝"],a:1},{q:"Where does the spider sit?",opts:["On a flower 🌸", "Under a rock 🪨", "In its web 🕸️"],a:2}]},
 
-  {id:209,free:true,kit:"T09",cat:"nat",title:"Planting Seeds with Grandmother",local:"ከአያት ጋር ዘር መዝራት",lang:"Amharic",age:"3-6",cc:"c3",emo:"🌱",desc:"Feven plants seeds with her grandmother, waters them day by day, and watches the garden grow until the family shares the harvest. A RISE Topic 09 (Plants & Trees) storybook.",status:"published",reads:0,
+  {id:209,free:true,kit:"T09",cat:"nat",title:"Planting Seeds with Grandmother",local:"ከአያት ጋር ዘር መዝራት",titles:{om:"Akkoo Wajjin Sanyii Dhaabuu",ti:"ምስ ዓባየይ ዘርኢ ምትካል",so:"Abuur la Beeridda Ayeeyo",wal:"Aakkeera Zerettaa Tokkiyoogaa"},lang:"Amharic",age:"3-6",cc:"c3",emo:"🌱",desc:"Feven plants seeds with her grandmother, waters them day by day, and watches the garden grow until the family shares the harvest. A RISE Topic 09 (Plants & Trees) storybook.",status:"published",reads:0,
     cover:"pages/planting-seeds-grandmother/cover.jpg",
     pages:[
       {img:"pages/planting-seeds-grandmother/cover.jpg",text:"",local:"",isCover:true},
@@ -2045,7 +2043,7 @@ const books = [
     ],
     quiz:[{q:"Who plants seeds with Feven?",opts:["Grandmother 👵", "A teacher 🏫", "A lion 🦁"],a:0},{q:"What do the seeds need to grow?",opts:["Candy 🍬", "Water 💧", "Shoes 👟"],a:1},{q:"What do they pick at the end of the story?",opts:["Stones 🪨", "Books 📚", "Vegetables 🥬"],a:2}]},
 
-  {id:210,free:true,kit:"T10",cat:"nat",title:"Fruits and Vegetables from Our Garden",local:"ከጓሯችን ፍራፍሬና አትክልት",lang:"Amharic",age:"3-6",cc:"c1",emo:"🥭",desc:"Aster walks through the family garden with her grandmother and meets enset, kale, tomatoes, mangoes, coffee and more growing all around her. A RISE Topic 10 (Vegetables & Fruits) storybook.",status:"published",reads:0,
+  {id:210,free:true,kit:"T10",cat:"nat",title:"Fruits and Vegetables from Our Garden",local:"ከጓሯችን ፍራፍሬና አትክልት",titles:{om:"Fuduraa fi Kuduraa Keenyaa",ti:"ፍረታትን ኣሕምልትን ካብ ጀርዲንና",so:"Miraha iyo Khudaarta Beerteenna",wal:"Nu Kaariyaa Aifiyaanne Atakiltiyaa"},lang:"Amharic",age:"3-6",cc:"c1",emo:"🥭",desc:"Aster walks through the family garden with her grandmother and meets enset, kale, tomatoes, mangoes, coffee and more growing all around her. A RISE Topic 10 (Vegetables & Fruits) storybook.",status:"published",reads:0,
     cover:"pages/fruits-and-vegetables/cover.jpg",
     pages:[
       {img:"pages/fruits-and-vegetables/cover.jpg",text:"",local:"",isCover:true},
@@ -2072,7 +2070,7 @@ const books = [
     ],
     quiz:[{q:"What does grandmother make from enset?",opts:["Kocho 🍞", "Shoes 👟", "A drum 🥁"],a:0},{q:"What color are the ripe tomatoes?",opts:["Blue 🔵", "Red 🔴", "Purple 🟣"],a:1},{q:"Who helps plant the new seedlings?",opts:["A bird 🐦", "A lion 🦁", "Aster 👧"],a:2}]},
 
-  {id:211,free:true,kit:"T11",cat:"nat",title:"Rain Comes to Our Town",local:"ዝናብ ወደ ከተማችን መጣ",lang:"Amharic",age:"3-6",cc:"c2",emo:"🌧️",desc:"Dark clouds gather, rain drums on the roof, and Eyob dances in the warm rain as the land drinks and turns green again. A RISE Topic 11 (Weather & Sky) storybook.",status:"published",reads:0,
+  {id:211,free:true,kit:"T11",cat:"nat",title:"Rain Comes to Our Town",local:"ዝናብ ወደ ከተማችን መጣ",titles:{om:"Roobni Magaalaa Keenyatti Dhufa",ti:"ዝናብ ናብ ከተማና ይመጽእ",so:"Roob baa Magaaladeenna Yimid",wal:"Iray Nu Katamaa Yiis"},lang:"Amharic",age:"3-6",cc:"c2",emo:"🌧️",desc:"Dark clouds gather, rain drums on the roof, and Eyob dances in the warm rain as the land drinks and turns green again. A RISE Topic 11 (Weather & Sky) storybook.",status:"published",reads:0,
     cover:"pages/rain-comes-to-our-town/cover.jpg",
     pages:[
       {img:"pages/rain-comes-to-our-town/cover.jpg",text:"",local:"",isCover:true},
@@ -2099,7 +2097,7 @@ const books = [
     ],
     quiz:[{q:"What falls from the dark clouds?",opts:["Rain 🌧️", "Bananas 🍌", "Balls ⚽"],a:0},{q:"What does Eyob do in the warm rain?",opts:["He sleeps 😴", "He dances 💃", "He hides 🙈"],a:1},{q:"What appears in the night sky after the rain?",opts:["Fish 🐟", "Cars 🚗", "Stars ⭐"],a:2}]},
 
-  {id:212,free:true,kit:"T11",cat:"nat",title:"A Year on Our Land",local:"አንድ ዓመት በምድራችን ላይ",lang:"Amharic",age:"3-6",cc:"c3",emo:"🌦️",desc:"Eyob walks through Ethiopia's four seasons — Kiremt's big rains, Tseday's Meskel daisies and harvest, golden dry Bega, and Belg's gentle planting rains. A RISE Topic 11 (Weather and Seasons) storybook.",status:"published",reads:0,
+  {id:212,free:true,kit:"T11",cat:"nat",title:"A Year on Our Land",local:"አንድ ዓመት በምድራችን ላይ",titles:{om:"Waggaa Tokko Lafa Keenya Irratti",ti:"ሓደ ዓመት ኣብ መሬትና",so:"Sannad Dhulkeenna ah",wal:"Nu Biittan Issi Laytta"},lang:"Amharic",age:"3-6",cc:"c3",emo:"🌦️",desc:"Eyob walks through Ethiopia's four seasons — Kiremt's big rains, Tseday's Meskel daisies and harvest, golden dry Bega, and Belg's gentle planting rains. A RISE Topic 11 (Weather and Seasons) storybook.",status:"published",reads:0,
     cover:"pages/a-year-on-our-land/cover.jpg",
     pages:[
       {img:"pages/a-year-on-our-land/cover.jpg",text:"",local:"",isCover:true},
@@ -2126,7 +2124,7 @@ const books = [
     ],
     quiz:[{q:"Which season brings the big rains?",opts:["Kiremt 🌧️", "Bega ☀️", "Tseday 🌼"],a:0},{q:"What flowers bloom in Tseday?",opts:["Roses 🌹", "Adey Abeba 🌼", "Cactus 🌵"],a:1},{q:"What burns warm and bright on Meskel night?",opts:["A candle 🕯️", "A lamp 💡", "The demera 🔥"],a:2}]},
 
-  {id:101,free:true,kit:"T12",cat:"learn",title:"Counting My Day",local:"ቀኔን መቁጠር",lang:"Amharic",age:"3-6",cc:"c3",emo:"🔢",desc:"Kuuree counts through her day — from one sun to ten happy moments. A RISE Topic 12 (Numbers) storybook.",status:"published",reads:0,
+  {id:101,free:true,kit:"T12",cat:"learn",title:"Counting My Day",local:"ቀኔን መቁጠር",titles:{om:"Guyyaa Koo Lakkaa'uu",ti:"መዓልተይ ምቑጻር",so:"Maalintayda Tirinta",wal:"Ta Gallassaa Qoodiyoogaa"},lang:"Amharic",age:"3-6",cc:"c3",emo:"🔢",desc:"Kuuree counts through her day — from one sun to ten happy moments. A RISE Topic 12 (Numbers) storybook.",status:"published",reads:0,
     cover:"pages/counting-my-day/cover.jpg",
     pages:[
       {img:"pages/counting-my-day/cover.jpg",text:"",local:"",isCover:true},
@@ -2143,7 +2141,7 @@ const books = [
     ],
     quiz:[{q:"How many suns greet the morning?",opts:["Three","One","Two"],a:1},{q:"What waits by the door?",opts:["Two cups","Two sandals","Two books"],a:1},{q:"What comes out as the sky grows dark?",opts:["Nine stars","Ten bananas","Three chickens"],a:0}]},
 
-  {id:213,free:true,kit:"T13",cat:"learn",title:"Shapes All Around the Compound",local:"ቅርጾች በግቢው ዙሪያ",lang:"Amharic",age:"3-6",cc:"c2",emo:"🔺",desc:"Nahom discovers shapes everywhere in his compound — the round door of the tukul, square windows, spiral snail shells, the crescent moon, and zigzag fences, until grandmother traces them all on his arm. A RISE Topic 13 (Shapes and Colors) storybook.",status:"published",reads:0,
+  {id:213,free:true,kit:"T13",cat:"learn",title:"Shapes All Around the Compound",local:"ቅርጾች በግቢው ዙሪያ",titles:{om:"Bocawwan Naannoo Mooraa",ti:"ቅርጽታት ኣብ ከባቢ ቀጽሪ",so:"Qaababka Barxadda",wal:"Dabaaban De'iya Merata"},lang:"Amharic",age:"3-6",cc:"c2",emo:"🔺",desc:"Nahom discovers shapes everywhere in his compound — the round door of the tukul, square windows, spiral snail shells, the crescent moon, and zigzag fences, until grandmother traces them all on his arm. A RISE Topic 13 (Shapes and Colors) storybook.",status:"published",reads:0,
     cover:"pages/shapes-all-around/cover.jpg",
     pages:[
       {img:"pages/shapes-all-around/cover.jpg",text:"",local:"",isCover:true},
@@ -2170,7 +2168,7 @@ const books = [
     ],
     quiz:[{q:"What shape is the door of Nahom's tukul?",opts:["Round 🔵", "Square 🟦", "Triangle 🔺"],a:0},{q:"What did Nahom find with a spiral shape?",opts:["A ball ⚽", "A book 📚", "A snail shell 🐌"],a:2},{q:"Who traced shapes on Nahom's arm at night?",opts:["His teacher 🏫", "His grandmother 👵", "His dog 🐶"],a:1}]},
 
-  {id:214,free:true,kit:"T13",cat:"learn",title:"Colors of My Village",local:"የመንደሬ ቀለማት",lang:"Amharic",age:"3-6",cc:"c3",emo:"🌈",desc:"Tsehay walks through her village finding every colour — red earth under her toes, green enset leaves, yellow corn, blue sky, brown coffee beans, and a little purple flower for her mother. A RISE Topic 13 (Colors) storybook.",status:"published",reads:0,
+  {id:214,free:true,kit:"T13",cat:"learn",title:"Colors of My Village",local:"የመንደሬ ቀለማት",titles:{om:"Halluuwwan Ganda Koo",ti:"ሕብርታት ዓደይ",so:"Midabada Tuuladayda",wal:"Ta Qachaa Meraa"},lang:"Amharic",age:"3-6",cc:"c3",emo:"🌈",desc:"Tsehay walks through her village finding every colour — red earth under her toes, green enset leaves, yellow corn, blue sky, brown coffee beans, and a little purple flower for her mother. A RISE Topic 13 (Colors) storybook.",status:"published",reads:0,
     cover:"pages/colors-of-my-village/cover.jpg",
     pages:[
       {img:"pages/colors-of-my-village/cover.jpg",text:"",local:"",isCover:true},
@@ -2196,7 +2194,7 @@ const books = [
     ],
     quiz:[{q:"What color was the path in Tsehay's village?",opts:["Green 🟢", "Red 🔴", "Blue 🔵"],a:1},{q:"What dried on a mat at the neighbour's door?",opts:["Yellow corn 🌽", "Purple flowers 🌸", "Blue cloth 🧵"],a:0},{q:"What did Tsehay carry gently to her mother?",opts:["A black bird 🐦", "A coffee bean 🫘", "A purple flower 🌸"],a:2}]},
 
-  {id:215,free:true,kit:"T14",cat:"mfh",title:"My Wonderful Body",local:"ድንቅ ሰውነቴ",lang:"Amharic",age:"3-6",cc:"c1",emo:"🧒",desc:"Naod is five years old, and from his head to his toes every part of his body has a job — eyes that see, hands that wave, feet that run, and a body that can hug, dance, and rest. A RISE Topic 14 (Body Self Care) storybook.",status:"published",reads:0,
+  {id:215,free:true,kit:"T14",cat:"mfh",title:"My Wonderful Body",local:"ድንቅ ሰውነቴ",titles:{om:"Qaama Koo Dinqisiisaa",ti:"ዘደንቕ ኣካላተይ",so:"Jidhkayga Yaabka leh",wal:"Ta Bollay Lo''o"},lang:"Amharic",age:"3-6",cc:"c1",emo:"🧒",desc:"Naod is five years old, and from his head to his toes every part of his body has a job — eyes that see, hands that wave, feet that run, and a body that can hug, dance, and rest. A RISE Topic 14 (Body Self Care) storybook.",status:"published",reads:0,
     cover:"pages/my-wonderful-body/cover.jpg",
     pages:[
       {img:"pages/my-wonderful-body/cover.jpg",text:"",local:"",isCover:true},
@@ -2223,7 +2221,7 @@ const books = [
     ],
     quiz:[{q:"What helps Naod chew his food?",opts:["His teeth 🦷", "His feet 🦶", "His ears 👂"],a:0},{q:"What can Naod's body do?",opts:["Fly to the moon 🌙", "Run fast as the wind 🌬️", "Turn into a lion 🦁"],a:1},{q:"What does Naod's body need?",opts:["Toys 🧸", "Television 📺", "Water and food 💧"],a:2}]},
 
-  {id:216,free:true,kit:"T15",cat:"mfh",title:"My Five Senses in the Village",local:"አምስቱ የስሜት ሕዋሶቼ በመንደሩ",lang:"Amharic",age:"3-6",cc:"c2",emo:"👂",desc:"Dawit wakes up and spends a whole village day seeing, hearing, smelling, tasting, and touching — from bright red flowers and far-away drums to sweet honey and grandmother's warm hand. A RISE Topic 15 (Five Senses) storybook.",status:"published",reads:0,
+  {id:216,free:true,kit:"T15",cat:"mfh",title:"My Five Senses in the Village",local:"አምስቱ የስሜት ሕዋሶቼ በመንደሩ",titles:{om:"Miira Koo Shanan Ganda Keessatti",ti:"ሓሙሽተ ህዋሳተይ ኣብ ዓዲ",so:"Shanta Dareen ee Tuulada",wal:"Ta Ichashu Siyo Wolqqata"},lang:"Amharic",age:"3-6",cc:"c2",emo:"👂",desc:"Dawit wakes up and spends a whole village day seeing, hearing, smelling, tasting, and touching — from bright red flowers and far-away drums to sweet honey and grandmother's warm hand. A RISE Topic 15 (Five Senses) storybook.",status:"published",reads:0,
     cover:"pages/my-five-senses/cover.jpg",
     pages:[
       {img:"pages/my-five-senses/cover.jpg",text:"",local:"",isCover:true},
@@ -2250,7 +2248,7 @@ const books = [
     ],
     quiz:[{q:"What sweet thing did the boy taste on his tongue?",opts:["Lemon 🍋", "Honey 🍯", "Bread 🍞"],a:1},{q:"What did he hear in the acacia tree?",opts:["A bird singing 🐦", "A drum 🥁", "A car 🚗"],a:0},{q:"How did the water feel on his hands?",opts:["Hot 🔥", "Rough 🪨", "Cool 💧"],a:2}]},
 
-  {id:217,free:true,kit:"T16",cat:"mfh",title:"Hanna's Feelings",local:"የሃና ስሜቶች",lang:"Amharic",age:"3-6",cc:"c3",emo:"😊",desc:"Hanna explores a day full of feelings — happy, sad, angry, scared, and calm again — and learns to notice, name, and share each one. A RISE Topic 16 (Emotions) storybook.",status:"published",reads:0,
+  {id:217,free:true,kit:"T16",cat:"mfh",title:"Hanna's Feelings",local:"የሃና ስሜቶች",titles:{om:"Miira Haannaa",ti:"ስምዒታት ሃና",so:"Dareenka Hanna",wal:"Hanna Siyettata"},lang:"Amharic",age:"3-6",cc:"c3",emo:"😊",desc:"Hanna explores a day full of feelings — happy, sad, angry, scared, and calm again — and learns to notice, name, and share each one. A RISE Topic 16 (Emotions) storybook.",status:"published",reads:0,
     cover:"pages/hannas-feelings/cover.jpg",
     pages:[
       {img:"pages/hannas-feelings/cover.jpg",text:"",local:"",isCover:true},
@@ -2277,7 +2275,7 @@ const books = [
     ],
     quiz:[{q:"What does Hanna want to do when she feels scared?",opts:["Hide 🙈", "Jump high ⬆️", "Sing a song 🎵"],a:0},{q:"What helps Hanna feel calm again?",opts:["Running fast 🏃", "Breathing slowly 🌬️", "Shouting loud 📢"],a:1},{q:"Who holds Hanna close when she feels loved?",opts:["Her teacher 🏫", "Her dog 🐕", "Her mother 💛"],a:2}]},
 
-  {id:218,free:true,kit:"T17",cat:"world",title:"Selam's Travel Day",local:"የሰላም የጉዞ ቀን",lang:"Amharic",age:"3-6",cc:"c1",emo:"🚌",desc:"Selam spends a whole day on the move — bajaj, minibus, donkey cart, motorcycle, bicycle, and truck — all the way to the busy market and home again. A RISE Topic 17 (Transport — Land) storybook.",status:"published",reads:0,
+  {id:218,free:true,kit:"T17",cat:"world",title:"Selam's Travel Day",local:"የሰላም የጉዞ ቀን",titles:{om:"Guyyaa Imala Salaam",ti:"መዓልቲ ጕዕዞ ሰላም",so:"Maalinta Safarka Salaam",wal:"Salaami Ogiyaa Gallassaa"},lang:"Amharic",age:"3-6",cc:"c1",emo:"🚌",desc:"Selam spends a whole day on the move — bajaj, minibus, donkey cart, motorcycle, bicycle, and truck — all the way to the busy market and home again. A RISE Topic 17 (Transport — Land) storybook.",status:"published",reads:0,
     cover:"pages/selams-travel-day/cover.jpg",
     pages:[
       {img:"pages/selams-travel-day/cover.jpg",text:"",local:"",isCover:true},
@@ -2304,7 +2302,7 @@ const books = [
     ],
     quiz:[{q:"What does Selam climb into at the start of her trip?",opts:["A boat ⛵", "A bajaj 🛺", "A plane ✈️"],a:1},{q:"Where do all the vehicles meet?",opts:["At the market 🧺", "At the river 🌊", "At the school 🏫"],a:0},{q:"What does the farm truck carry from the fields?",opts:["Toys 🧸", "Stones 🪨", "Vegetables 🥕"],a:2}]},
 
-  {id:219,free:true,kit:"T18",cat:"world",title:"Solomon's Sky and River Journey",local:"የሰለሞን የሰማይና የወንዝ ጉዞ",lang:"Amharic",age:"3-6",cc:"c2",emo:"✈️",desc:"Solomon journeys by air and water — a small plane, a helicopter, a hot-air balloon at dawn, and reed boats, canoes, and ferries across a great lake. A RISE Topic 18 (Transport — Air & Water) storybook.",status:"published",reads:0,
+  {id:219,free:true,kit:"T18",cat:"world",title:"Solomon's Sky and River Journey",local:"የሰለሞን የሰማይና የወንዝ ጉዞ",titles:{om:"Imala Samii fi Lagaa Solomoon",ti:"ጕዕዞ ሰማይን ፈለግን ናይ ሰሎሞን",so:"Safarka Cirka iyo Webiga ee Solomon",wal:"Solomona Saluwaanne Shaafaa Ogiyaa"},lang:"Amharic",age:"3-6",cc:"c2",emo:"✈️",desc:"Solomon journeys by air and water — a small plane, a helicopter, a hot-air balloon at dawn, and reed boats, canoes, and ferries across a great lake. A RISE Topic 18 (Transport — Air & Water) storybook.",status:"published",reads:0,
     cover:"pages/solomons-sky-river-journey/cover.jpg",
     pages:[
       {img:"pages/solomons-sky-river-journey/cover.jpg",text:"",local:"",isCover:true},
@@ -2331,7 +2329,7 @@ const books = [
     ],
     quiz:[{q:"What rises in the sky at dawn?",opts:["A hot air balloon 🎈", "A big truck 🚚", "A kite 🪁"],a:0},{q:"Who rides the ferry with Solomon?",opts:["A lion 🦁", "A donkey 🐴", "A goat 🐐"],a:1},{q:"What is the tankwa boat made of?",opts:["Metal 🔩", "Stone 🪨", "Reeds 🌾"],a:2}]},
 
-  {id:220,free:true,kit:"T19",cat:"world",title:"Building Our New Classroom",local:"አዲሱን መማሪያ ክፍላችንን መገንባት",lang:"Amharic",age:"3-6",cc:"c3",emo:"🏗️",desc:"When the whole village comes together to build a new classroom, little Hana helps too — carrying straw, smoothing mud walls, and stepping through the finished doorway. A RISE Topic 19 (Buildings & Construction) storybook.",status:"published",reads:0,
+  {id:220,free:true,kit:"T19",cat:"world",title:"Building Our New Classroom",local:"አዲሱን መማሪያ ክፍላችንን መገንባት",titles:{om:"Kutaa Barnootaa Haaraa Ijaaruu",ti:"ሓድሽ ክፍሊ ትምህርትና ምህናጽ",so:"Dhisidda Fasalkeenna Cusub",wal:"Nu Ooratha Timirtte Keettaa Keexiyoogaa"},lang:"Amharic",age:"3-6",cc:"c3",emo:"🏗️",desc:"When the whole village comes together to build a new classroom, little Hana helps too — carrying straw, smoothing mud walls, and stepping through the finished doorway. A RISE Topic 19 (Buildings & Construction) storybook.",status:"published",reads:0,
     cover:"pages/building-our-new-classroom/cover.jpg",
     pages:[
       {img:"pages/building-our-new-classroom/cover.jpg",text:"",local:"",isCover:true},
@@ -2358,7 +2356,7 @@ const books = [
     ],
     quiz:[{q:"What did the women mix with strong hands?",opts:["Clay and straw 🧱", "Flour and water 🍞", "Paint and sand 🎨"],a:0},{q:"What did everyone share at noon?",opts:["Bread and milk 🥛", "Injera and tea ☕", "Mango and rice 🥭"],a:1},{q:"Who built Hana's classroom?",opts:["One builder 👷", "Robots 🤖", "The whole village 🏘️"],a:2}]},
 
-  {id:221,free:true,kit:"T20",cat:"cult",title:"Liya's Coffee Ceremony",local:"የሊያ የቡና ሥነ ሥርዓት",lang:"Amharic",age:"3-6",cc:"c1",emo:"☕",desc:"Liya watches Grandmother lead the coffee ceremony step by step — washing and roasting the green beans, grinding them, brewing in the jebena, and pouring the rounds of coffee for the family. A RISE Topic 20 (Coffee Ceremony) storybook.",status:"published",reads:0,
+  {id:221,free:true,kit:"T20",cat:"cult",title:"Liya's Coffee Ceremony",local:"የሊያ የቡና ሥነ ሥርዓት",titles:{om:"Sirna Buna Liyaa",ti:"ስርዓተ ቡን ሊያ",so:"Xafladda Bunka Liya",wal:"Liyi Buna Sirnaa"},lang:"Amharic",age:"3-6",cc:"c1",emo:"☕",desc:"Liya watches Grandmother lead the coffee ceremony step by step — washing and roasting the green beans, grinding them, brewing in the jebena, and pouring the rounds of coffee for the family. A RISE Topic 20 (Coffee Ceremony) storybook.",status:"published",reads:0,
     cover:"pages/liyas-coffee-ceremony/cover.jpg",
     pages:[
       {img:"pages/liyas-coffee-ceremony/cover.jpg",text:"",local:"",isCover:true},
@@ -2385,7 +2383,7 @@ const books = [
     ],
     quiz:[{q:"What does Grandmother roast over the fire?",opts:["Coffee beans ☕", "Popcorn 🍿", "Bread 🍞"],a:0},{q:"What does Grandmother use to crush the roasted beans?",opts:["A spoon 🥄", "A wooden mortar 🪵", "A basket 🧺"],a:1},{q:"What snack does Liya hold during the ceremony?",opts:["Bananas 🍌", "Cookies 🍪", "Popcorn — fendisha 🍿"],a:2}]},
 
-  {id:222,free:true,kit:"T21",cat:"cult",title:"Song of the Mortar",local:"የሙቀጫው ዜማ",lang:"Amharic",age:"3-6",cc:"c2",emo:"🥁",desc:"A little boy hears music in everyday life as Mother pounds the grain — soon the washint, kebero, krar, and an azmari's masenqo join in, and the whole family dances. A RISE Topic 21 (Music & Rhythm) storybook.",status:"published",reads:0,
+  {id:222,free:true,kit:"T21",cat:"cult",title:"Song of the Mortar",local:"የሙቀጫው ዜማ",titles:{om:"Faarfannaa Mooyyee",ti:"ደርፊ መውቀጢ",so:"Heesta Mooyaha",wal:"Gaaccino Yettaa"},lang:"Amharic",age:"3-6",cc:"c2",emo:"🥁",desc:"A little boy hears music in everyday life as Mother pounds the grain — soon the washint, kebero, krar, and an azmari's masenqo join in, and the whole family dances. A RISE Topic 21 (Music & Rhythm) storybook.",status:"published",reads:0,
     cover:"pages/song-of-the-mortar/cover.jpg",
     pages:[
       {img:"pages/song-of-the-mortar/cover.jpg",text:"",local:"",isCover:true},
@@ -2412,7 +2410,7 @@ const books = [
     ],
     quiz:[{q:"What instrument does Father bring out?",opts:["A washint flute 🎶", "A big horn 📯", "A guitar 🎸"],a:0},{q:"Who plays the kebero drum?",opts:["Sister 👧", "Grandfather 👴", "The azmari 🎻"],a:1},{q:"What does the azmari play?",opts:["A krar 🎵", "A whistle 😗", "A masenqo 🎻"],a:2}]},
 
-  {id:223,free:true,kit:"T22",cat:"cult",title:"Gifaataa",local:"ጊፋታ",lang:"Amharic",age:"3-6",cc:"c3",emo:"🎉",desc:"A joyful journey through Gifaataa, the Wolaytta New Year — cleaning and mending, forgiving neighbours, feasting, music, the great bonfire, and blessings for the year ahead. A RISE Topic 22 (Festivals) storybook.",status:"published",reads:0,
+  {id:223,free:true,kit:"T22",cat:"cult",title:"Gifaataa",local:"ጊፋታ",titles:{om:"Gifaataa",ti:"ጊፋታ",so:"Gifaataa",wal:"Gifaataa"},lang:"Amharic",age:"3-6",cc:"c3",emo:"🎉",desc:"A joyful journey through Gifaataa, the Wolaytta New Year — cleaning and mending, forgiving neighbours, feasting, music, the great bonfire, and blessings for the year ahead. A RISE Topic 22 (Festivals) storybook.",status:"published",reads:0,
     cover:"pages/gifaataa/cover.jpg",
     pages:[
       {img:"pages/gifaataa/cover.jpg",text:"",local:"",isCover:true},
@@ -2439,7 +2437,7 @@ const books = [
     ],
     quiz:[{q:"What festival is the village getting ready for?",opts:["Gifaataa, the New Year 🎉", "A birthday party 🎂", "Market day 🧺"],a:0},{q:"What does the family hang over their doorway?",opts:["Red flowers 🌸", "Green leaves 🌿", "Bright lamps 🏮"],a:1},{q:"What do the people dance around at night?",opts:["A big tree 🌳", "The river 🌊", "The bonfire 🔥"],a:2}]},
 
-  {id:224,free:true,kit:"T23",cat:"learn",title:"Seven Days with Grandma",local:"ሰባት ቀናት ከአያቴ ጋር",lang:"Amharic",age:"3-6",cc:"c1",emo:"📅",desc:"Genet spends a whole week with her grandma — washing, school, market day, stories, and songs — learning the seven days as each one brings its own small joy. A RISE Topic 23 (Time & Routines) storybook.",status:"published",reads:0,
+  {id:224,free:true,kit:"T23",cat:"learn",title:"Seven Days with Grandma",local:"ሰባት ቀናት ከአያቴ ጋር",titles:{om:"Guyyoota Torba Akkoo Wajjin",ti:"ሸውዓተ መዓልታት ምስ ዓባየይ",so:"Toddoba Maalmood iyo Ayeeyo",wal:"Aakkeera Laappun Gallassaa"},lang:"Amharic",age:"3-6",cc:"c1",emo:"📅",desc:"Genet spends a whole week with her grandma — washing, school, market day, stories, and songs — learning the seven days as each one brings its own small joy. A RISE Topic 23 (Time & Routines) storybook.",status:"published",reads:0,
     cover:"pages/seven-days-with-grandma/cover.jpg",
     pages:[
       {img:"pages/seven-days-with-grandma/cover.jpg",text:"",local:"",isCover:true},
@@ -2466,7 +2464,7 @@ const books = [
     ],
     quiz:[{q:"Who does Genet spend the week with?",opts:["Her Grandma 👵", "Her teacher 🏫", "Her uncle 👨"],a:0},{q:"What happens on Thursday?",opts:["Washing day 🧺", "Market day 🛒", "School trip 🚌"],a:1},{q:"How many days are in one week?",opts:["Five ✋", "Six 🎲", "Seven 7️⃣"],a:2}]},
 
-  {id:225,free:true,kit:"T24",cat:"learn",title:"First Sounds: An English Alphabet Book",local:"የመጀመሪያ ድምፆች፦ የእንግሊዝኛ ፊደላት መጽሐፍ",lang:"Amharic",age:"3-6",cc:"c2",emo:"🔤",desc:"From A for Apple to Z for Zebra — twenty-six letters and twenty-six joyful village moments make a warm first English alphabet book for little readers. A RISE Topic 24 (First Sounds) storybook.",status:"published",reads:0,
+  {id:225,free:true,kit:"T24",cat:"learn",title:"First Sounds: An English Alphabet Book",local:"የመጀመሪያ ድምፆች፦ የእንግሊዝኛ ፊደላት መጽሐፍ",titles:{om:"Sagaleewwan Jalqabaa: Kitaaba Qubee Ingiliffaa",ti:"ቀዳሞት ድምጽታት፡ መጽሓፍ ፊደላት እንግሊዝኛ",so:"Dhawaaqyada Ugu Horreeya: Buugga Alifbeetada Ingiriisiga",wal:"Koyro Cenggurssata: Inggilizetto Pitaleta Maxaafaa"},lang:"Amharic",age:"3-6",cc:"c2",emo:"🔤",desc:"From A for Apple to Z for Zebra — twenty-six letters and twenty-six joyful village moments make a warm first English alphabet book for little readers. A RISE Topic 24 (First Sounds) storybook.",status:"published",reads:0,
     cover:"pages/first-sounds-alphabet/cover.jpg",
     pages:[
       {img:"pages/first-sounds-alphabet/cover.jpg",text:"",local:"",isCover:true},
@@ -2503,7 +2501,7 @@ const books = [
     ],
     quiz:[{q:"What is A for?",opts:["Apple 🍎", "Ball ⚽", "Cat 🐱"],a:0},{q:"Which letter is for Zebra?",opts:["A 🅰️", "M Ⓜ️", "Z 🦓"],a:2},{q:"How many letters are in the alphabet?",opts:["5 ✋", "26 🔤", "100 💯"],a:1}]},
 
-  {id:226,free:true,kit:"T25",cat:"mfh",title:"Clean Hands, Healthy Me",local:"ንጹህ እጆች፣ ጤናማ እኔ",lang:"Amharic",age:"3-6",cc:"c3",emo:"🧼",desc:"Tigist shows how to wash hands step by step — soap, bubbles, rinse, dry — and the five important times to wash every day. A RISE Topic 25 (Hygiene & Health) storybook.",status:"published",reads:0,
+  {id:226,free:true,kit:"T25",cat:"mfh",title:"Clean Hands, Healthy Me",local:"ንጹህ እጆች፣ ጤናማ እኔ",titles:{om:"Harka Qulqulluu, Fayyaa Koo",ti:"ጽሩይ ኣእዳው፣ ጥዑይ ኣነ",so:"Gacmo Nadiif ah, Ani Caafimaad qaba",wal:"Geeshsha Kushiyaa, Payya Tana"},lang:"Amharic",age:"3-6",cc:"c3",emo:"🧼",desc:"Tigist shows how to wash hands step by step — soap, bubbles, rinse, dry — and the five important times to wash every day. A RISE Topic 25 (Hygiene & Health) storybook.",status:"published",reads:0,
     cover:"pages/clean-hands-healthy-me/cover.jpg",
     pages:[
       {img:"pages/clean-hands-healthy-me/cover.jpg",text:"",local:"",isCover:true},
@@ -2530,7 +2528,7 @@ const books = [
     ],
     quiz:[{q:"What is Tigist learning about?",opts:["Clean hands 🧼", "Flying kites 🪁", "Baking bread 🍞"],a:0},{q:"What makes bubbles when Tigist washes?",opts:["A stone 🪨", "The soap 🫧", "A banana 🍌"],a:1},{q:"When should you wash your hands?",opts:["Only on holidays 🎉", "Never 🙅", "Before eating 🍽️"],a:2}]},
 
-  {id:227,free:true,kit:"T26",cat:"cult",title:"The Weaver's Beautiful Thread",local:"የሸማኔው ውብ ክር",lang:"Amharic",age:"3-6",cc:"c1",emo:"🧵",desc:"A child visits grandfather's great loom and watches threads of red, yellow, and black become a beautiful scarf, while grandmother spins soft cotton into yarn. A RISE Topic 26 (Crafts / Weaving) storybook.",status:"published",reads:0,
+  {id:227,free:true,kit:"T26",cat:"cult",title:"The Weaver's Beautiful Thread",local:"የሸማኔው ውብ ክር",titles:{om:"Kirrii Bareedaa Kan Dhooftuu",ti:"ጽቡቕ ፈትሊ ሰራሕ ዓለባ",so:"Dunta Quruxsan ee Tolaha",wal:"Shamaaniyaa Lo''o Kiriyaa"},lang:"Amharic",age:"3-6",cc:"c1",emo:"🧵",desc:"A child visits grandfather's great loom and watches threads of red, yellow, and black become a beautiful scarf, while grandmother spins soft cotton into yarn. A RISE Topic 26 (Crafts / Weaving) storybook.",status:"published",reads:0,
     cover:"pages/weavers-beautiful-thread/cover.jpg",
     pages:[
       {img:"pages/weavers-beautiful-thread/cover.jpg",text:"",local:"",isCover:true},
@@ -2557,7 +2555,7 @@ const books = [
     ],
     quiz:[{q:"Who weaves at the great loom?",opts:["Grandfather 👴", "A little bird 🐦", "The teacher 🍎"],a:0},{q:"What does grandmother turn the cotton into?",opts:["Bread 🍞", "Stones 🪨", "Thread 🧵"],a:2},{q:"What gift does the child take home?",opts:["A drum 🥁", "A scarf 🧣", "A ball ⚽"],a:1}]},
 
-  {id:228,free:true,kit:"T27",cat:"world",title:"Keno and the Builders",local:"ኬኖ እና ገንቢዎቹ",lang:"Amharic",age:"3-6",cc:"c2",emo:"🚜",desc:"Keno explores a busy building site and meets every machine — the digging excavator, the pushing bulldozer, the spinning cement mixer, and the tall crane — and the workers who make them all work together. A RISE Topic 27 (Construction Vehicles) storybook.",status:"published",reads:0,
+  {id:228,free:true,kit:"T27",cat:"world",title:"Keno and the Builders",local:"ኬኖ እና ገንቢዎቹ",titles:{om:"Keenoo fi Ijaartota",ti:"ኬኖን ሃነጽትን",so:"Keno iyo Dhistayaasha",wal:"Kenonne Keexiyaageeta"},lang:"Amharic",age:"3-6",cc:"c2",emo:"🚜",desc:"Keno explores a busy building site and meets every machine — the digging excavator, the pushing bulldozer, the spinning cement mixer, and the tall crane — and the workers who make them all work together. A RISE Topic 27 (Construction Vehicles) storybook.",status:"published",reads:0,
     cover:"pages/keno-and-the-builders/cover.jpg",
     pages:[
       {img:"pages/keno-and-the-builders/cover.jpg",text:"",local:"",isCover:true},
@@ -3142,6 +3140,13 @@ function _catLabel(b){
   const c=CATS[b.cat]||CATS.learn;
   return {emoji:c.emoji, name:c.label, cls:c.cls};
 }
+// Book title in a given reading language (falls back Amharic → English).
+// titles:{om,ti,so,wal} are Claude drafts — need native review like page text.
+function _titleInLang(b, lang){
+  if(lang==='Amharic') return b.local || b.title;
+  const k = {Oromiffa:'om', Tigrinya:'ti', Somali:'so', Wolaytta:'wal'}[lang];
+  return (k && b.titles && b.titles[k]) || b.local || b.title;
+}
 function bCardHTML(b){
   const fav=favourites.has(b.id);
   const prog=readProgress[b.id]||0;
@@ -3159,10 +3164,11 @@ function bCardHTML(b){
   const completedBadge = isCompleted
     ? `<div style="position:absolute;top:6px;left:6px;background:#2e7d32;color:#fff;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;box-shadow:0 2px 8px rgba(0,0,0,.4);z-index:5;" title="Completed!">✓</div>`
     : '';
-  // In a language mode, show the native title on the card when available
+  // In a language mode, show the title in the SELECTED language on the card
   const isNativeLang = activeLang!=='all' && activeLang!=='English';
-  const cardTitle = isNativeLang && b.local ? b.local : b.title;
-  const cardSubTitle = isNativeLang && b.local ? `<div style="font-size:10px;color:var(--text-light);margin-top:1px;">${b.title}</div>` : '';
+  const nativeTitle = isNativeLang ? _titleInLang(b, activeLang) : '';
+  const cardTitle = nativeTitle || b.title;
+  const cardSubTitle = nativeTitle && nativeTitle!==b.title ? `<div style="font-size:10px;color:var(--text-light);margin-top:1px;">${b.title}</div>` : '';
   // Cover overlay: show English title when in non-English mode
   const coverText = isNativeLang ? b.title : b.local;
   // Language badge
@@ -3336,7 +3342,8 @@ function openReader(id){
     // else keep whatever setLang() set (e.g. 'local' for Amharic filter)
     const b=books.find(bk=>bk.id===id);
     if(!b){ showToast('⚠️ Book not found'); return; }
-    document.getElementById('readerTitle').textContent=`${b.title} · ${b.local}`;
+    const _hdrNative = (activeLang!=='all'&&activeLang!=='English') ? _titleInLang(b, activeLang) : b.local;
+    document.getElementById('readerTitle').textContent = _hdrNative && _hdrNative!==b.title ? `${b.title} · ${_hdrNative}` : b.title;
     document.getElementById('readerMeta').textContent=`${b.lang} · Ages ${b.age}`;
     // Show language toggle button — reflects current reading language
     const hasLocalText = b.pages && b.pages.some(pg=>
@@ -3524,6 +3531,20 @@ function initPageFlipFromIllustrated(b, container, startBp){
     if(!flipRoot.parentNode) pfBook.appendChild(flipRoot);
 
     const textHosts = []; // [{inner, bp}] — re-filled on language switch
+    const imgZones = [];  // [{z, bp}] — image zones, hydrated lazily near current page
+
+    function _setLeafBg(z){
+      if(!z.dataset.img || z.dataset.loaded) return;
+      // Force the download even while the leaf is hidden (StPageFlip hides
+      // non-current leaves, and browsers defer hidden background images)
+      const pre = new Image(); pre.src = z.dataset.img;
+      z.style.background =
+        `url('${z.dataset.img}') center/cover no-repeat,linear-gradient(160deg,#f6f1e7,#ece4d4)`;
+      z.dataset.loaded = '1';
+    }
+    function _hydrateAround(bp){
+      imgZones.forEach(o=>{ if(Math.abs(o.bp - bp) <= 3) _setLeafBg(o.z); });
+    }
 
     function _mkImgLeaf(pg, bp){
       const d = document.createElement('div');
@@ -3562,24 +3583,33 @@ function initPageFlipFromIllustrated(b, container, startBp){
       if(pg.isCover) d.dataset.density = 'hard';
       const imgZone = document.createElement('div');
       imgZone.className = 'ill-stpf-img';
-      imgZone.style.height = pg.isCover ? '100%' : IMG_PCT;
+      // Cover uses the SAME square image zone as inside pages so the book
+      // feels proportional from cover to last page (Sule, 2026-06-11)
+      imgZone.style.height = IMG_PCT;
       if(pg.img){
-        imgZone.style.background =
-          `url('${pg.img}') center/${pg.isCover?'contain':'cover'} no-repeat,linear-gradient(160deg,${pg.isCover?'#1a1208,#2d1e0a':'#f6f1e7,#ece4d4'})`;
+        // Lazy loading: only pages near the start load immediately; the rest
+        // hydrate as the reader approaches them (slow-connection fix)
+        imgZone.dataset.img = pg.img;
+        if(Math.abs(bp - (startBp||0)) <= 2 || pg.isCover) _setLeafBg(imgZone);
       } else if(pg.emo){
         imgZone.style.cssText += 'display:flex;align-items:center;justify-content:center;font-size:56px;';
         imgZone.textContent = pg.emo;
       }
+      imgZones.push({z: imgZone, bp});
       d.appendChild(imgZone);
       if(pg.isCover){
-        // Designed cover title block (cover art from the PPTX has no title text)
-        const tb = document.createElement('div');
-        tb.className = 'ill-cover-titleblock';
-        tb.innerHTML =
-          `<div class="ill-cover-title" style="font-size:${Math.max(17,Math.round(pageW*0.058))}px">${b.title}</div>` +
-          (b.local ? `<div class="ill-cover-title-local ethiopic" style="font-size:${Math.max(12,Math.round(pageW*0.038))}px">${b.local}</div>` : '') +
+        // Designed cover title zone — cream area matching the inside text zone
+        // (the PPTX cover art carries no title text). Bottom padding keeps the
+        // title clear of the Start Reading CTA that overlays the page bottom.
+        const tz = document.createElement('div');
+        tz.className = 'ill-cover-titlezone';
+        tz.style.paddingBottom = Math.round(pageH*0.06 + 46) + 'px';
+        tz.innerHTML =
+          `<div class="ill-cover-title" style="font-size:${Math.max(20,Math.round(pageW*0.072))}px">${b.title}</div>` +
+          (()=>{const lt=(activeLang!=='all'&&activeLang!=='English') ? _titleInLang(b, activeLang) : b.local;
+                return lt && lt!==b.title ? `<div class="ill-cover-title-local ethiopic" style="font-size:${Math.max(14,Math.round(pageW*0.046))}px">${lt}</div>` : '';})() +
           `<div class="ill-cover-series">A Gugut Library Picture Book</div>`;
-        d.appendChild(tb);
+        d.appendChild(tz);
       }
       if(!pg.isCover){
         const tz = document.createElement('div');
@@ -3695,6 +3725,7 @@ function initPageFlipFromIllustrated(b, container, startBp){
     pfInstance.on('flip', e=>{
       const bp = bpOf(e.data);
       currentPage = bp;
+      _hydrateAround(bp);
       readProgress[currentBookId] = Math.min(100, Math.round(((bp+1)/N)*100));
       _saveState(); _recordReadToday(); stopAudio();
       _syncUI(bp);
