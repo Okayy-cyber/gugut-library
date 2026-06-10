@@ -421,11 +421,36 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
   font-size:10px;color:#b8ab92;letter-spacing:.5px;
   font-family:'Nunito',Arial,sans-serif;pointer-events:none;
 }
+/* Cover title block — pasted over the bottom of the cover art */
+.ill-cover-titleblock{
+  position:absolute;left:0;right:0;bottom:0;
+  padding:7% 8% 9%;text-align:center;pointer-events:none;
+  background:linear-gradient(to top,rgba(16,10,2,.88) 0%,rgba(16,10,2,.62) 62%,transparent 100%);
+}
+.ill-cover-title{
+  font-family:'Nunito',system-ui,sans-serif;font-weight:900;
+  line-height:1.2;color:#FFF7E6;
+  text-shadow:0 2px 8px rgba(0,0,0,.5);
+}
+.ill-cover-title-local{
+  font-family:'Noto Sans Ethiopic','Nunito',sans-serif;font-weight:700;
+  color:#F5C020;margin-top:5px;
+  text-shadow:0 2px 6px rgba(0,0,0,.5);
+}
+.ill-cover-series{
+  font-family:'Nunito',sans-serif;font-weight:700;font-size:10px;
+  letter-spacing:2.2px;text-transform:uppercase;color:rgba(255,247,230,.75);
+  margin-top:9px;
+}
 
 /* ── Illustrated book: DOM two-page spread (Boukili-style) ──
    Left page = full illustration, right page = live text with .tts-word spans.
    StPageFlip provides the spine-pivot leaf flip; no canvas, no pre-render. */
-.ill-leaf{background:#fffdf5;overflow:hidden;box-sizing:border-box;position:relative;}
+.ill-leaf{background:#fffdf5;overflow:hidden;box-sizing:border-box;position:relative;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+/* Clip the soft page-curl so no fold fragments paint outside the page bounds
+   (stray sliver below the book, Sule 2026-06-11). Slight padding via the
+   block keeps shadows; anything beyond the parent rect is cut. */
+.stf__parent{overflow:hidden !important;}
 .ill-img-page{background:linear-gradient(160deg,#f6f1e7,#ece4d4);display:flex;align-items:center;justify-content:center;}
 .ill-img-page img{width:100%;height:100%;object-fit:contain;display:block;user-select:none;-webkit-user-drag:none;pointer-events:none;}
 .ill-cover-page{background:linear-gradient(160deg,#1a1208,#2d1e0a);}
@@ -3546,6 +3571,16 @@ function initPageFlipFromIllustrated(b, container, startBp){
         imgZone.textContent = pg.emo;
       }
       d.appendChild(imgZone);
+      if(pg.isCover){
+        // Designed cover title block (cover art from the PPTX has no title text)
+        const tb = document.createElement('div');
+        tb.className = 'ill-cover-titleblock';
+        tb.innerHTML =
+          `<div class="ill-cover-title" style="font-size:${Math.max(17,Math.round(pageW*0.058))}px">${b.title}</div>` +
+          (b.local ? `<div class="ill-cover-title-local ethiopic" style="font-size:${Math.max(12,Math.round(pageW*0.038))}px">${b.local}</div>` : '') +
+          `<div class="ill-cover-series">A Gugut Library Picture Book</div>`;
+        d.appendChild(tb);
+      }
       if(!pg.isCover){
         const tz = document.createElement('div');
         tz.className = 'ill-stpf-text';
