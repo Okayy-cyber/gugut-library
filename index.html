@@ -402,6 +402,24 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
   font-family:Arial,sans-serif;pointer-events:none;
 }
 
+/* ── Illustrated book: DOM two-page spread (Boukili-style) ──
+   Left page = full illustration, right page = live text with .tts-word spans.
+   StPageFlip provides the spine-pivot leaf flip; no canvas, no pre-render. */
+.ill-leaf{background:#fffdf5;overflow:hidden;box-sizing:border-box;position:relative;}
+.ill-img-page{background:linear-gradient(160deg,#f6f1e7,#ece4d4);display:flex;align-items:center;justify-content:center;}
+.ill-img-page img{width:100%;height:100%;object-fit:contain;display:block;user-select:none;-webkit-user-drag:none;pointer-events:none;}
+.ill-cover-page{background:linear-gradient(160deg,#1a1208,#2d1e0a);}
+.ill-cover-page img{object-fit:contain;}
+/* Static gutter shadows — left leaf darkens toward its right edge (the spine), right leaf toward its left */
+.ill-gutter-l{box-shadow:inset -22px 0 26px -18px rgba(0,0,0,.28);}
+.ill-gutter-r{box-shadow:inset 22px 0 26px -18px rgba(0,0,0,.22);}
+.ill-text-page{display:flex;align-items:center;justify-content:center;background:#fffdf5;padding:9% 10%;}
+.ill-text-page::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 31px,rgba(0,0,0,.022) 31px,rgba(0,0,0,.022) 32px);pointer-events:none;}
+.ill-text-inner{font-family:Georgia,'Times New Roman',serif;color:#2a2018;text-align:center;line-height:1.75;font-weight:400;letter-spacing:.01em;-webkit-font-smoothing:antialiased;position:relative;z-index:1;}
+.ill-text-inner.ethiopic{font-family:'Noto Sans Ethiopic',Georgia,serif;line-height:1.95;}
+.ill-blank-orn{color:#d8cdb6;font-size:28px;}
+.ill-pgnum{position:absolute;bottom:10px;right:14px;font-size:11px;color:#b8ab92;font-family:Arial,sans-serif;pointer-events:none;z-index:1;}
+
 /* Audio controls */
 .audio-bar{background:#111;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
 .audio-play{width:44px;height:44px;border-radius:50%;border:none;background:var(--amber);color:var(--green-dark);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,transform .15s;}
@@ -3218,6 +3236,7 @@ function initPageFlip(b){
   window._illViewerGoTo = null;
   window._illViewerNext = null;
   window._illViewerPrev = null;
+  window._illRefreshTexts = null;
   // Remove keyboard handler from previous illustrated book
   if(window._illKeyHandler){ document.removeEventListener('keydown', window._illKeyHandler); window._illKeyHandler = null; }
 
@@ -3228,8 +3247,7 @@ function initPageFlip(b){
   const container = document.createElement('div');
   pfBook.appendChild(container);
 
-  // If any page has an image, use the canvas-render path (same as PDF flow —
-  // avoids the display:flex!important conflict that breaks loadFromHTML flipping)
+  // Illustrated books → DOM two-page spread reader (image left, live text right)
   const hasImages = b.pages.some(pg => pg.img);
   if(hasImages){
     initPageFlipFromIllustrated(b, container);
@@ -3283,443 +3301,188 @@ function initPageFlip(b){
   else{ const ind=document.getElementById('pageInd'); if(ind) ind.textContent='1 / '+b.pages.length; }
 }
 
-// ── Illustrated books: StPageFlip HTML mode ─────────────────────────────────
-//    Each page is an HTML div: image zone (top ~74%) + text zone (bottom ~26%).
-//    StPageFlip handles the 3D fold animation. Text is live HTML so TTS
-//    word highlighting works natively via .tts-word spans.
-async function initPageFlipFromIllustrated(b, container){
+// ── Illustrated books: DOM two-page spread reader (Boukili-style) ───────────
+//    Wide screens: each book page becomes TWO leaves — illustration on the
+//    left page, live DOM text (.tts-word spans) on the right page.
+//    Narrow screens: one combined leaf per page (image top + text bottom).
+//    StPageFlip animates the spine-pivot leaf turn. No canvas, no pre-render
+//    → books open instantly and TTS word highlighting runs on the real text.
+function initPageFlipFromIllustrated(b, container, startBp){
   const pfBook = document.getElementById('pfBook');
-  const _bookTitleForSpinner = b.title || 'Loading…';
-  pfBook.innerHTML = `<div id="pfLoadingState"><div class="pf-spin"></div><div class="pf-book-title">${_bookTitleForSpinner}</div><span>Preparing pages…</span><div class="pf-progress-track"><div class="pf-progress-fill" id="pfProgressFill"></div></div></div>`;
-
   try{
     const wrap = document.getElementById('pfWrap');
     const availW = (wrap.clientWidth || window.innerWidth) - 16;
     const availH = (wrap.clientHeight || window.innerHeight) - 20;
-    const hasCover = b.pages[0] && b.pages[0].isCover;
+    const hasCover = !!(b.pages[0] && b.pages[0].isCover);
     const coverOffset = hasCover ? 1 : 0;
-    const storyCount = b.pages.length - coverOffset;
-    // Portrait dimensions — fill available width first for a large book on mobile.
-    // Cap at 430px on desktop so it doesn't look over-sized on a wide screen.
+    const N = b.pages.length;
+    const storyCount = N - coverOffset;
+
+    // ── Layout mode + page dimensions ────────────────────────────────────────
+    const isNarrow = availW < 560;           // phones → single combined leaf
+    const PAGE_RATIO = 1.45;                 // portrait page w:h
     const MAX_PAGE_W = 430;
-    let pageW = Math.min(MAX_PAGE_W, Math.max(200, availW - 8));
-    let pageH = Math.round(pageW * 1.45);
-    if (pageH > availH - 16) {
-      pageH = Math.max(300, availH - 16);
-      pageW = Math.max(200, Math.round(pageH / 1.45));
+    let pageW = isNarrow
+      ? Math.min(MAX_PAGE_W, Math.max(200, availW - 8))
+      : Math.min(MAX_PAGE_W, Math.max(180, Math.floor(availW/2) - 10));
+    let pageH = Math.round(pageW * PAGE_RATIO);
+    if(pageH > availH - 12){
+      pageH = Math.max(300, availH - 12);
+      pageW = Math.max(180, Math.round(pageH / PAGE_RATIO));
     }
 
-    const _canvasDisplayLang = readerDisplayLang==='local' ? activeLang : 'English';
+    // Reading language: in 'local' mode fall back to the BOOK's language when
+    // no specific language filter is active (activeLang 'all'/'English').
+    const _dispLang = ()=> readerDisplayLang==='local'
+      ? ((activeLang==='all'||activeLang==='English') ? b.lang : activeLang)
+      : 'English';
 
-    // ── Per-page canvas renderer ──────────────────────────────────────────────
-    // Draws: image (top 74%) + cream text strip (bottom 26%) + page number.
-    // Text content is kept in the HTML illTextOverlay so TTS highlighting works.
-    async function _renderPage(i){
-      const pg = b.pages[i];
-      const oc = document.createElement('canvas');
-      oc.width = pageW*2; oc.height = pageH*2;   // 2× retina
-      const ctx = oc.getContext('2d');
-      ctx.clearRect(0,0,oc.width,oc.height);
-      const _isEthiopic = ['Amharic','Tigrinya'].includes(_canvasDisplayLang);
-      if(_isEthiopic) try{ await document.fonts.load(`16px 'Noto Sans Ethiopic'`); }catch(e){}
-      if(pg.img){
-        await new Promise(resolve=>{
-          const imgEl = new Image();
-          // crossOrigin not needed — all images are same-origin; setting it on a
-          // server without CORS headers would taint the canvas and break toDataURL()
-          imgEl.onload = ()=>{
-            const cw=oc.width, ch=oc.height;
-            const hasText = !!_getPageText(pg,_canvasDisplayLang) && !pg.isCover;
-            const textZoneH = hasText ? Math.round(ch*0.26) : 0;
-            const imgZoneH  = ch - textZoneH;
-
-            if(pg.isCover){
-              // Cover: contain (letterbox) — show full artwork without cropping.
-              // Fill letterbox areas with a zoomed/blurred version of the image,
-              // falling back to a warm dark gradient if ctx.filter isn't supported.
-              const scaleContain = Math.min(cw/imgEl.width, imgZoneH/imgEl.height);
-              const fw = Math.round(imgEl.width * scaleContain);
-              const fh = Math.round(imgEl.height * scaleContain);
-              const fx = Math.round((cw - fw) / 2);
-              const fy = Math.round((imgZoneH - fh) / 2);
-              // Background: zoomed cover fill + blur (graceful degradation if filter unsupported)
-              const bgScale = Math.max(cw/imgEl.width, imgZoneH/imgEl.height) * 1.05;
-              const bgW = Math.round(imgEl.width * bgScale), bgH = Math.round(imgEl.height * bgScale);
-              const bgX = Math.round((cw - bgW) / 2), bgY = Math.round((imgZoneH - bgH) / 2);
-              ctx.save();
-              try{
-                ctx.filter = 'blur(20px) brightness(0.55) saturate(0.8)';
-                ctx.drawImage(imgEl, bgX, bgY, bgW, bgH);
-              }catch(fe){
-                // ctx.filter unsupported or drawImage failed — fill with dark gradient
-                const gCover = ctx.createLinearGradient(0,0,0,imgZoneH);
-                gCover.addColorStop(0,'#1a1208'); gCover.addColorStop(1,'#2d1e0a');
-                ctx.fillStyle=gCover; ctx.fillRect(0,0,cw,imgZoneH);
-              }finally{
-                ctx.restore(); // always clears filter and any other state changes
-              }
-              // Draw full cover artwork on top (letterboxed)
-              ctx.drawImage(imgEl, fx, fy, fw, fh);
-            } else {
-              // Story page: contain (show full illustration, no cropping)
-              const scale = Math.min(cw/imgEl.width, imgZoneH/imgEl.height);
-              const dw=Math.round(imgEl.width*scale), dh=Math.round(imgEl.height*scale);
-              const dx=Math.round((cw-dw)/2), dy=Math.round((imgZoneH-dh)/2);
-              ctx.drawImage(imgEl, dx, dy, dw, dh);
-            }
-
-            if(hasText){
-              // Cream text zone background + STATIC TEXT drawn on canvas.
-              // This gives the "authentic book page" feel the user wants.
-              // During TTS an invisible HTML overlay fades in over this zone
-              // with word-span highlighting, then fades back out.
-              ctx.fillStyle='#fffdf5'; ctx.fillRect(0,imgZoneH,cw,textZoneH);
-              ctx.strokeStyle='#e8e0d0'; ctx.lineWidth=2;
-              ctx.beginPath(); ctx.moveTo(0,imgZoneH); ctx.lineTo(cw,imgZoneH); ctx.stroke();
-
-              // Draw the page text on the canvas
-              const _pgText = _getPageText(pg, _canvasDisplayLang);
-              if(_pgText){
-                const _isEth = ['Amharic','Tigrinya'].includes(_canvasDisplayLang);
-                const _fontFam = _isEth ? "'Noto Sans Ethiopic',serif" : "Georgia,serif";
-                const _fontSize = Math.round(ch*0.042);
-                const _lineH = Math.round(ch*0.055);
-                // Scale down font for long text
-                const _adjSize = _pgText.length > 70
-                  ? Math.max(Math.round(ch*0.028), Math.round(_fontSize * Math.sqrt(65/_pgText.length)))
-                  : _fontSize;
-                const _adjLH = _pgText.length > 70
-                  ? Math.max(Math.round(ch*0.038), Math.round(_lineH * Math.sqrt(65/_pgText.length)))
-                  : _lineH;
-                ctx.fillStyle='#1a1a1a';
-                ctx.font=`${_adjSize}px ${_fontFam}`;
-                ctx.textAlign='center';
-                const _textY = imgZoneH + Math.round(textZoneH*0.15) + _adjLH;
-                const _maxW = cw * 0.88;
-                wrapCanvasText(ctx, _pgText, cw/2, _textY, _maxW, _adjLH);
-              }
-
-              // Page number (bottom-right, subtle)
-              ctx.fillStyle='#bbb';
-              ctx.font=`${Math.round(ch*0.025)}px Arial,sans-serif`;
-              ctx.textAlign='right';
-              ctx.fillText((i+1-coverOffset)+'/'+storyCount, cw-Math.round(cw*0.03), imgZoneH+textZoneH-Math.round(ch*0.018));
-            }
-            resolve();
-          };
-          imgEl.onerror = ()=>{
-            // Draw a warm placeholder so the page isn't blank
-            const cw=oc.width, ch=oc.height;
-            const g=ctx.createLinearGradient(0,0,0,ch);
-            g.addColorStop(0,'#2d4a1e'); g.addColorStop(1,'#1a2e11');
-            ctx.fillStyle=g; ctx.fillRect(0,0,cw,ch);
-            ctx.fillStyle='rgba(255,255,255,.15)';
-            ctx.font=`bold ${Math.round(ch*0.09)}px sans-serif`;
-            ctx.textAlign='center'; ctx.textBaseline='middle';
-            ctx.fillText('🖼️', cw/2, ch*0.42);
-            ctx.font=`${Math.round(ch*0.035)}px sans-serif`;
-            ctx.fillStyle='rgba(255,255,255,.4)';
-            ctx.fillText('Image unavailable', cw/2, ch*0.58);
-            resolve();
-          };
-          imgEl.src = pg.img;
-        });
-      } else {
-        // Text-only page: warm parchment background with centered story text
-        const grd = ctx.createLinearGradient(0, 0, 0, oc.height);
-        grd.addColorStop(0, '#fefdf8');
-        grd.addColorStop(1, '#f5f0e8');
-        ctx.fillStyle = grd;
-        ctx.fillRect(0, 0, oc.width, oc.height);
-        // Subtle decorative top band
-        ctx.fillStyle = 'rgba(180,160,120,0.10)';
-        ctx.fillRect(0, 0, oc.width, Math.round(oc.height * 0.06));
-        // Emoji (if available)
-        ctx.fillStyle = '#1a1a1a'; // reset before text drawing
-        const pgText = _getPageText(pg, _canvasDisplayLang) || '';
-        const startY = pg.emo ? oc.height * 0.32 : oc.height * 0.40;
-        if(pg.emo){
-          ctx.font = `${Math.round(oc.height * 0.14)}px serif`;
-          ctx.textAlign = 'center';
-          ctx.fillText(pg.emo, oc.width / 2, oc.height * 0.22);
-        }
-        // Story text
-        ctx.fillStyle = '#2a2018';
-        ctx.font = `${Math.round(oc.height * 0.055)}px 'Nunito',Georgia,sans-serif`;
-        ctx.textAlign = 'center';
-        wrapCanvasText(ctx, pgText, oc.width / 2, startY, oc.width * 0.82, oc.height * 0.068);
-        // Page number
-        if(i > 0){
-          ctx.fillStyle = '#bbb';
-          ctx.font = `${Math.round(oc.height * 0.025)}px Arial,sans-serif`;
-          ctx.textAlign = 'right';
-          ctx.fillText(i + '/' + storyCount, oc.width - Math.round(oc.width * 0.04), oc.height - Math.round(oc.height * 0.025));
-        }
-      }
-      try {
-        return oc.toDataURL('image/jpeg', 0.88);
-      } catch(taintErr){
-        // Tainted canvas — browser blocked toDataURL (file:// protocol or missing CORS headers).
-        // Fall back to the raw image path; the overlay handles text display anyway.
-        console.warn('Canvas tainted, using direct image URL for page', i);
-        return pg.img || '';
-      }
+    // Wrap every word in a .tts-word span carrying its char offset (data-start)
+    // so both the ElevenLabs alignment scheduler and the Web-Speech timer
+    // engine can highlight words directly in the page DOM.
+    function _wrapWords(text){
+      let h='', off=0;
+      text.split(/(\s+)/).forEach(tok=>{
+        if(/^\s+$/.test(tok)){ h+=tok; off+=tok.length; }
+        else if(tok){ h+=`<span class="tts-word" data-start="${off}">${tok}</span>`; off+=tok.length; }
+      });
+      return h;
     }
 
-    // ── Render all pages (parallel for speed) then hand to StPageFlip ─────────
-    const loadState = document.getElementById('pfLoadingState');
-    const totalPgs = b.pages.length;
-    let doneCount = 0;
-    const dataUrls = await Promise.all(
-      b.pages.map(async (_,i)=>{
-        const url = await _renderPage(i);
-        doneCount++;
-        if(loadState){
-          const sp = loadState.querySelector('span');
-          if(sp) sp.textContent = `Rendering ${doneCount} of ${totalPgs}…`;
-          const fill = document.getElementById('pfProgressFill');
-          if(fill) fill.style.width = Math.round((doneCount/totalPgs)*100) + '%';
-        }
-        return url;
-      })
-    );
-
-    // ── Custom slide-based page viewer (no external library) ─────────────────
-    // Two <img> layers animate with CSS translateX for a smooth page-slide effect.
-    // Works reliably on all devices, fully supports TTS word-highlight overlay.
+    // ── Build leaf elements ───────────────────────────────────────────────────
     pfInstance = null;
     pfBook.innerHTML = '';
-    const newContainer = document.createElement('div');
-    newContainer.style.cssText =
-      `width:${pageW}px;height:${pageH}px;position:relative;overflow:hidden;`+
-      `border-radius:8px;`+
-      // Layered shadow: deep drop shadow + right-edge book-spine shadow + warm glow
-      `box-shadow:0 8px 40px rgba(0,0,0,.65),0 2px 8px rgba(0,0,0,.4),`+
-              `-3px 0 12px rgba(0,0,0,.35),3px 0 20px rgba(0,0,0,.25);`;
-    pfBook.appendChild(newContainer);
+    const flipRoot = container || document.createElement('div');
+    flipRoot.innerHTML = '';
+    if(!flipRoot.parentNode) pfBook.appendChild(flipRoot);
 
-    // Layer A = visible page, Layer B = waiting off-screen
-    const _imgA = document.createElement('img');
-    _imgA.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:block;user-select:none;';
-    _imgA.src = dataUrls[0];
-    newContainer.appendChild(_imgA);
+    const textHosts = []; // [{inner, bp}] — re-filled on language switch
 
-    const _imgB = document.createElement('img');
-    _imgB.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:block;user-select:none;transform:translateX(100%);';
-    newContainer.appendChild(_imgB);
-
-    let _useA = true;   // which layer is currently the visible one
-    let _busy  = false; // prevent overlapping animations
-
-    // ── 3-D book-page-flip ────────────────────────────────────────────────────
-    // The flip element lives in pfWrap (overflow:visible) — NOT inside newContainer
-    // (overflow:hidden) — so transform-style:preserve-3d is never clipped.
-    // Front face = current page; Back face = next page.
-    // Origin = right edge (forward) or left edge (backward).
-    function _goToPage(idx, dir){
-      if(_busy || idx < 0 || idx >= dataUrls.length) return;
-      _busy = true;
-      const ms = 480;
-      const isForward = dir > 0;
-
-      const curr = _useA ? _imgA : _imgB;
-      const next = _useA ? _imgB : _imgA;
-
-      // 1. Show next page underneath current (z:1), hide curr so only the
-      //    flipper's front face shows the current content while it folds.
-      //    Also briefly hide the text overlay (behind flipper, but clean to hide).
-      next.src = dataUrls[idx];
-      next.style.transition  = 'none';
-      next.style.transform   = 'none';
-      next.style.opacity     = '1';
-      next.style.zIndex      = '1';
-      curr.style.transition  = 'none';
-      curr.style.opacity     = '0';   // covered by flipper front face
-      curr.style.zIndex      = '2';
-      const _illo = document.getElementById('illTextOverlay');
-      if(_illo) _illo.style.opacity = '0';
-
-      // 2. Build the perspective wrapper positioned exactly over newContainer
-      //    inside pfWrap (which has overflow:visible and position:relative).
-      const pfWrapEl = document.getElementById('pfWrap');
-      const cRect  = newContainer.getBoundingClientRect();
-      const wRect  = pfWrapEl.getBoundingClientRect();
-      const relTop  = Math.round(cRect.top  - wRect.top);
-      const relLeft = Math.round(cRect.left - wRect.left);
-
-      const perspWrap = document.createElement('div');
-      perspWrap.style.cssText =
-        `position:absolute;top:${relTop}px;left:${relLeft}px;`+
-        `width:${pageW}px;height:${pageH}px;perspective:2400px;z-index:30;`+
-        `pointer-events:none;border-radius:8px;`;
-      pfWrapEl.appendChild(perspWrap);
-
-      // 3. The flipping page element (preserve-3d safe here — no overflow:hidden ancestor)
-      const flipEl = document.createElement('div');
-      flipEl.style.cssText =
-        `position:absolute;top:0;left:0;width:100%;height:100%;`+
-        `transform-style:preserve-3d;will-change:transform;`+
-        // Spine is on the LEFT → forward flip pivots at LEFT edge (right side peels back)
-        // Backward flip pivots at RIGHT edge (left side peels back)
-        `transform-origin:${isForward ? 'left' : 'right'} center;`+
-        `transform:rotateY(0deg);`;
-
-      // Front face — current page image (faces viewer at start)
-      const frontFace = document.createElement('div');
-      frontFace.style.cssText =
-        `position:absolute;top:0;left:0;width:100%;height:100%;`+
-        `backface-visibility:hidden;-webkit-backface-visibility:hidden;`+
-        `background:url('${dataUrls[currentPage]}') 0 0/100% 100% no-repeat;`+
-        `border-radius:8px;`+
-        // Forward: page lifts at right edge (shadow on right). Backward: shadow on left.
-        `box-shadow:${isForward ? 'inset -8px 0 18px rgba(0,0,0,.13)' : 'inset 8px 0 18px rgba(0,0,0,.13)'};`;
-
-      // Back face — next page image (faces away at start; revealed after 180°)
-      const backFace = document.createElement('div');
-      backFace.style.cssText =
-        `position:absolute;top:0;left:0;width:100%;height:100%;`+
-        `backface-visibility:hidden;-webkit-backface-visibility:hidden;`+
-        `transform:rotateY(180deg);`+
-        `background:url('${dataUrls[idx]}') 0 0/100% 100% no-repeat;`+
-        `border-radius:8px;`+
-        // Forward: newly-revealed page has spine shadow on left. Backward: shadow on right.
-        `box-shadow:${isForward ? 'inset 8px 0 18px rgba(0,0,0,.08)' : 'inset -8px 0 18px rgba(0,0,0,.08)'};`;
-
-      flipEl.appendChild(frontFace);
-      flipEl.appendChild(backFace);
-      perspWrap.appendChild(flipEl);
-
-      // 4. Kick off the rotation on the next frame (ensures CSS transition picks it up)
-      flipEl.getBoundingClientRect(); // force layout
-      requestAnimationFrame(()=>{
-        flipEl.style.transition = `transform ${ms}ms cubic-bezier(.45,0,.35,1)`;
-        // Forward: left pivot → rotate to +180 (right edge goes back = natural page turn)
-        // Backward: right pivot → rotate to -180 (left edge goes back)
-        flipEl.style.transform  = `rotateY(${isForward ? '180deg' : '-180deg'})`;
-      });
-
-      // 5. Cleanup — runs after animation completes
-      setTimeout(()=>{
-        perspWrap.remove();
-        // Park the outgoing layer far off-screen so it's invisible but ready for next use
-        curr.style.transition  = 'none';
-        curr.style.opacity     = '1';
-        curr.style.transform   = 'translateX(-400%)';
-        curr.style.zIndex      = '';
-        next.style.zIndex      = '';
-        _useA = !_useA;
-        _busy = false;
-
-        currentPage = idx;
-        readProgress[currentBookId] = Math.min(100, Math.round(((idx+1)/b.pages.length)*100));
-        _saveState(); _recordReadToday(); stopAudio();
-        // On cover page pass -1 so indicator shows "Cover", else show 0-based story index
-        const _dotIdx = (coverOffset > 0 && idx === 0) ? -1 : Math.max(0, idx - coverOffset);
-        if(typeof _renderPageDots==='function') _renderPageDots(_dotIdx, storyCount);
-        else { const ind=document.getElementById('pageInd'); if(ind) ind.textContent=(idx===0&&coverOffset>0)?'Cover':(idx+1)+' / '+b.pages.length; }
-        // Update nav button disabled state based on boundaries
-        const _pBtn=document.getElementById('prevBtn'), _nBtn=document.getElementById('nextBtn');
-        if(_pBtn) _pBtn.disabled = (idx === 0);
-        if(_nBtn) _nBtn.disabled = (idx >= dataUrls.length - 1);
-        // Show/hide cover CTA overlay
-        if(typeof _updateCoverCta==='function') _updateCoverCta(idx);
-        if(typeof _resetControlsTimer==='function') _resetControlsTimer();
-        if(typeof _playPageTurnSound==='function') _playPageTurnSound();
-        _positionIllOverlay(); // restores illTextOverlay opacity via _illUpdateOverlay
-        if(autoReadMode) setTimeout(()=>startAudio(), 300);
-        if(idx===b.pages.length-1 && typeof _showCompletion==='function'){
-          // Only show completion if audio is NOT currently playing.
-          // When audio IS playing the user hit the last page — let it finish;
-          // stopAudio(true) / the EL onended path will call _showCompletion.
-          setTimeout(function(){
-            const audioActive = _audioEl && !_audioEl.paused;
-            const ttsActive   = ttsPlaying;
-            if(!audioActive && !ttsActive) _showCompletion();
-          }, 3000); // 3 s — enough for the user to see the last page illustration
-        }
-      }, ms + 40);
-    }
-
-    // Expose as pfInstance so all existing nav code (swipe, keyboard, autoRead) works
-    pfInstance = {
-      flipNext: ()=>_goToPage(currentPage+1, 1),
-      flipPrev: ()=>_goToPage(currentPage-1, -1),
-      flip:     (idx)=>_goToPage(idx, idx > currentPage ? 1 : -1),
-      destroy:  ()=>{}
-    };
-
-    document.getElementById('prevBtn').onclick = ()=>pfInstance.flipPrev();
-    document.getElementById('nextBtn').onclick = ()=>pfInstance.flipNext();
-
-    window._illViewerGoTo = idx=>pfInstance.flip(idx);
-    window._illViewerNext = ()=>pfInstance.flipNext();
-    window._illViewerPrev = ()=>pfInstance.flipPrev();
-
-    // Keyboard navigation
-    if(window._illKeyHandler) document.removeEventListener('keydown', window._illKeyHandler);
-    window._illKeyHandler = ev=>{
-      if(!document.getElementById('readerOverlay')?.classList.contains('open')) return;
-      if(ev.key==='ArrowRight'||ev.key==='ArrowDown'){ ev.preventDefault(); pfInstance.flipNext(); }
-      else if(ev.key==='ArrowLeft'||ev.key==='ArrowUp'){ ev.preventDefault(); pfInstance.flipPrev(); }
-    };
-    document.addEventListener('keydown', window._illKeyHandler);
-
-    // Touch swipe on the book container for natural mobile flipping
-    let _swipeStartX = 0, _swipeStartY = 0;
-    newContainer.addEventListener('touchstart', ev=>{
-      _swipeStartX = ev.touches[0].clientX;
-      _swipeStartY = ev.touches[0].clientY;
-    }, { passive: true });
-    newContainer.addEventListener('touchend', ev=>{
-      const dx = ev.changedTouches[0].clientX - _swipeStartX;
-      const dy = ev.changedTouches[0].clientY - _swipeStartY;
-      if(Math.abs(dx) > Math.abs(dy) * 1.2 && Math.abs(dx) > 40){
-        if(dx < 0) pfInstance.flipNext();
-        else pfInstance.flipPrev();
+    function _mkImgLeaf(pg, bp){
+      const d = document.createElement('div');
+      d.className = 'ill-leaf ill-img-page' + (pg.isCover ? ' ill-cover-page' : ' ill-gutter-l');
+      if(pg.isCover) d.dataset.density = 'hard';
+      if(pg.img){
+        const im = document.createElement('img');
+        im.src = pg.img; im.alt = ''; im.decoding = 'async'; im.draggable = false;
+        if(bp < 2) im.fetchPriority = 'high';
+        d.appendChild(im);
+      } else {
+        d.innerHTML = `<div style="font-size:64px;">${pg.emo||'📖'}</div>`;
       }
-    }, { passive: true });
-
-    // Show "Cover" in indicator if book has a cover page, else page 1 dot
-    if(typeof _renderPageDots==='function') _renderPageDots(coverOffset > 0 ? -1 : 0, storyCount);
-
-    // ── Position the floating text overlay over the canvas cream strip ─────────
-    function _positionIllOverlay(){
-      const pfWrapEl = document.getElementById('pfWrap');
-      const illo = document.getElementById('illTextOverlay');
-      if(!illo || !pfWrapEl) return;
-      const wrapH = pfWrapEl.clientHeight || pfWrapEl.offsetHeight || window.innerHeight;
-      const bottomGap = Math.max(0, Math.round((wrapH - pageH) / 2));
-      const textH = Math.round(pageH * 0.26);
-      illo.style.bottom   = bottomGap + 'px';
-      illo.style.width    = pageW + 'px';
-      illo.style.height   = textH + 'px';
-      illo.style.fontSize = Math.max(13, Math.round(pageH * 0.042)) + 'px';
-      illo.style.transition = 'none';
-      // Do NOT force display:block here — _illUpdateOverlay sets display
-      // based on whether the page actually has text, preventing a flash of
-      // an empty overlay on cover pages and image-only pages.
-      _illUpdateOverlay(currentPage);
+      return d;
     }
-    if(window._illResizeHandler) window.removeEventListener('resize', window._illResizeHandler);
-    window._illResizeHandler = ()=>{ clearTimeout(window._illResizeT); window._illResizeT=setTimeout(_positionIllOverlay, 200); };
-    window.addEventListener('resize', window._illResizeHandler);
 
-    // ── Cover CTA overlay: "Tap ▶ to start" button shown over the cover page ──
-    // Built fresh per book so it always aligns to the correct page dimensions.
+    function _mkTextLeaf(pg, bp){
+      const d = document.createElement('div');
+      d.className = 'ill-leaf ill-text-page ill-gutter-r ill-text-host';
+      d.dataset.bp = bp;
+      const inner = document.createElement('div');
+      inner.className = 'ill-text-inner';
+      d.appendChild(inner);
+      const num = document.createElement('div');
+      num.className = 'ill-pgnum';
+      num.textContent = (bp - coverOffset + 1) + ' / ' + storyCount;
+      d.appendChild(num);
+      textHosts.push({inner, bp});
+      return d;
+    }
+
+    function _mkComboLeaf(pg, bp){
+      const d = document.createElement('div');
+      d.className = 'ill-leaf ill-stpf-page ill-text-host';
+      d.dataset.bp = bp;
+      if(pg.isCover) d.dataset.density = 'hard';
+      const imgZone = document.createElement('div');
+      imgZone.className = 'ill-stpf-img';
+      imgZone.style.height = pg.isCover ? '100%' : '72%';
+      if(pg.img){
+        imgZone.style.background =
+          `url('${pg.img}') center/contain no-repeat,linear-gradient(160deg,${pg.isCover?'#1a1208,#2d1e0a':'#f6f1e7,#ece4d4'})`;
+      } else if(pg.emo){
+        imgZone.style.cssText += 'display:flex;align-items:center;justify-content:center;font-size:56px;';
+        imgZone.textContent = pg.emo;
+      }
+      d.appendChild(imgZone);
+      if(!pg.isCover){
+        const tz = document.createElement('div');
+        tz.className = 'ill-stpf-text';
+        const inner = document.createElement('div');
+        inner.className = 'ill-text-inner';
+        tz.appendChild(inner);
+        d.appendChild(tz);
+        textHosts.push({inner, bp});
+        const num = document.createElement('div');
+        num.className = 'ill-stpf-pgnum';
+        num.textContent = (bp - coverOffset + 1) + ' / ' + storyCount;
+        d.appendChild(num);
+      }
+      return d;
+    }
+
+    // StPageFlip leaf index ↔ book page index
+    const stIdxOf = bp => isNarrow ? bp : (hasCover ? (bp===0 ? 0 : bp*2-1) : bp*2);
+    const bpOf    = st => isNarrow ? st : (hasCover ? Math.ceil(st/2) : Math.floor(st/2));
+
+    b.pages.forEach((pg, bp)=>{
+      if(isNarrow){
+        flipRoot.appendChild(_mkComboLeaf(pg, bp));
+      } else if(pg.isCover){
+        flipRoot.appendChild(_mkImgLeaf(pg, bp));
+      } else {
+        flipRoot.appendChild(_mkImgLeaf(pg, bp));
+        flipRoot.appendChild(_mkTextLeaf(pg, bp));
+      }
+    });
+
+    // ── Fill (and re-fill on language switch) every text leaf ────────────────
+    function _refreshSpreadTexts(){
+      const lang = _dispLang();
+      const isEth = ['Amharic','Tigrinya'].includes(lang);
+      if(isEth){ try{ document.fonts.load("16px 'Noto Sans Ethiopic'"); }catch(e){} }
+      textHosts.forEach(h=>{
+        const txt = _getPageText(b.pages[h.bp], lang);
+        h.inner.classList.toggle('ethiopic', isEth);
+        if(txt){
+          h.inner.innerHTML = _wrapWords(txt);
+          const base = isNarrow ? Math.max(13, Math.round(pageH*0.034)) : Math.max(16, Math.round(pageH*0.044));
+          const sz = txt.length > 110 ? Math.max(12, Math.round(base*Math.sqrt(100/txt.length))) : base;
+          h.inner.style.fontSize = sz + 'px';
+        } else {
+          h.inner.innerHTML = '<span class="ill-blank-orn">❧</span>';
+        }
+      });
+    }
+    _refreshSpreadTexts();
+    window._illRefreshTexts = _refreshSpreadTexts;
+
+    // ── StPageFlip — spine-pivot leaf flip ────────────────────────────────────
+    if(typeof St==='undefined' || !St.PageFlip) throw new Error('Flip library not loaded — check internet connection');
+    const startB = Math.max(0, Math.min(N-1, startBp||0));
+    pfInstance = new St.PageFlip(flipRoot, {
+      width: pageW, height: pageH, size: 'fixed',
+      usePortrait: isNarrow,
+      showCover: hasCover,
+      startPage: stIdxOf(startB),
+      flippingTime: 1000,
+      maxShadowOpacity: 0.45,
+      useMouseEvents: true, swipeDistance: 30,
+      clickEventForward: true, mobileScrollSupport: false
+    });
+    pfInstance.loadFromHTML(flipRoot.querySelectorAll('.ill-leaf'));
+
+    // ── Cover CTA: "Start Reading" button shown over the cover ──────────────
     let _coverCta = null;
-    function _buildCoverCta(){
+    (function _buildCoverCta(){
       const existing = document.getElementById('_coverCtaOverlay');
       if(existing) existing.remove();
-      const hasCoverPage = b.pages[0] && b.pages[0].isCover;
-      if(!hasCoverPage) return;
-      const pfWrapEl2 = document.getElementById('pfWrap');
+      if(!hasCover) return;
       _coverCta = document.createElement('div');
       _coverCta.id = '_coverCtaOverlay';
       _coverCta.style.cssText =
         'position:absolute;bottom:0;left:50%;transform:translateX(-50%);'+
-        `width:${pageW}px;pointer-events:none;z-index:25;`+
-        'display:flex;flex-direction:column;align-items:center;justify-content:flex-end;'+
-        `padding-bottom:${Math.round(pageH*0.08)}px;`;
+        'pointer-events:none;z-index:25;display:flex;align-items:flex-end;justify-content:center;'+
+        `padding-bottom:${Math.round(pageH*0.06)}px;`;
       _coverCta.innerHTML =
         '<button style="pointer-events:auto;background:var(--amber);color:var(--green-dark);'+
         'border:none;border-radius:50px;padding:12px 32px;font-size:16px;font-weight:900;'+
@@ -3728,15 +3491,12 @@ async function initPageFlipFromIllustrated(b, container){
         'animation:ctaPulse 2s ease-in-out infinite;" '+
         'onclick="if(pfInstance)pfInstance.flipNext()">'+
         '<span style="font-size:20px">▶</span> Start Reading</button>';
-      pfWrapEl2.appendChild(_coverCta);
-    }
-    function _updateCoverCta(idx){
+      wrap.appendChild(_coverCta);
+    })();
+    function _updateCoverCta(bp){
       if(!_coverCta) return;
-      // Only show CTA on the cover page (idx 0 when isCover)
-      const hasCoverPage = b.pages[0] && b.pages[0].isCover;
-      _coverCta.style.display = (hasCoverPage && idx === 0) ? 'flex' : 'none';
+      _coverCta.style.display = (hasCover && bp===0) ? 'flex' : 'none';
     }
-    // Add the ctaPulse keyframes if not already present
     if(!document.getElementById('_ctaPulseStyle')){
       const st=document.createElement('style');
       st.id='_ctaPulseStyle';
@@ -3744,44 +3504,71 @@ async function initPageFlipFromIllustrated(b, container){
       document.head.appendChild(st);
     }
 
-    setTimeout(()=>{
-      _positionIllOverlay();
-      _buildCoverCta();
-      _updateCoverCta(currentPage);
-      // Set initial nav button disabled state
-      const _pBtn0=document.getElementById('prevBtn'), _nBtn0=document.getElementById('nextBtn');
-      if(_pBtn0) _pBtn0.disabled = (currentPage === 0);
-      if(_nBtn0) _nBtn0.disabled = (currentPage >= dataUrls.length - 1);
-      const prevProg = readProgress[b.id]||0;
-      if(typeof _showReadModePicker==='function' && prevProg<5){
-        setTimeout(()=>_showReadModePicker(b), 200);
+    // ── UI sync (dots, nav buttons, CTA) ─────────────────────────────────────
+    function _syncUI(bp){
+      const dotIdx = (hasCover && bp===0) ? -1 : Math.max(0, bp - coverOffset);
+      if(typeof _renderPageDots==='function') _renderPageDots(dotIdx, storyCount);
+      else { const ind=document.getElementById('pageInd'); if(ind) ind.textContent=(bp+1)+' / '+N; }
+      const pBtn=document.getElementById('prevBtn'), nBtn=document.getElementById('nextBtn');
+      if(pBtn) pBtn.disabled = (bp===0);
+      if(nBtn) nBtn.disabled = (bp>=N-1);
+      _updateCoverCta(bp);
+    }
+
+    pfInstance.on('flip', e=>{
+      const bp = bpOf(e.data);
+      currentPage = bp;
+      readProgress[currentBookId] = Math.min(100, Math.round(((bp+1)/N)*100));
+      _saveState(); _recordReadToday(); stopAudio();
+      _syncUI(bp);
+      if(typeof _resetControlsTimer==='function') _resetControlsTimer();
+      if(typeof _playPageTurnSound==='function') _playPageTurnSound();
+      if(autoReadMode) setTimeout(()=>startAudio(), 350);
+      if(bp===N-1 && typeof _showCompletion==='function'){
+        // Only show completion if audio is NOT playing — when it is, the
+        // stopAudio(true)/EL onended path triggers _showCompletion itself.
+        setTimeout(()=>{
+          const audioActive = _audioEl && !_audioEl.paused;
+          if(!audioActive && !ttsPlaying && currentPage===N-1) _showCompletion();
+        }, 3000);
       }
-    }, 200);
-    setTimeout(_positionIllOverlay, 600);
+    });
+
+    document.getElementById('prevBtn').onclick = ()=>{ if(pfInstance) pfInstance.flipPrev(); };
+    document.getElementById('nextBtn').onclick = ()=>{ if(pfInstance) pfInstance.flipNext(); };
+    window._illViewerGoTo = bp=>{ if(pfInstance) pfInstance.flip(stIdxOf(Math.max(0, Math.min(N-1, bp)))); };
+    window._illViewerNext = ()=>{ if(pfInstance) pfInstance.flipNext(); };
+    window._illViewerPrev = ()=>{ if(pfInstance) pfInstance.flipPrev(); };
+
+    // ── Rebuild on resize when layout mode or size changes meaningfully ─────
+    if(window._illResizeHandler) window.removeEventListener('resize', window._illResizeHandler);
+    window._illResizeHandler = ()=>{
+      clearTimeout(window._illResizeT);
+      window._illResizeT = setTimeout(()=>{
+        if(!document.getElementById('readerOverlay')?.classList.contains('open')) return;
+        const nowW = (wrap.clientWidth || window.innerWidth) - 16;
+        if(((nowW < 560) !== isNarrow) || Math.abs(nowW - availW) > 80){
+          try{ if(pfInstance) pfInstance.destroy(); }catch(e){}
+          pfInstance = null;
+          initPageFlipFromIllustrated(b, null, currentPage);
+        }
+      }, 250);
+    };
+    window.addEventListener('resize', window._illResizeHandler);
+
+    // ── Initial UI state ──────────────────────────────────────────────────────
+    currentPage = startB;
+    _syncUI(startB);
+    const prevProg = readProgress[b.id]||0;
+    if(typeof _showReadModePicker==='function' && prevProg<5 && startBp===undefined){
+      setTimeout(()=>_showReadModePicker(b), 350);
+    }
 
   }catch(err){
-    console.error('Illustrated StPageFlip error:', err);
+    console.error('Illustrated spread reader error:', err);
     const pb = document.getElementById('pfBook');
     if(pb) pb.innerHTML='<div style="padding:24px;text-align:center;color:var(--text-mid);"><p style="font-weight:700;">Could not load book.</p><p style="font-size:13px;opacity:.7;">'+err.message+'</p></div>';
   }
-}
-
-// Helper: wrap text across multiple lines on a canvas
-function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight){
-  const words = text.split(' ');
-  let line = '';
-  let currentY = y;
-  for(let n=0; n<words.length; n++){
-    const testLine = line + words[n] + ' ';
-    if(ctx.measureText(testLine).width > maxWidth && n > 0){
-      ctx.fillText(line.trim(), x, currentY);
-      line = words[n] + ' ';
-      currentY += lineHeight;
-    } else {
-      line = testLine;
-    }
-  }
-  if(line.trim()) ctx.fillText(line.trim(), x, currentY);
 }
 
 // ── PDF → StPageFlip: render every PDF page to an image, then flip ──
@@ -3998,6 +3785,8 @@ function closeReader(){
     try{ stopAudio(); }catch(e){}
     pdfDoc=null; pdfRendering=false; pdfPageNum=1;
     if(pfInstance){ try{ pfInstance.destroy(); }catch(e){} pfInstance=null; }
+    window._illRefreshTexts = null;
+    document.getElementById('_coverCtaOverlay')?.remove();
     if(window._illKeyHandler){ document.removeEventListener('keydown', window._illKeyHandler); window._illKeyHandler = null; }
     if(window._illResizeHandler){ window.removeEventListener('resize', window._illResizeHandler); window._illResizeHandler = null; }
     document.getElementById('pfWrap').style.display='none';
@@ -4109,7 +3898,11 @@ function getPageText(){
   if(!b) return '';
   // For PDF books: use extracted page text if available, else description
   if(b.pdf_url) return _currentPdfPageText || b.desc||b.description||b.title||'';
-  const displayLang = readerDisplayLang==='local' ? activeLang : 'English';
+  // Must match the reader's display language exactly — TTS char offsets are
+  // computed against the same text the page shows.
+  const displayLang = readerDisplayLang==='local'
+    ? ((activeLang==='all'||activeLang==='English') ? b.lang : activeLang)
+    : 'English';
   // Illustrated books (canvas pages): return current single page text only
   const hasImages = b.pages && b.pages.some(pg=>pg.img);
   if(hasImages){
@@ -4779,6 +4572,8 @@ function cycleSpeed(){
 // Overlay stays INVISIBLE (opacity:0) at rest — canvas-drawn text shows through.
 // TTS fades the overlay in (opacity:1) for word highlighting, then fades it out.
 function _illUpdateOverlay(pageIndex){
+  // New DOM spread reader: text lives in the page leaves — just re-render them
+  if(window._illRefreshTexts){ window._illRefreshTexts(); return; }
   const b = books.find(bk=>bk.id===currentBookId);
   if(!b || !b.pages || !b.pages.some(pg=>pg.img)) return;
   const overlay = document.getElementById('illTextOverlay');
@@ -4850,16 +4645,24 @@ function toggleReaderLang(){
 // WORD HIGHLIGHT HELPERS
 // ═══════════════════════════════════
 function _wrapTextForHighlight(fullText, book){
-  // Illustrated books — populate floating overlay with word spans
+  // Illustrated books — words are already wrapped in .tts-word spans inside the
+  // current page's live DOM text leaf. Just collect them for highlighting.
   const hasImages = book.pages && book.pages.some(pg=>pg.img);
   if(!book.pdf_url && hasImages){
-    const overlay = document.getElementById('illTextOverlay');
-    if(!overlay) return;
-    // Spans already pre-wrapped by _illUpdateOverlay. Collect them for highlighting.
-    // Fade in the overlay so highlighted text covers the static canvas text.
-    overlay.style.transition = 'opacity .15s';
-    overlay.style.opacity = '1';
-    _ttsWordSpans = Array.from(overlay.querySelectorAll('.tts-word'));
+    let spans = [];
+    const host = document.querySelector(`#pfBook .ill-text-host[data-bp="${currentPage}"]`);
+    if(host){
+      spans = Array.from(host.querySelectorAll('.tts-word'));
+    } else {
+      // Legacy fallback: overlay-based highlighting
+      const overlay = document.getElementById('illTextOverlay');
+      if(overlay){
+        overlay.style.transition = 'opacity .15s';
+        overlay.style.opacity = '1';
+        spans = Array.from(overlay.querySelectorAll('.tts-word'));
+      }
+    }
+    _ttsWordSpans = spans;
     _ttsWordIdx = 0;
     return;
   }
@@ -4891,10 +4694,11 @@ function _clearHighlights(){
   clearTimeout(_ttsHighlightInterval); _ttsHighlightInterval = null;
   _ttsWordSpans.forEach(s => s.classList.remove('lit'));
   _ttsWordSpans = []; _ttsWordIdx = 0;
-  // Illustrated books: fade overlay back out — canvas text shows through again.
+  // Legacy canvas reader only: fade the floating overlay back out.
+  // (New DOM spread reader keeps text visible in the page — nothing to fade.)
   const _cb = books.find(bk=>bk.id===currentBookId);
   const _cbHasImg = _cb && _cb.pages && _cb.pages.some(pg=>pg.img);
-  if(_cbHasImg){
+  if(_cbHasImg && !window._illRefreshTexts){
     const _illo = document.getElementById('illTextOverlay');
     if(_illo){ _illo.style.transition='opacity .2s'; _illo.style.opacity='0'; }
   }
@@ -5071,6 +4875,9 @@ document.addEventListener('keydown',function(e){
     _tx=e.touches[0].clientX; _ty=e.touches[0].clientY;
   },{passive:true});
   document.getElementById('readerOverlay').addEventListener('touchend',function(e){
+    // Swipes that start ON the book are handled by StPageFlip itself —
+    // skip them here so one swipe never turns two pages.
+    if(e.target && e.target.closest && e.target.closest('.stf__parent')) return;
     const dx=e.changedTouches[0].clientX-_tx;
     const dy=e.changedTouches[0].clientY-_ty;
     if(Math.abs(dx)<Math.abs(dy)||Math.abs(dx)<50) return; // ignore vertical or tiny swipes
