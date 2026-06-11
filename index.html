@@ -7,6 +7,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦉</text></svg>">
 <meta name="theme-color" content="#142B1A">
 <meta name="description" content="Gugut Library by Savannah Printing Press — multilingual children's books in Amharic, Oromiffa, Tigrinya, Somali &amp; Wolaytta. From the makers of Felek notebooks (myfelek.com).">
+<link rel="preload" as="image" href="gugut-logo-wide-sm.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+Ethiopic:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -998,7 +999,7 @@ if(location.protocol === 'file:') {
 <header class="topbar">
   <div class="topbar-inner">
     <a href="#" class="logo" onclick="handleLogoTap();return false;">
-      <img id="logoImg" src="gugut%20logo%20wide.png" alt="Gugut Montessori" style="height:42px;width:auto;display:block;"
+      <img id="logoImg" src="gugut-logo-wide-sm.png" alt="Gugut Montessori" style="height:42px;width:auto;display:block;"
         onerror="this.onerror=null;this.style.display='none';document.getElementById('logoFallback').style.display='flex';" />
       <div id="logoFallback" style="display:none;align-items:center;gap:10px;">
         <div class="logo-icon" style="width:40px;height:40px;background:var(--amber);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">🦉</div>
@@ -5238,7 +5239,15 @@ let logoTapCount = 0;
 
 function handleLogoTap() {
   logoTapCount++;
-  if (logoTapCount >= 5) { logoTapCount = 0; openAdminLogin(); }
+  if (logoTapCount >= 5) { logoTapCount = 0; openAdminLogin(); return; }
+  // Logo tap = go home (library view, top of page) — standard kids-app behavior.
+  // The 5-tap admin entrance still works because the counter keeps counting.
+  try {
+    if (typeof switchView === 'function') switchView('library');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    const c = document.querySelector('.content, #mainContent');
+    if (c) c.scrollTo({top: 0, behavior: 'smooth'});
+  } catch(e) {}
 }
 
 function openAdminLogin() {
