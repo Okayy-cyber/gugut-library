@@ -67,6 +67,8 @@ button:focus-visible{outline:2.5px solid var(--amber);outline-offset:2px;}
 .tbtn:hover{background:rgba(255,255,255,.15);}
 .tbtn.amber{background:var(--amber);color:var(--green-dark);font-size:13px;font-weight:800;padding:0 14px;width:auto;border-radius:24px;}
 .tbtn.amber:hover{background:var(--amber-dark);color:#fff;}
+.tbtn.signin{width:auto;padding:0 14px;font-size:13px;font-weight:800;border:1.5px solid rgba(255,255,255,.55);border-radius:24px;white-space:nowrap;}
+.tbtn.signin:hover{background:rgba(255,255,255,.15);border-color:#fff;}
 
 /* ── BOTTOM NAV ── */
 .bottom-nav{background:var(--bar-bg);border-top:1px solid var(--border);display:flex;flex-shrink:0;z-index:100;}
@@ -1032,7 +1034,7 @@ if(location.protocol === 'file:') {
       <button class="tbtn" onclick="toggleNight()" title="Night mode" id="nightBtn" aria-label="Toggle night mode">🌙</button>
       <button class="tbtn amber" id="addBookBtn" onclick="openUpload()" style="display:none">＋ Add Book</button>
       <button class="tbtn amber" id="subscribeTopBtn" onclick="handleSubscribeClick()" title="Subscribe for full access">⭐ Subscribe</button>
-      <button class="tbtn" id="signInTopBtn" onclick="openAuthModal('signin')" title="Sign in">Sign In</button>
+      <button class="tbtn signin" id="signInTopBtn" onclick="openAuthModal('signin')" title="Sign in">Sign In</button>
       <span class="account-wrap" id="accountWrap" style="display:none;">
         <button class="account-chip" id="accountChip" onclick="toggleAccountMenu(event)"><span id="accountInitial">👤</span><span id="accountLabel">Account</span></button>
         <div class="account-menu" id="accountMenu">
@@ -1185,10 +1187,10 @@ if(location.protocol === 'file:') {
     <div class="section">
       <div class="section-hdr plain"><span class="section-title">⬇️ Downloaded for Offline</span></div>
       <div class="rr-item" onclick="showToast('📥 Offline reading coming in the full app!')">
-        <div class="rr-emo c2">👑</div>
+        <div class="rr-emo c3">🔢</div>
         <div class="rr-info">
-          <div class="rr-title">The King's Secret</div>
-          <div class="rr-meta">Amharic · Ages 6–9 · Saved offline</div>
+          <div class="rr-title">Counting My Day</div>
+          <div class="rr-meta">Amharic · Ages 3–6 · Saved offline</div>
         </div>
         <span style="color:var(--green-mid);font-size:12px;font-weight:700;">✓ Saved</span>
       </div>
