@@ -220,7 +220,7 @@ body.night .account-menu button:hover{background:rgba(255,255,255,.06);}
 .c6{background:linear-gradient(150deg,#80DEEA 0%,#00838F 55%,#004D40 100%);}
 .c7{background:linear-gradient(150deg,#FFF59D 0%,#F9A825 55%,#E65100 100%);}
 .c8{background:linear-gradient(150deg,#9FA8DA 0%,#3949AB 55%,#1A237E 100%);}
-.cover-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,.7) 0%,rgba(0,0,0,0) 100%);color:#fff;font-size:10px;font-weight:700;padding:18px 8px 6px;line-height:1.3;}
+.cover-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(20,83,45,.92) 0%,rgba(27,107,58,.55) 55%,rgba(27,107,58,0) 100%);color:#FBF8F0;font-size:10px;font-weight:700;padding:18px 8px 6px;line-height:1.3;}
 .lang-badge{position:absolute;top:7px;left:7px;background:var(--green-dark);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:24px;letter-spacing:.3px;backdrop-filter:blur(4px);}
 .fav-btn{position:absolute;top:7px;right:7px;background:rgba(255,255,255,.9);border:none;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,transform .15s;box-shadow:0 2px 6px rgba(0,0,0,.15);}
 .fav-btn:hover{background:#fff;transform:scale(1.1);}
@@ -425,24 +425,36 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
   font-size:10px;color:#b8ab92;letter-spacing:.5px;
   font-family:'Nunito',Arial,sans-serif;pointer-events:none;
 }
-/* Cover title zone — cream area below the cover art, matching inside pages */
+/* Cover title zone — print-matching brand band: green gradient + gold title
+   (mirrors the printed books' cover branding; Sule 2026-06-12) */
 .ill-cover-titlezone{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:#FFFDF6;text-align:center;padding:2% 8% 0;box-sizing:border-box;
+  background:linear-gradient(168deg,#1B6B3A 0%,#175C32 55%,#14532D 100%);
+  text-align:center;padding:2% 8% 0;box-sizing:border-box;
   pointer-events:none;
+}
+.ill-cover-logo{
+  height:34px;width:auto;display:block;margin:0 auto 6px;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));
 }
 .ill-cover-title{
   font-family:'Nunito',system-ui,sans-serif;font-weight:900;
-  line-height:1.22;color:#1B6B3A;
+  line-height:1.22;color:#F2C239;
+  text-shadow:0 1px 3px rgba(0,0,0,.25);
 }
 .ill-cover-title-local{
   font-family:'Noto Sans Ethiopic','Nunito',sans-serif;font-weight:700;
-  color:#A87908;margin-top:6px;
+  color:#FBF8F0;margin-top:6px;
 }
 .ill-cover-series{
   font-family:'Nunito',sans-serif;font-weight:700;font-size:10px;
-  letter-spacing:2.2px;text-transform:uppercase;color:#b8ab92;
-  margin-top:10px;
+  letter-spacing:2.2px;text-transform:uppercase;color:rgba(251,248,240,.55);
+  margin-top:10px;display:flex;align-items:center;gap:8px;justify-content:center;
+}
+.ill-cover-kit{
+  display:inline-block;font-size:9px;font-weight:800;letter-spacing:1px;
+  color:#F2C239;border:1px solid rgba(242,194,57,.55);border-radius:20px;
+  padding:1px 8px;
 }
 
 /* ── Illustrated book: DOM two-page spread (Boukili-style) ──
@@ -3660,9 +3672,12 @@ function initPageFlipFromIllustrated(b, container, startBp){
         tz.className = 'ill-cover-titlezone';
         tz.style.paddingBottom = Math.round(pageH*0.06 + 46) + 'px';
         tz.innerHTML =
+          `<img class="ill-cover-logo" src="gugut-owl-sm.png" alt="">` +
           `<div class="ill-cover-title"></div>` +
           `<div class="ill-cover-title-local"></div>` +
-          `<div class="ill-cover-series">A Gugut Library Picture Book</div>`;
+          `<div class="ill-cover-series">A Gugut Library Picture Book` +
+            (b.kit ? `<span class="ill-cover-kit">${b.kit}</span>` : '') +
+          `</div>`;
         d.appendChild(tz);
         _coverTitleEls = {
           primary: tz.querySelector('.ill-cover-title'),
@@ -6726,11 +6741,23 @@ function renderBookCover(bookId, pdf_url, canvasEl) {
     _applyThumb(canvasEl, coverCache.get(bookId));
     return;
   }
-  // Books with a static cover image — no PDF rendering needed
+  // Books with a static cover image — no PDF rendering needed.
+  // Card grids use the lightweight cover_sm.jpg (~25KB vs ~140KB) so the
+  // library loads fast on mobile data; falls back to the full cover if the
+  // small variant is missing.
   const b = books.find(bk => bk.id === bookId);
   if (b && b.cover) {
-    _applyThumb(canvasEl, b.cover);
-    coverCache.set(bookId, b.cover);
+    const smUrl = b.cover.replace(/cover\.jpg$/, 'cover_sm.jpg');
+    if (smUrl !== b.cover) {
+      canvasEl.classList.add('thumb-loading');
+      const probe = new Image();
+      probe.onload  = () => { _applyThumb(canvasEl, smUrl);   coverCache.set(bookId, smUrl); };
+      probe.onerror = () => { _applyThumb(canvasEl, b.cover); coverCache.set(bookId, b.cover); };
+      probe.src = smUrl;
+    } else {
+      _applyThumb(canvasEl, b.cover);
+      coverCache.set(bookId, b.cover);
+    }
     return;
   }
   // Show shimmer pulse while thumbnail is being fetched
