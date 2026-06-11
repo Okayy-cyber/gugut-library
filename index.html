@@ -3542,17 +3542,62 @@ function initPageFlipFromIllustrated(b, container, startBp){
     const textHosts = []; // [{inner, bp}] — re-filled on language switch
     const imgZones = [];  // [{z, bp}] — image zones, hydrated lazily near current page
 
-    function _setLeafBg(z){
-      if(!z.dataset.img || z.dataset.loaded) return;
+    function _setLeafBg(z, onDone){
+      if(!z.dataset.img || z.dataset.loaded){ if(onDone) onDone(); return; }
       // Force the download even while the leaf is hidden (StPageFlip hides
       // non-current leaves, and browsers defer hidden background images)
-      const pre = new Image(); pre.src = z.dataset.img;
+      const pre = new Image();
+      if(onDone){ pre.onload = onDone; pre.onerror = onDone; }
+      pre.src = z.dataset.img;
       z.style.background =
         `url('${z.dataset.img}') center/cover no-repeat,linear-gradient(160deg,#f6f1e7,#ece4d4)`;
       z.dataset.loaded = '1';
     }
     function _hydrateAround(bp){
       imgZones.forEach(o=>{ if(Math.abs(o.bp - bp) <= 3) _setLeafBg(o.z); });
+    }
+    // Cover title follows the reading language: selected language's title is
+    // PRIMARY (big), English secondary — English-first only in English mode.
+    let _coverTitleEls = null;
+    function _updateCoverTitle(){
+      if(!_coverTitleEls) return;
+      const lang = _dispLang();
+      const isEng = (lang === 'English');
+      const native = _titleInLang(b, isEng ? 'Amharic' : lang);
+      const isEthScript = ['Amharic','Tigrinya'].includes(isEng ? 'Amharic' : lang);
+      const p = _coverTitleEls.primary, s = _coverTitleEls.secondary;
+      if(!isEng && native && native !== b.title){
+        p.textContent = native;
+        p.classList.toggle('ethiopic', isEthScript);
+        p.style.fontSize = Math.max(19, Math.round(pageW * (isEthScript ? 0.062 : 0.066))) + 'px';
+        s.textContent = b.title;
+        s.classList.remove('ethiopic');
+        s.style.fontSize = Math.max(13, Math.round(pageW * 0.040)) + 'px';
+        s.style.display = '';
+      } else {
+        p.textContent = b.title;
+        p.classList.remove('ethiopic');
+        p.style.fontSize = Math.max(20, Math.round(pageW * 0.072)) + 'px';
+        if(native && native !== b.title){
+          s.textContent = native;
+          s.classList.add('ethiopic');
+          s.style.fontSize = Math.max(14, Math.round(pageW * 0.046)) + 'px';
+          s.style.display = '';
+        } else { s.style.display = 'none'; }
+      }
+    }
+
+    // Background trickle: after the first pages are in, fetch the REST of the
+    // book one image at a time (in page order) so slow connections have every
+    // page cached before the reader gets there — without 21 parallel requests
+    // competing on open.
+    function _trickleLoadRest(){
+      const queue = imgZones.filter(o=>!o.z.dataset.loaded).sort((a,b1)=>a.bp-b1.bp);
+      (function next(){
+        const o = queue.shift();
+        if(!o) return;
+        _setLeafBg(o.z, ()=>setTimeout(next, 120));
+      })();
     }
 
     function _mkImgLeaf(pg, bp){
@@ -3614,11 +3659,15 @@ function initPageFlipFromIllustrated(b, container, startBp){
         tz.className = 'ill-cover-titlezone';
         tz.style.paddingBottom = Math.round(pageH*0.06 + 46) + 'px';
         tz.innerHTML =
-          `<div class="ill-cover-title" style="font-size:${Math.max(20,Math.round(pageW*0.072))}px">${b.title}</div>` +
-          (()=>{const lt=(activeLang!=='all'&&activeLang!=='English') ? _titleInLang(b, activeLang) : b.local;
-                return lt && lt!==b.title ? `<div class="ill-cover-title-local ethiopic" style="font-size:${Math.max(14,Math.round(pageW*0.046))}px">${lt}</div>` : '';})() +
+          `<div class="ill-cover-title"></div>` +
+          `<div class="ill-cover-title-local"></div>` +
           `<div class="ill-cover-series">A Gugut Library Picture Book</div>`;
         d.appendChild(tz);
+        _coverTitleEls = {
+          primary: tz.querySelector('.ill-cover-title'),
+          secondary: tz.querySelector('.ill-cover-title-local')
+        };
+        _updateCoverTitle();
       }
       if(!pg.isCover){
         const tz = document.createElement('div');
@@ -3669,8 +3718,9 @@ function initPageFlipFromIllustrated(b, container, startBp){
         }
       });
     }
-    _refreshSpreadTexts();
-    window._illRefreshTexts = _refreshSpreadTexts;
+    function _refreshAllTexts(){ _refreshSpreadTexts(); _updateCoverTitle(); }
+    _refreshAllTexts();
+    window._illRefreshTexts = _refreshAllTexts;
 
     // ── StPageFlip — spine-pivot leaf flip ────────────────────────────────────
     if(typeof St==='undefined' || !St.PageFlip) throw new Error('Flip library not loaded — check internet connection');
@@ -3780,6 +3830,8 @@ function initPageFlipFromIllustrated(b, container, startBp){
     // the first story page's audio so Read-to-Me starts almost instantly
     try{ fetch('/.netlify/functions/tts', {method:'OPTIONS'}).catch(()=>{}); }catch(e){}
     setTimeout(()=>{ try{ _elPrefetchNext(); }catch(e){} }, 500);
+    // After the near pages are in, trickle-load the rest of the book's images
+    setTimeout(()=>{ try{ _trickleLoadRest(); }catch(e){} }, 1800);
     const prevProg = readProgress[b.id]||0;
     if(typeof _showReadModePicker==='function' && prevProg<5 && startBp===undefined){
       setTimeout(()=>_showReadModePicker(b), 350);
