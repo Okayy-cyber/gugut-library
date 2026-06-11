@@ -3605,7 +3605,13 @@ function initPageFlipFromIllustrated(b, container, startBp){
       const p = _coverTitleEls.primary, s = _coverTitleEls.secondary;
       p.textContent = title;
       p.classList.toggle('ethiopic', !isEng && isEthScript);
-      p.style.fontSize = Math.max(20, Math.round(pageW * (isEthScript && !isEng ? 0.064 : 0.072))) + 'px';
+      // Length-aware sizing: long titles shrink so they never collide with
+      // the Start Reading CTA (Sule 2026-06-12). ~14 chars renders at full
+      // size; longer titles scale down on a square-root curve with a floor.
+      let scale = (isEthScript && !isEng) ? 0.064 : 0.072;
+      if(title.length > 14) scale *= Math.sqrt(14 / title.length);
+      p.style.fontSize = Math.max(15, Math.round(pageW * scale)) + 'px';
+      p.style.lineHeight = '1.18';
       s.style.display = 'none';
     }
 
