@@ -428,13 +428,19 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 /* Cover title zone — print-matching brand band: green gradient + gold title
    (mirrors the printed books' cover branding; Sule 2026-06-12) */
 .ill-cover-titlezone{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
   background:linear-gradient(168deg,#1B6B3A 0%,#175C32 55%,#14532D 100%);
-  text-align:center;padding:2% 8% 0;box-sizing:border-box;
+  text-align:center;padding:3.5% 7% 0;box-sizing:border-box;
   pointer-events:none;
 }
+.ill-cover-toprow{
+  display:flex;align-items:center;justify-content:center;gap:11px;max-width:100%;
+}
+.ill-cover-toprow .ill-cover-titles{
+  display:flex;flex-direction:column;align-items:flex-start;text-align:left;min-width:0;
+}
 .ill-cover-logo{
-  height:34px;width:auto;display:block;margin:0 auto 6px;
+  height:32px;width:auto;display:block;flex-shrink:0;
   filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));
 }
 .ill-cover-title{
@@ -1814,6 +1820,11 @@ if(location.protocol === 'file:') {
 <div class="toast" id="toast"></div>
 
 <script>
+// WebP support detection — page images ship as both .jpg and .webp (~50% smaller)
+window._webpOK = (function(){
+  try { return document.createElement('canvas').toDataURL('image/webp').indexOf('data:image/webp') === 0; }
+  catch(e){ return false; }
+})();
 // ═══════════════════════════════════
 // DATA
 // ═══════════════════════════════════
@@ -3191,8 +3202,11 @@ function bCardHTML(b){
   const nativeTitle = isNativeLang ? _titleInLang(b, activeLang) : '';
   const cardTitle = nativeTitle || b.title;
   const cardSubTitle = nativeTitle && nativeTitle!==b.title ? `<div style="font-size:10px;color:var(--text-light);margin-top:1px;">${b.title}</div>` : '';
-  // Cover overlay: show English title when in non-English mode
-  const coverText = isNativeLang ? b.title : b.local;
+  // Cover overlay: only in a non-English language mode, and it shows the
+  // ENGLISH title as the complement to the native title below the card.
+  // In English/All mode the overlay is hidden — title lives below the art
+  // (consistency fix, Sule 2026-06-12).
+  const coverText = isNativeLang ? b.title : '';
   // Language badge
   const langBadge = activeLang==='all' ? b.lang : activeLang;
   const isPremium = !b.free;
@@ -3203,7 +3217,7 @@ function bCardHTML(b){
       ${isLocked?'<div class="lock-badge">🔒 Premium</div>':''}
       ${!isLocked && isPremium && userSubscribed?'<div class="premium-badge">⭐ Premium</div>':''}
       <span style="font-size:44px">${b.emo}</span>
-      <div class="cover-overlay">${coverText}</div>
+      ${coverText ? `<div class="cover-overlay">${coverText}</div>` : ''}
       <div class="lang-badge">${langBadge}</div>
       <button class="fav-btn" onclick="event.stopPropagation();toggleFav(${b.id})" id="fav-${b.id}">${fav?'❤️':'🤍'}</button>
     </div>
@@ -3557,14 +3571,28 @@ function initPageFlipFromIllustrated(b, container, startBp){
 
     function _setLeafBg(z, onDone){
       if(!z.dataset.img || z.dataset.loaded){ if(onDone) onDone(); return; }
+      // Prefer WebP (~half the bytes of the JPG) when the browser supports it
+      const src = (window._webpOK && /\.jpg$/.test(z.dataset.img))
+        ? z.dataset.img.replace(/\.jpg$/, '.webp') : z.dataset.img;
       // Force the download even while the leaf is hidden (StPageFlip hides
       // non-current leaves, and browsers defer hidden background images)
       const pre = new Image();
-      if(onDone){ pre.onload = onDone; pre.onerror = onDone; }
-      pre.src = z.dataset.img;
-      z.style.background =
-        `url('${z.dataset.img}') center/cover no-repeat,linear-gradient(160deg,#f6f1e7,#ece4d4)`;
-      z.dataset.loaded = '1';
+      const apply = (url)=>{
+        z.style.background =
+          `url('${url}') center/cover no-repeat,linear-gradient(160deg,#f6f1e7,#ece4d4)`;
+        z.dataset.loaded = '1';
+        if(onDone) onDone();
+      };
+      pre.onload = ()=>apply(src);
+      // If the .webp is missing on the server, fall back to the original .jpg
+      pre.onerror = ()=>{
+        if(src !== z.dataset.img){
+          const fb = new Image();
+          fb.onload = fb.onerror = ()=>apply(z.dataset.img);
+          fb.src = z.dataset.img;
+        } else apply(z.dataset.img);
+      };
+      pre.src = src;
     }
     function _hydrateAround(bp){
       imgZones.forEach(o=>{ if(Math.abs(o.bp - bp) <= 3) _setLeafBg(o.z); });
@@ -3670,12 +3698,16 @@ function initPageFlipFromIllustrated(b, container, startBp){
         // title clear of the Start Reading CTA that overlays the page bottom.
         const tz = document.createElement('div');
         tz.className = 'ill-cover-titlezone';
-        tz.style.paddingBottom = Math.round(pageH*0.06 + 46) + 'px';
+        tz.style.paddingBottom = Math.round(pageH*0.025 + 50) + 'px';
         tz.innerHTML =
-          `<img class="ill-cover-logo" src="gugut-owl-sm.png" alt="">` +
-          `<div class="ill-cover-title"></div>` +
-          `<div class="ill-cover-title-local"></div>` +
-          `<div class="ill-cover-series">A Gugut Library Picture Book` +
+          `<div class="ill-cover-toprow">` +
+            `<img class="ill-cover-logo" src="gugut-owl-sm.png" alt="">` +
+            `<div class="ill-cover-titles">` +
+              `<div class="ill-cover-title"></div>` +
+              `<div class="ill-cover-title-local"></div>` +
+            `</div>` +
+          `</div>` +
+          `<div class="ill-cover-series" style="margin-top:7px;">A Gugut Library Picture Book` +
             (b.kit ? `<span class="ill-cover-kit">${b.kit}</span>` : '') +
           `</div>`;
         d.appendChild(tz);
@@ -3764,7 +3796,7 @@ function initPageFlipFromIllustrated(b, container, startBp){
       _coverCta.style.cssText =
         'position:absolute;bottom:0;left:50%;transform:translateX(-50%);'+
         'pointer-events:none;z-index:25;display:flex;align-items:flex-end;justify-content:center;'+
-        `padding-bottom:${Math.round(pageH*0.06)}px;`;
+        `padding-bottom:${Math.round(pageH*0.022)}px;`;
       _coverCta.innerHTML =
         '<button style="pointer-events:auto;background:var(--amber);color:var(--green-dark);'+
         'border:none;border-radius:50px;padding:12px 32px;font-size:16px;font-weight:900;'+
@@ -6747,7 +6779,8 @@ function renderBookCover(bookId, pdf_url, canvasEl) {
   // small variant is missing.
   const b = books.find(bk => bk.id === bookId);
   if (b && b.cover) {
-    const smUrl = b.cover.replace(/cover\.jpg$/, 'cover_sm.jpg');
+    const smExt = window._webpOK ? 'cover_sm.webp' : 'cover_sm.jpg';
+    const smUrl = b.cover.replace(/cover\.jpg$/, smExt);
     if (smUrl !== b.cover) {
       canvasEl.classList.add('thumb-loading');
       const probe = new Image();
