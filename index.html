@@ -648,6 +648,95 @@ body.night .modal-sheet h3{color:var(--green-light);}
   .hero h2{font-size:18px;}
 }
 
+/* ══ CURRICULUM WORLDS JOURNEY (Phase 3, 2026-06-12) ══ */
+#journeyHero{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,var(--green-dark) 0%,#1B6B3A 100%);border-radius:20px;padding:16px 18px;color:#fff;margin-bottom:22px;box-shadow:0 6px 24px rgba(20,83,45,.3);}
+#journeyHeroOwl{width:64px;height:auto;flex-shrink:0;filter:drop-shadow(0 4px 8px rgba(0,0,0,.3));}
+#journeyHero h2{font-size:19px;font-weight:900;letter-spacing:.2px;}
+#journeyHero p{font-size:12px;opacity:.85;margin-top:3px;line-height:1.4;}
+#journeyHero p strong{color:#F2C239;}
+#journeyHeroStat{flex-shrink:0;background:rgba(255,255,255,.12);border:1.5px solid rgba(242,194,57,.5);border-radius:16px;padding:8px 14px;text-align:center;line-height:1.1;}
+#journeyHeroStat strong{display:block;font-size:24px;color:#F2C239;font-weight:900;}
+#journeyHeroStat span{font-size:9px;opacity:.8;text-transform:uppercase;letter-spacing:.5px;}
+#worldsPath{position:relative;display:flex;flex-direction:column;gap:18px;max-width:640px;margin:0 auto;}
+#worldsPath::before{content:'';position:absolute;left:31px;top:30px;bottom:30px;width:4px;border-left:4px dotted var(--green-light);opacity:.5;z-index:0;}
+.world-card{position:relative;z-index:1;border-radius:22px;overflow:hidden;background:var(--card-bg);box-shadow:0 4px 18px rgba(20,40,20,.12);border:2px solid transparent;transition:transform .2s,box-shadow .2s;}
+.world-card.unlocked:not(.complete){border-color:var(--amber);}
+.world-card.complete{border-color:var(--green-mid);}
+body.night .world-card{background:#1d2a1f;box-shadow:0 4px 18px rgba(0,0,0,.4);}
+.world-scene{position:relative;height:96px;display:flex;align-items:flex-end;}
+.world-scene svg{position:absolute;inset:0;width:100%;height:100%;}
+.world-stop-dot{position:absolute;left:19px;top:18px;width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--green-mid);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:var(--green-dark);box-shadow:0 2px 8px rgba(0,0,0,.25);z-index:3;}
+.world-card.complete .world-stop-dot{background:var(--green-mid);color:#fff;}
+.world-card.locked .world-stop-dot{border-color:#9aa49b;color:#9aa49b;}
+.world-owl-here{position:absolute;right:12px;top:8px;width:52px;height:auto;z-index:3;filter:drop-shadow(0 3px 6px rgba(0,0,0,.35));animation:owlBob 2.6s ease-in-out infinite;}
+@keyframes owlBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.world-name-band{position:relative;z-index:2;width:100%;padding:26px 16px 8px;background:linear-gradient(to top,rgba(10,30,12,.72),rgba(10,30,12,0));color:#fff;}
+.world-name-band h3{font-size:18px;font-weight:900;letter-spacing:.3px;text-shadow:0 2px 6px rgba(0,0,0,.45);}
+.world-name-band .world-tag{font-size:10.5px;font-weight:700;opacity:.92;text-shadow:0 1px 4px rgba(0,0,0,.5);}
+.world-body{padding:12px 16px 14px;}
+.world-progress-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+.world-stars{display:flex;gap:5px;}
+.world-star{width:30px;height:30px;border-radius:50%;background:var(--green-pale);display:flex;align-items:center;justify-content:center;font-size:15px;border:1.5px solid var(--border);}
+.world-star.filled{background:#FBE9B7;border-color:var(--amber);}
+body.night .world-star{background:#243228;}
+.world-status-chip{font-size:11px;font-weight:800;padding:5px 12px;border-radius:20px;background:var(--green-pale);color:var(--green-dark);margin-left:auto;}
+.world-status-chip.done{background:var(--green-mid);color:#fff;}
+.world-status-chip.locked-chip{background:#ECEFEA;color:#7c857d;}
+body.night .world-status-chip{background:#243228;color:#A5D6A7;}
+.world-books{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.world-book-row{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:12px;background:var(--bg);cursor:pointer;transition:background .15s;border:1px solid var(--border);}
+.world-book-row:hover{background:var(--green-pale);}
+body.night .world-book-row{background:#16211a;}
+.world-book-check{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;border:2px solid var(--border);color:transparent;}
+.world-book-check.done{background:var(--green-mid);border-color:var(--green-mid);color:#fff;}
+.world-book-row .wb-title{font-size:12.5px;font-weight:700;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.world-book-row .wb-more{font-size:11px;color:var(--text-light);font-weight:700;}
+.world-more-btn{font-size:11px;font-weight:800;color:var(--green-mid);background:none;border:none;cursor:pointer;padding:4px 0;}
+.world-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.world-btn{flex:1;min-width:140px;font-size:13px;font-weight:800;padding:11px 14px;border-radius:14px;border:none;cursor:pointer;transition:transform .15s,filter .15s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.world-btn:active{transform:scale(.96);}
+.world-btn-read{background:var(--green-mid);color:#fff;}
+.world-btn-game{background:var(--amber);color:var(--green-dark);}
+.world-btn-game:disabled{background:#ECEFEA;color:#9aa49b;cursor:not-allowed;}
+body.night .world-btn-game:disabled{background:#243228;color:#5a6b5d;}
+.world-card.locked .world-scene,.world-card.locked .world-body{filter:grayscale(.85) opacity(.6);}
+.world-lock-overlay{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(245,245,242,.45);backdrop-filter:blur(1.5px);border-radius:20px;}
+body.night .world-lock-overlay{background:rgba(10,16,11,.55);}
+.world-lock-overlay .wl-pad{font-size:30px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));}
+.world-lock-overlay .wl-msg{font-size:12px;font-weight:800;color:var(--green-dark);background:#fff;border-radius:16px;padding:6px 14px;box-shadow:0 2px 10px rgba(0,0,0,.18);max-width:85%;text-align:center;}
+body.night .world-lock-overlay .wl-msg{background:#1d2a1f;color:#A5D6A7;}
+/* ── Memory match game ── */
+#memoryOverlay{position:fixed;inset:0;background:rgba(12,26,14,.88);backdrop-filter:blur(4px);z-index:1500;display:none;align-items:center;justify-content:center;padding:14px;}
+#memoryOverlay.open{display:flex;}
+#memoryBox{background:var(--card-bg);border-radius:24px;width:100%;max-width:480px;max-height:94vh;overflow-y:auto;padding:16px 16px 20px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+body.night #memoryBox{background:#1d2a1f;}
+#memoryHead{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+#memTitle{font-size:17px;font-weight:900;color:var(--green-dark);}
+body.night #memTitle{color:#A5D6A7;}
+#memSub{font-size:11.5px;color:var(--text-light);margin-top:2px;}
+#memMoves{margin-left:auto;font-size:13px;font-weight:900;background:#FBE9B7;color:#7A4E00;border-radius:16px;padding:6px 12px;white-space:nowrap;}
+#memClose{width:36px;height:36px;border-radius:50%;border:none;background:var(--green-pale);color:var(--green-dark);font-size:15px;font-weight:900;cursor:pointer;flex-shrink:0;}
+body.night #memClose{background:#243228;color:#A5D6A7;}
+#memGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+@media(min-width:420px){#memGrid{grid-template-columns:repeat(4,1fr);}}
+.mem-card{position:relative;aspect-ratio:1/1;cursor:pointer;perspective:600px;border:none;background:none;padding:0;}
+.mem-inner{position:absolute;inset:0;transition:transform .4s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d;}
+.mem-card.flipped .mem-inner,.mem-card.matched .mem-inner{transform:rotateY(180deg);}
+.mem-face{position:absolute;inset:0;border-radius:14px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.2);}
+.mem-back{background:linear-gradient(135deg,#1B6B3A,#14532D);display:flex;align-items:center;justify-content:center;border:2px solid rgba(242,194,57,.55);}
+.mem-back img{width:55%;height:auto;opacity:.95;}
+.mem-front{transform:rotateY(180deg);background-size:cover;background-position:center;border:2px solid var(--green-mid);}
+.mem-card.matched .mem-front{border-color:var(--amber);animation:memPop .45s ease;}
+@keyframes memPop{0%{transform:rotateY(180deg) scale(1)}50%{transform:rotateY(180deg) scale(1.12)}100%{transform:rotateY(180deg) scale(1)}}
+.mem-card.matched{cursor:default;}
+#memWin{display:none;text-align:center;padding:18px 8px 6px;}
+#memWin.show{display:block;}
+#memWin h3{font-size:20px;font-weight:900;color:var(--green-dark);margin:8px 0 4px;}
+body.night #memWin h3{color:#A5D6A7;}
+#memWin p{font-size:13px;color:var(--text-mid);margin-bottom:14px;}
+.mem-btn{font-size:13px;font-weight:800;padding:11px 18px;border-radius:14px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;}
+.mem-btn-gold{background:var(--amber);border-color:var(--amber);color:var(--green-dark);}
+
 /* ── AFRICA MAP ── */
 .africa-map-wrap{border-radius:20px;overflow:hidden;margin-bottom:20px;box-shadow:0 6px 28px rgba(0,60,140,.28),0 1px 0 rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.1);}
 body.night .africa-map-wrap{box-shadow:0 6px 28px rgba(0,0,0,.5),0 1px 0 rgba(255,255,255,.08);}
@@ -1400,30 +1489,45 @@ if(location.protocol === 'file:') {
   </div>
 </div>
 
-<!-- EXPLORE VIEW -->
+<!-- JOURNEY VIEW — Curriculum Worlds (Phase 3 foundation, 2026-06-12).
+     Replaces the old country-based Adventure screen: progression now follows
+     the 5 curriculum categories with neutral nature scenery — no regions. -->
 <div class="view" id="view-map">
+  <div class="scroll" id="journeyScroll" style="padding:16px 14px 90px;">
+    <div id="journeyHero">
+      <img src="owl-explorer.png" alt="" id="journeyHeroOwl"/>
+      <div style="flex:1;min-width:0;">
+        <h2>My Reading Journey</h2>
+        <p>Read <strong>4 books</strong> in a world to complete it and move on!</p>
+      </div>
+      <div id="journeyHeroStat"><strong id="jrnWorldsDone">0</strong><span>of 5<br>worlds</span></div>
+    </div>
+    <div id="worldsPath"></div>
+  </div>
+</div>
 
-  <!-- Journey Banner: owl explorer travels the world as books are read -->
-  <div id="adventureBanner">
-    <div id="advMeta">
-      <span id="advTitle">✈️ My Adventure</span>
-      <div id="advStats">
-        <span class="adv-stat">📚 <strong id="exploreTotal">0</strong> books</span>
-        <span class="adv-stat">🌍 <strong id="exploreCountries">0</strong> regions</span>
+<!-- Memory Match mini-game overlay -->
+<div id="memoryOverlay" role="dialog" aria-modal="true" aria-label="Memory match game">
+  <div id="memoryBox">
+    <div id="memoryHead">
+      <div>
+        <div id="memTitle">Memory Match</div>
+        <div id="memSub">Find the matching pairs!</div>
+      </div>
+      <div id="memMoves" title="Pairs found">⭐ 0/6</div>
+      <button id="memClose" onclick="closeMemoryGame()" aria-label="Close game">✕</button>
+    </div>
+    <div id="memGrid"></div>
+    <div id="memWin">
+      <img src="owl-celebrating.png" alt="" style="width:110px;height:auto;"/>
+      <h3>You found them all!</h3>
+      <p id="memWinSub"></p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button class="mem-btn mem-btn-gold" onclick="restartMemoryGame()">🎴 Play Again</button>
+        <button class="mem-btn" onclick="closeMemoryGame()">Back to Journey</button>
       </div>
     </div>
-    <div id="journeyWrap">
-      <div id="journeyRopeLine"><div id="journeyRopeFill"></div></div>
-      <div id="journeyStops"></div>
-      <div id="journeyOwlWrap"></div>
-      <div id="journeyStartFlag">🇪🇹</div>
-      <div id="journeyEndHint">🌏 more worlds →</div>
-    </div>
   </div>
-
-  <!-- Adventure Cards: one per language/region + coming-soon locked tiles -->
-  <div id="adventureGrid"></div>
-
 </div>
 
 <!-- ══════════════════════════════════
@@ -1464,7 +1568,7 @@ if(location.protocol === 'file:') {
     <span class="bico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span>My Books
   </button>
   <button class="bnav-item" id="bnav-map" onclick="switchView('map')">
-    <span class="bico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span>Explore</span>
+    <span class="bico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span>Journey</span>
   </button>
   <button class="bnav-item" id="bnav-admin" onclick="switchView('admin')" style="display:none">
     <span class="bico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>Admin
@@ -6190,14 +6294,174 @@ function getCountryState(isoNum) {
 }
 
 function initMapView() {
-  const totalRead      = AFRICA_COUNTRIES.reduce((s, c) => s + getLangProgress(c.lang).completed, 0);
-  const visitedCountries = getAfricaVisited();
-  const elTotal     = document.getElementById('exploreTotal');
-  const elCountries = document.getElementById('exploreCountries');
-  if (elTotal)     elTotal.textContent     = totalRead;
-  if (elCountries) elCountries.textContent = visitedCountries;
-  renderJourneyPath();
-  renderAdventureCards();
+  // Phase 3 (2026-06-12): the Journey tab is now the Curriculum Worlds
+  // screen. The old country-based adventure code below is retained but dead.
+  renderWorldsJourney();
+}
+
+// ═══════════════════════════════════════════════════
+// CURRICULUM WORLDS JOURNEY (Phase 3 foundation)
+// 5 worlds = the 5 curriculum categories. Read 4 books
+// in a world to complete it and unlock the next.
+// Neutral nature scenery only — no regions, no borders.
+// ═══════════════════════════════════════════════════
+const WORLDS=[
+  {cat:'mfh',  name:'Family Village',  am:'የቤተሰብ መንደር'},
+  {cat:'nat',  name:'Animal Lands',    am:'የእንስሳት ምድር'},
+  {cat:'learn',name:'Learning Garden', am:'የመማሪያ አትክልት'},
+  {cat:'cult', name:'Culture Square',  am:'የባህል አደባባይ'},
+  {cat:'world',name:'Big World',       am:'ትልቁ ዓለም'},
+];
+const WORLD_GOAL=4;
+function _worldBooks(cat){return books.filter(b=>b.cat===cat&&b.status==='published');}
+function _worldDone(cat){return _worldBooks(cat).filter(b=>(readProgress[b.id]||0)>=100).length;}
+function _worldComplete(cat){return _worldDone(cat)>=WORLD_GOAL;}
+function _worldUnlocked(i){return i===0||_worldComplete(WORLDS[i-1].cat);}
+
+// Simple layered nature scenes (inline SVG, no place names) per world.
+function _worldScene(cat){
+  const scenes={
+    mfh:`<svg viewBox="0 0 360 96" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="skyMfh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE3B3"/><stop offset="1" stop-color="#FFB36B"/></linearGradient></defs><rect width="360" height="96" fill="url(#skyMfh)"/><circle cx="300" cy="26" r="16" fill="#FFD24D"/><ellipse cx="80" cy="110" rx="160" ry="46" fill="#D98E4A"/><ellipse cx="300" cy="118" rx="180" ry="52" fill="#C77A38"/><path d="M96 62 l22 -18 22 18 z" fill="#8A5A2B"/><rect x="102" y="62" width="32" height="22" rx="3" fill="#E8C9A0"/><path d="M170 68 l18 -15 18 15 z" fill="#8A5A2B"/><rect x="175" y="68" width="26" height="18" rx="3" fill="#E8C9A0"/><circle cx="246" cy="74" r="9" fill="#4E9B47"/><rect x="244.5" y="78" width="3" height="12" fill="#6B4423"/></svg>`,
+    nat:`<svg viewBox="0 0 360 96" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="skyNat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFEDC2"/><stop offset="1" stop-color="#F2C94C"/></linearGradient></defs><rect width="360" height="96" fill="url(#skyNat)"/><circle cx="64" cy="24" r="14" fill="#FF9E45"/><ellipse cx="180" cy="116" rx="220" ry="42" fill="#C98A2D"/><path d="M250 84 l3 -30 m0 0 c-16 -12 -10 -24 6 -22 c2 -10 20 -12 24 -2 c14 -4 20 10 6 16 c8 8 -2 16 -14 12 l-16 -4" stroke="#6B4423" stroke-width="3" fill="#4E7B3A"/><path d="M236 38 q22 -14 46 -2 q-4 12 -22 12 q-18 2 -24 -10z" fill="#4E7B3A"/><path d="M40 30 q4 -5 8 0 m10 -4 q4 -5 8 0" stroke="#6B4F2A" stroke-width="2" fill="none"/><ellipse cx="120" cy="88" rx="34" ry="5" fill="#B5791F" opacity=".6"/></svg>`,
+    learn:`<svg viewBox="0 0 360 96" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="skyLrn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E4F6D8"/><stop offset="1" stop-color="#A8DB8F"/></linearGradient></defs><rect width="360" height="96" fill="url(#skyLrn)"/><circle cx="312" cy="22" r="13" fill="#FFD24D"/><ellipse cx="180" cy="118" rx="220" ry="44" fill="#5FA84E"/><path d="M70 84 q-2 -26 -18 -34 q22 0 24 26z M76 84 q2 -30 22 -40 q-18 -2 -26 32z" fill="#3E8C3A"/><path d="M150 86 q0 -18 -12 -24 q16 0 16 18z" fill="#3E8C3A"/><path d="M210 86 q4 -22 20 -28 q-22 -2 -24 22z" fill="#357A33"/><circle cx="276" cy="70" r="10" fill="#E8772E"/><rect x="274.5" y="76" width="3" height="12" fill="#6B4423"/></svg>`,
+    cult:`<svg viewBox="0 0 360 96" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="skyClt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F4E3C8"/><stop offset="1" stop-color="#D9A86A"/></linearGradient></defs><rect width="360" height="96" fill="url(#skyClt)"/><ellipse cx="180" cy="120" rx="220" ry="46" fill="#8A5A2B"/><path d="M60 80 q-2 -34 -8 -40 m8 40 q2 -30 10 -38" stroke="#3E6B33" stroke-width="3" fill="none"/><circle cx="56" cy="52" r="4" fill="#C62828"/><circle cx="66" cy="46" r="4" fill="#C62828"/><circle cx="61" cy="60" r="4" fill="#8C1F1F"/><path d="M150 84 q-14 -4 -12 -20 q2 -14 16 -16 q14 2 16 16 q2 16 -12 20 l4 6 h-16 z" fill="#3B2A1A"/><path d="M154 48 q-4 -10 4 -14" stroke="#3B2A1A" stroke-width="3" fill="none"/><path d="M214 70 q6 -16 0 -26 m10 26 q6 -14 0 -24" stroke="#fff" stroke-width="2.5" fill="none" opacity=".7"/><circle cx="290" cy="30" r="12" fill="#F2C239"/></svg>`,
+    world:`<svg viewBox="0 0 360 96" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="skyWld" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CDEAF7"/><stop offset="1" stop-color="#7FBEDB"/></linearGradient></defs><rect width="360" height="96" fill="url(#skyWld)"/><circle cx="52" cy="22" r="13" fill="#FFD24D"/><ellipse cx="90" cy="112" rx="150" ry="40" fill="#4E9B47"/><ellipse cx="300" cy="120" rx="170" ry="48" fill="#3E8C3A"/><path d="M0 78 q60 -16 120 0 q60 16 120 0 q60 -16 120 0 v18 h-360 z" fill="#3D8FB5"/><path d="M150 70 q14 -10 28 0 l-4 8 h-20 z" fill="#C77A38"/><rect x="162" y="56" width="3" height="14" fill="#6B4423"/><path d="M165 56 l12 6 -12 4 z" fill="#E8772E"/><path d="M236 32 q5 -6 10 0 m12 -4 q5 -6 10 0" stroke="#fff" stroke-width="2.5" fill="none" opacity=".8"/></svg>`,
+  };
+  return scenes[cat]||scenes.world;
+}
+
+const _worldExpanded={};
+function renderWorldsJourney(){
+  const path=document.getElementById('worldsPath');
+  if(!path) return;
+  const worldsDone=WORLDS.filter(w=>_worldComplete(w.cat)).length;
+  const wd=document.getElementById('jrnWorldsDone');
+  if(wd) wd.textContent=worldsDone;
+  // Owl stands at the first unlocked-but-incomplete world
+  let owlAt=WORLDS.findIndex((w,i)=>_worldUnlocked(i)&&!_worldComplete(w.cat));
+  if(owlAt===-1) owlAt=WORLDS.length-1; // everything complete — owl at the end
+  path.innerHTML=WORLDS.map((w,i)=>{
+    const wb=_worldBooks(w.cat);
+    const done=_worldDone(w.cat);
+    const unlocked=_worldUnlocked(i);
+    const complete=_worldComplete(w.cat);
+    const cls=complete?'complete':(unlocked?'unlocked':'locked');
+    const stars=Array.from({length:WORLD_GOAL},(_,s)=>
+      `<div class="world-star${s<done?' filled':''}">${s<done?'⭐':''}</div>`).join('');
+    const chip=complete
+      ? '<span class="world-status-chip done">🏆 World complete!</span>'
+      : unlocked
+        ? `<span class="world-status-chip">${done} of ${WORLD_GOAL} books read</span>`
+        : '<span class="world-status-chip locked-chip">🔒 Locked</span>';
+    // Book checklist — completed first, then unread; cap at 4 with expand
+    const sorted=[...wb].sort((a,b)=>((readProgress[b.id]||0)>=100?1:0)-((readProgress[a.id]||0)>=100?1:0));
+    const expanded=!!_worldExpanded[w.cat];
+    const visible=expanded?sorted:sorted.slice(0,4);
+    const rows=unlocked?visible.map(b=>{
+      const bdone=(readProgress[b.id]||0)>=100;
+      return `<div class="world-book-row" onclick="openReader(${b.id})">
+        <div class="world-book-check${bdone?' done':''}">✓</div>
+        <span class="wb-title">${b.title}</span>
+        <span class="wb-more">${bdone?'Read again':'Read ›'}</span>
+      </div>`;
+    }).join('')+(sorted.length>4?`<button class="world-more-btn" onclick="_worldExpanded['${w.cat}']=${expanded?'false':'true'};renderWorldsJourney()">${expanded?'Show fewer ▲':`Show all ${sorted.length} books ▼`}</button>`:''):'';
+    const nextBook=sorted.find(b=>(readProgress[b.id]||0)<100);
+    const canPlay=done>=1;
+    const actions=unlocked?`<div class="world-actions">
+      ${nextBook?`<button class="world-btn world-btn-read" onclick="openReader(${nextBook.id})">📖 ${done===0?'Start this world':'Keep reading'}</button>`:''}
+      <button class="world-btn world-btn-game" ${canPlay?`onclick="startMemoryGame('${w.cat}')"`:'disabled title="Finish one book in this world to unlock the game"'}>🎴 Memory Match${canPlay?'':' 🔒'}</button>
+    </div>${canPlay?'':'<div style="font-size:10.5px;color:var(--text-light);margin-top:6px;">Finish one book here to unlock the matching game!</div>'}`:'';
+    const prevName=i>0?WORLDS[i-1].name:'';
+    return `<div class="world-card ${cls}">
+      <div class="world-scene">${_worldScene(w.cat)}
+        <div class="world-stop-dot">${complete?'✓':i+1}</div>
+        ${i===owlAt&&unlocked?'<img class="world-owl-here" src="owl-explorer.png" alt="You are here"/>':''}
+        <div class="world-name-band">
+          <h3>${w.name}</h3>
+          <div class="world-tag">${CATS[w.cat].emoji} ${CATS[w.cat].label} · ${w.am}</div>
+        </div>
+      </div>
+      ${unlocked?`<div class="world-body">
+        <div class="world-progress-row"><div class="world-stars">${stars}</div>${chip}</div>
+        <div class="world-books">${rows}</div>
+        ${actions}
+      </div>`:`<div class="world-body" style="min-height:46px;"></div>
+      <div class="world-lock-overlay">
+        <div class="wl-pad">🔒</div>
+        <div class="wl-msg">Read ${WORLD_GOAL} books in ${prevName} to unlock</div>
+      </div>`}
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// MEMORY MATCH — pairs from the world's book art.
+// Unlocks per world after the first completed book.
+// ═══════════════════════════════════════════════════
+let _mem=null;
+function _memCandidates(cat){
+  const wb=_worldBooks(cat);
+  const useWebp=!!window._webpOK;
+  const smExt=useWebp?'cover_sm.webp':'cover_sm.jpg';
+  const imgs=[];
+  wb.forEach(b=>{ if(b.cover) imgs.push(b.cover.replace('cover.jpg',smExt)); });
+  // Worlds with fewer than 6 books: top up with inside-page art
+  for(const b of wb){
+    if(imgs.length>=9) break;
+    const pgs=(b.pages||[]).filter(p=>p.img&&!p.isCover);
+    if(pgs[1]) imgs.push(useWebp?pgs[1].img.replace(/\.jpg$/,'.webp'):pgs[1].img);
+  }
+  return imgs;
+}
+function _shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function startMemoryGame(cat){
+  const w=WORLDS.find(x=>x.cat===cat);
+  const six=_shuffle(_memCandidates(cat)).slice(0,6);
+  if(six.length<3){ showToast('Not enough pictures for this game yet!'); return; }
+  const deck=_shuffle(six.flatMap((img,k)=>[{img,k},{img,k}]));
+  _mem={cat,deck,first:null,lock:false,found:0,moves:0,pairs:six.length};
+  document.getElementById('memTitle').textContent=`Memory Match — ${w.name}`;
+  document.getElementById('memSub').textContent='Find the matching pairs!';
+  document.getElementById('memMoves').textContent=`⭐ 0/${six.length}`;
+  document.getElementById('memWin').classList.remove('show');
+  const grid=document.getElementById('memGrid');
+  grid.style.display='';
+  grid.innerHTML=deck.map((c,i)=>
+    `<button class="mem-card" data-k="${c.k}" onclick="_memFlip(this)" aria-label="Card ${i+1}">
+      <div class="mem-inner">
+        <div class="mem-face mem-back"><img src="gugut-owl-sm.png" alt=""/></div>
+        <div class="mem-face mem-front" style="background-image:url('${c.img}')"></div>
+      </div>
+    </button>`).join('');
+  document.getElementById('memoryOverlay').classList.add('open');
+}
+function _memFlip(el){
+  if(!_mem||_mem.lock||el.classList.contains('flipped')||el.classList.contains('matched')) return;
+  el.classList.add('flipped');
+  if(!_mem.first){ _mem.first=el; return; }
+  const a=_mem.first, b=el;
+  _mem.first=null; _mem.moves++;
+  if(a.dataset.k===b.dataset.k){
+    a.classList.add('matched'); b.classList.add('matched');
+    a.classList.remove('flipped'); b.classList.remove('flipped');
+    _mem.found++;
+    document.getElementById('memMoves').textContent=`⭐ ${_mem.found}/${_mem.pairs}`;
+    if(_mem.found>=_mem.pairs){
+      setTimeout(()=>{
+        document.getElementById('memGrid').style.display='none';
+        document.getElementById('memWinSub').textContent=`All ${_mem.pairs} pairs in ${_mem.moves} tries — great memory!`;
+        document.getElementById('memWin').classList.add('show');
+      },650);
+    }
+  } else {
+    _mem.lock=true;
+    setTimeout(()=>{ a.classList.remove('flipped'); b.classList.remove('flipped'); _mem.lock=false; },900);
+  }
+}
+function restartMemoryGame(){ if(_mem) startMemoryGame(_mem.cat); }
+function closeMemoryGame(){
+  document.getElementById('memoryOverlay').classList.remove('open');
+  _mem=null;
 }
 
 // ── Helper: is this African country unlocked? ──
