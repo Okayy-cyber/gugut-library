@@ -773,7 +773,9 @@ body.night #tpTitle{color:#A5D6A7;}
 #tpScore{margin-left:auto;font-size:12.5px;font-weight:900;background:#FBE9B7;color:#7A4E00;border-radius:16px;padding:6px 10px;white-space:nowrap;}
 #tpClose{width:36px;height:36px;border-radius:50%;border:none;background:var(--green-pale);color:var(--green-dark);font-size:15px;font-weight:900;cursor:pointer;flex-shrink:0;}
 body.night #tpClose{background:#243228;color:#A5D6A7;}
-#tpWord{font-size:26px;font-weight:900;color:var(--green-dark);text-align:center;background:var(--green-pale);border:2.5px dashed var(--green-mid);border-radius:18px;padding:16px 12px;margin:2px 0 14px;font-family:'Nunito','Noto Sans Ethiopic',sans-serif;line-height:1.25;}
+#tpWord{font-size:26px;font-weight:900;color:var(--green-dark);text-align:center;background:var(--green-pale);border:2.5px dashed var(--green-mid);border-radius:18px;padding:16px 12px;margin:2px 0 14px;font-family:'Nunito','Noto Sans Ethiopic',sans-serif;line-height:1.25;cursor:pointer;}
+#tpWord:active{transform:scale(.985);}
+.tp-speaker{font-size:17px;margin-right:9px;opacity:.6;vertical-align:middle;}
 body.night #tpWord{background:#243228;color:#C8E6C9;}
 #tpGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
 .tp-pic{aspect-ratio:1/1;border:2.5px solid var(--green-light);border-radius:16px;background:#fff;cursor:pointer;padding:3px;transition:transform .12s,border-color .15s;min-height:44px;}
@@ -1600,7 +1602,7 @@ if(location.protocol === 'file:') {
       <div id="tpScore" title="First-try stars">⭐ 0</div>
       <button id="tpClose" onclick="closeWordMatch()" aria-label="Close game">✕</button>
     </div>
-    <div id="tpWord"></div>
+    <div id="tpWord" onclick="_tpSayWord()" role="button" title="Hear the word" aria-label="Hear the word"></div>
     <div id="tpGrid"></div>
     <div id="tpWin">
       <img src="owl-medal.png" alt="" style="width:110px;height:auto;"/>
@@ -6552,6 +6554,28 @@ function _gamePickKit(cat){
 // games, even while the world itself is still sequence-locked for reading.
 function _worldGamesOpen(cat){return _worldDone(cat)>=1;}
 
+// ── Game audio: speak a card word in the selected language ──────────────
+// Reuses the reader's ElevenLabs proxy (+ cache); falls back to browser voice.
+let _gameAudio=null;
+async function _gameSpeak(text){
+  if(!text) return;
+  try{ if(_gameAudio){ _gameAudio.pause(); _gameAudio=null; } }catch(e){}
+  try{
+    if(typeof _elFetch==='function'){
+      const res=await _elFetch(text,_elSelectedVoice);
+      if(res&&res.url){ _gameAudio=new Audio(res.url); _gameAudio.play().catch(()=>{}); return; }
+    }
+  }catch(e){}
+  try{
+    if(window.speechSynthesis){
+      speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text);
+      u.rate=0.9;
+      speechSynthesis.speak(u);
+    }
+  }catch(e){}
+}
+
 // ═══════════════════════════════════════════════════
 // MEMORY MATCH — real kit memory cards (image + word).
 // 6 pairs from one kit's printed deck per game.
@@ -6583,6 +6607,8 @@ function startMemoryGame(cat,kit){
 function _memFlip(el){
   if(!_mem||_mem.lock||el.classList.contains('flipped')||el.classList.contains('matched')) return;
   el.classList.add('flipped');
+  const lblEl=el.querySelector('.mem-lbl');
+  if(lblEl) _gameSpeak(lblEl.textContent.trim());
   if(!_mem.first){ _mem.first=el; return; }
   const a=_mem.first, b=el;
   _mem.first=null; _mem.moves++;
@@ -6636,7 +6662,9 @@ function _tpRound(){
   document.getElementById('tpOwl').src='owl-pointing.png';
   document.getElementById('tpSub').textContent='Tap the right picture!';
   document.getElementById('tpScore').textContent=`⭐ ${_tp.stars} · ${_tp.r+1}/${_tp.rounds.length}`;
-  document.getElementById('tpWord').textContent=_cardLbl(t);
+  const wordEl=document.getElementById('tpWord');
+  wordEl.innerHTML=`<span class="tp-speaker" aria-hidden="true">🔊</span>${_cardLbl(t)}`;
+  _gameSpeak(_cardLbl(t));
   document.getElementById('tpGrid').innerHTML=opts.map(o=>
     `<button class="tp-pic" onclick="_tpPick(this,${o.i===t.i})" aria-label="Picture choice">
       <img src="${_cardImg(o)}" alt="" loading="lazy"/>
@@ -6668,9 +6696,13 @@ function _tpPick(el,ok){
     setTimeout(()=>{ el.classList.remove('shake'); el.classList.add('out'); },380);
   }
 }
+function _tpSayWord(){
+  if(_tp&&_tp.r<_tp.rounds.length) _gameSpeak(_cardLbl(_tp.rounds[_tp.r]));
+}
 function restartWordMatch(){ if(_tp) startWordMatch(_tp.cat); }
 function closeWordMatch(){
   document.getElementById('tpOverlay').classList.remove('open');
+  try{ if(_gameAudio){ _gameAudio.pause(); _gameAudio=null; } }catch(e){}
   _tp=null;
 }
 
