@@ -1254,9 +1254,9 @@ if(location.protocol === 'file:') {
         </div>
       </div>
       <ul class="sub-features">
-        <li>All 15+ illustrated books, with new titles added regularly</li>
+        <li>All 29 illustrated books, with new titles added regularly</li>
         <li>Read-aloud with word-by-word highlighting</li>
-        <li>6 African languages — Amharic, Oromiffa, Tigrinya &amp; more</li>
+        <li>Read in 6 languages — English, አማርኛ, Afaan Oromo &amp; more</li>
         <li>Reading streaks, quizzes &amp; progress tracking</li>
         <li>Works offline after first load</li>
       </ul>
@@ -6550,6 +6550,10 @@ function _gamePickKit(cat){
   const pool=fin.length?fin:_worldAllKits(cat);
   return pool.length?pool[Math.floor(Math.random()*pool.length)]:null;
 }
+// Prefetch a kit's card images so game rounds never show empty frames.
+function _gamePrefetchKit(kit){
+  try{ _kitCards(kit).forEach(c=>{ const im=new Image(); im.src=_cardImg(c); }); }catch(e){}
+}
 // Decision #7 (Sule 2026-06-12): finishing ANY book unlocks that world's
 // games, even while the world itself is still sequence-locked for reading.
 function _worldGamesOpen(cat){return _worldDone(cat)>=1;}
@@ -6587,6 +6591,7 @@ function startMemoryGame(cat,kit){
   kit=kit||_gamePickKit(cat);
   const cards=kit?_shuffle(_kitCards(kit).slice()).slice(0,6):[];
   if(cards.length<3){ showToast('No game cards for this world yet!'); return; }
+  _gamePrefetchKit(kit);
   const deck=_shuffle(cards.flatMap(c=>[{...c},{...c}]));
   _mem={cat,kit,deck,first:null,lock:false,found:0,moves:0,pairs:cards.length};
   document.getElementById('memTitle').textContent=`Memory Match — ${GAME_TOPICS[kit]||w.name}`;
@@ -6645,6 +6650,7 @@ function startWordMatch(cat,kit){
   kit=kit||_gamePickKit(cat);
   const cards=kit?_shuffle(_kitCards(kit).slice()):[];
   if(cards.length<3){ showToast('No game cards for this world yet!'); return; }
+  _gamePrefetchKit(kit);
   const rounds=cards.slice(0,Math.min(8,cards.length));
   _tp={cat,kit,all:cards,rounds,r:0,stars:0,firstTry:true,lock:false};
   document.getElementById('tpTitle').textContent=`Word Match — ${GAME_TOPICS[kit]||''}`;
