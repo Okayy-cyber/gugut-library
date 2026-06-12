@@ -763,7 +763,7 @@ body.night .wl-games-note{background:#3a3214;color:#F2C239;}
 /* ── Word Match (three-part cards) game ── */
 #tpOverlay{position:fixed;inset:0;background:rgba(12,26,14,.88);backdrop-filter:blur(4px);z-index:1500;display:none;align-items:center;justify-content:center;padding:14px;}
 #tpOverlay.open{display:flex;}
-#tpBox{background:var(--card-bg);border-radius:24px;width:100%;max-width:440px;max-height:94vh;overflow-y:auto;padding:16px 16px 20px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+#tpBox{background:var(--card-bg);border-radius:24px;width:100%;max-width:500px;max-height:94vh;overflow-y:auto;padding:16px 16px 20px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.5);}
 body.night #tpBox{background:#1d2a1f;}
 #tpHead{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
 #tpHead img#tpOwl{width:46px;height:auto;flex-shrink:0;}
@@ -776,7 +776,7 @@ body.night #tpClose{background:#243228;color:#A5D6A7;}
 #tpWord{font-size:26px;font-weight:900;color:var(--green-dark);text-align:center;background:var(--green-pale);border:2.5px dashed var(--green-mid);border-radius:18px;padding:16px 12px;margin:2px 0 14px;font-family:'Nunito','Noto Sans Ethiopic',sans-serif;line-height:1.25;}
 body.night #tpWord{background:#243228;color:#C8E6C9;}
 #tpGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-.tp-pic{aspect-ratio:1/1;border:2.5px solid var(--green-light);border-radius:16px;background:#fff;cursor:pointer;padding:5px;transition:transform .12s,border-color .15s;min-height:44px;}
+.tp-pic{aspect-ratio:1/1;border:2.5px solid var(--green-light);border-radius:16px;background:#fff;cursor:pointer;padding:3px;transition:transform .12s,border-color .15s;min-height:44px;}
 .tp-pic:active{transform:scale(.96);}
 .tp-pic img{width:100%;height:100%;object-fit:contain;pointer-events:none;}
 .tp-pic.hit{border-color:var(--amber);animation:memPop .45s ease;box-shadow:0 0 0 3px rgba(242,194,57,.4);}
