@@ -621,9 +621,6 @@ body.night .modal-sheet h3{color:var(--green-light);}
   #logoImg{height:32px !important;}
   .topbar-actions{gap:5px;}
   .tbtn{width:34px;height:34px;font-size:16px;}
-  /* Subscribe collapses to its star icon — full label lives in the modal/profile */
-  .tbtn.amber{font-size:0;padding:0;width:34px;height:34px;border-radius:50%;}
-  .tbtn.amber::before{content:'⭐';font-size:16px;}
   .tbtn.signin{padding:0 11px;font-size:12px;height:32px;}
   .topbar-search{min-width:80px;}
   .topbar-search input{padding:7px 10px 7px 30px;font-size:12px;}
@@ -705,6 +702,26 @@ body.night .world-lock-overlay{background:rgba(10,16,11,.55);}
 .world-lock-overlay .wl-pad{font-size:30px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));}
 .world-lock-overlay .wl-msg{font-size:12px;font-weight:800;color:var(--green-dark);background:#fff;border-radius:16px;padding:6px 14px;box-shadow:0 2px 10px rgba(0,0,0,.18);max-width:85%;text-align:center;}
 body.night .world-lock-overlay .wl-msg{background:#1d2a1f;color:#A5D6A7;}
+/* ── Quiz (brand restyle, Sule 2026-06-12) ── */
+.quiz-sheet{background:var(--card-bg);border-radius:22px;max-height:84vh;overflow-y:auto;max-width:500px;width:100%;padding:0;overflow-x:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);}
+body.night .quiz-sheet{background:#1d2a1f;}
+.quiz-head{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#1B6B3A,#14532D);padding:14px 16px;color:#fff;}
+.quiz-head img{width:54px;height:auto;flex-shrink:0;filter:drop-shadow(0 3px 6px rgba(0,0,0,.3));}
+.quiz-head h3{font-size:16px;font-weight:900;color:#fff;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.quiz-head p{font-size:11px;color:#F2C239;font-weight:800;margin:2px 0 0;}
+.quiz-close{width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.18);color:#fff;font-size:15px;font-weight:900;cursor:pointer;flex-shrink:0;}
+.quiz-body{padding:18px 20px 22px;}
+#quizQuestion{font-size:17px;font-weight:800;text-align:center;margin-bottom:18px;color:var(--text);line-height:1.4;}
+#quizOptions{display:flex;flex-direction:column;gap:10px;margin-bottom:6px;}
+.quiz-opt{padding:14px 16px;border-radius:16px;border:2.5px solid var(--green-light);background:var(--green-pale);font-size:15px;font-weight:800;cursor:pointer;text-align:left;transition:transform .12s,border-color .15s,background .15s;color:var(--green-dark);box-shadow:0 2px 6px rgba(20,60,30,.08);}
+.quiz-opt:hover{border-color:var(--green-mid);}
+.quiz-opt:active{transform:scale(.97);}
+body.night .quiz-opt{background:#243228;color:#C8E6C9;border-color:#3a5740;}
+#quizResult{text-align:center;padding:14px 0 4px;}
+#quizResult img{width:96px;height:auto;}
+#quizResultMsg{font-size:18px;font-weight:900;color:var(--green-dark);margin:10px 0 16px;}
+body.night #quizResultMsg{color:#A5D6A7;}
+#quizNextBtn{background:var(--amber);color:var(--green-dark);border:none;border-radius:22px;padding:12px 30px;font-weight:900;font-size:15px;cursor:pointer;box-shadow:0 4px 12px rgba(212,160,23,.4);}
 /* ── Memory match game ── */
 #memoryOverlay{position:fixed;inset:0;background:rgba(12,26,14,.88);backdrop-filter:blur(4px);z-index:1500;display:none;align-items:center;justify-content:center;padding:14px;}
 #memoryOverlay.open{display:flex;}
@@ -1158,7 +1175,7 @@ if(location.protocol === 'file:') {
     <div class="topbar-actions">
       <button class="tbtn" onclick="toggleNight()" title="Night mode" id="nightBtn" aria-label="Toggle night mode">🌙</button>
       <button class="tbtn amber" id="addBookBtn" onclick="openUpload()" style="display:none">＋ Add Book</button>
-      <button class="tbtn amber" id="subscribeTopBtn" onclick="handleSubscribeClick()" title="Subscribe for full access">⭐ Subscribe</button>
+      <!-- Subscribe lives in Profile (parent zone) — no commerce in the kid-facing header (Sule, 2026-06-12) -->
       <button class="tbtn signin" id="signInTopBtn" onclick="openAuthModal('signin')" title="Sign in">Sign In</button>
       <span class="account-wrap" id="accountWrap" style="display:none;">
         <button class="account-chip" id="accountChip" onclick="toggleAccountMenu(event)"><span id="accountInitial">👤</span><span id="accountLabel">Account</span></button>
@@ -1441,6 +1458,11 @@ if(location.protocol === 'file:') {
         <div class="badge"><div class="badge-icon badge-locked" data-badge="alllang">🎓</div><div class="badge-label">All Languages</div></div>
       </div>
       <div class="section-hdr plain" style="margin-bottom:12px;"><span class="section-title">⚙️ Settings</span></div>
+      <div class="setting-row" id="profileSubscribeRow" onclick="handleSubscribeClick()" style="background:linear-gradient(135deg,#FBE9B7,#F2C239);border:1.5px solid var(--amber);">
+        <div class="setting-icon">⭐</div>
+        <div class="setting-info"><div class="setting-title" style="color:var(--green-dark);">Gugut Full Library</div><div class="setting-sub" style="color:#7A4E00;">Every book, every language — subscribe for the whole family</div></div>
+        <span style="font-size:15px;font-weight:900;color:var(--green-dark);">›</span>
+      </div>
       <div class="setting-row" onclick="toggleNight();showToast('Night mode toggled')">
         <div class="setting-icon">🌙</div>
         <div class="setting-info"><div class="setting-title">Night Mode</div><div class="setting-sub">Dark theme for bedtime reading</div></div>
@@ -2755,7 +2777,8 @@ const PLANS = {
 if (location.search.includes('sub=1')) userSubscribed = true;
 
 function _updateSubUI(){
-  const subBtn       = document.getElementById('subscribeTopBtn');
+  // Subscribe entry point moved from the header to Profile (parent zone)
+  const subBtn       = document.getElementById('profileSubscribeRow');
   const signInBtn    = document.getElementById('signInTopBtn');
   const accountWrap  = document.getElementById('accountWrap');
   const accountEmail = document.getElementById('accountEmail');
@@ -3348,7 +3371,7 @@ function bCardHTML(b){
       ${cardSubTitle}
       <div class="bmeta">
         ${(()=>{const d=_catLabel(b);return `<span class="tag tag-age ${d.cls}" title="${d.name} · Ages ${b.age}">${d.emoji} ${d.name}</span>`;})()}
-        ${b.kit?`<span class="tag tag-kit" title="RISE Topic Kit ${b.kit}">${b.kit}</span>`:''}
+        ${b.kit&&isAdmin?`<span class="tag tag-kit" title="RISE Topic Kit ${b.kit}">${b.kit}</span>`:''}
         ${langBadge?`<span class="tag tag-lang">${langBadge}</span>`:''}
         <span class="tag" style="background:var(--sand);color:var(--text-mid);font-size:9px;padding:2px 5px;">${_readTime(b)}</span>
         ${isCompleted?`<span class="tag" style="background:#e8f5e9;color:#2e7d32;font-size:9px;padding:2px 6px;font-weight:800;">✓ Done</span>`:''}
@@ -5066,17 +5089,16 @@ function _illUpdateOverlay(pageIndex){
 // Toggle between English and native language in the illustrated reader
 function _updateLangBtn(btn, b){
   if(!btn) return;
-  // The button shows what language you'll SWITCH TO (not current)
+  // The chip shows the CURRENT reading language (Sule, 2026-06-12) — tap to switch.
+  const SHORT={English:'EN',Amharic:'አማ',Tigrinya:'ትግ',Oromiffa:'ORO',Somali:'SOM',Wolaytta:'WOL'};
+  const native=(activeLang==='all'||activeLang==='English')?b.lang:activeLang;
   if(readerDisplayLang==='text'){
-    // Currently English → button offers to switch to the book's language
-    const nativeName = {Amharic:'አማ',Tigrinya:'ትግ',Oromiffa:'ORO',Somali:'SOM',Wolaytta:'WOL'}[b.lang]||b.lang.slice(0,3).toUpperCase();
-    btn.textContent=nativeName;
-    btn.title='Switch to '+b.lang;
+    btn.textContent='EN';
+    btn.title='Reading in English — tap for '+native;
     btn.style.background='';btn.style.color='';
   } else {
-    // Currently native → button offers to switch to English
-    btn.textContent='EN';
-    btn.title='Switch to English';
+    btn.textContent=SHORT[native]||native.slice(0,3).toUpperCase();
+    btn.title='Reading in '+native+' — tap for English';
     btn.style.background='var(--amber)';btn.style.color='var(--green-dark)';
   }
 }
@@ -5674,7 +5696,7 @@ function startQuiz(bookId) {
   quizScore = 0;
   quizBookId = bookId;
   document.getElementById('quizOverlay').style.display = 'flex';
-  document.getElementById('quizBookEmo').textContent = b.emo;
+  const _qo=document.getElementById('quizHeadOwl'); if(_qo) _qo.src='owl-question.png';
   document.getElementById('quizTitle').textContent = b.title;
   showQuizQuestion();
 }
@@ -5686,10 +5708,11 @@ function showQuizQuestion() {
   document.getElementById('quizResult').style.display = 'none';
   const opts = document.getElementById('quizOptions');
   opts.innerHTML = '';
+  const _qo=document.getElementById('quizHeadOwl'); if(_qo) _qo.src='owl-question.png';
   q.opts.forEach((opt, i) => {
     const btn = document.createElement('button');
     btn.textContent = opt;
-    btn.style = 'padding:12px 16px;border-radius:12px;border:2px solid var(--border);background:var(--card-bg);font-size:14px;font-weight:600;cursor:pointer;text-align:left;transition:all .15s;color:var(--text);';
+    btn.className = 'quiz-opt';
     btn.onclick = () => answerQuiz(i, q.a, btn);
     opts.appendChild(btn);
   });
@@ -5711,7 +5734,10 @@ function answerQuiz(chosen, correct, btn) {
     document.querySelectorAll('#quizOptions button')[correct].style.color='#fff'; 
   }
   document.getElementById('quizResult').style.display = 'block';
-  document.getElementById('quizResultEmo').textContent = isRight ? '🎉' : '💪';
+  const _ro=document.getElementById('quizResultOwl');
+  if(_ro) _ro.src = isRight ? 'owl-celebrating.png' : 'owl-confused.png';
+  const _ho=document.getElementById('quizHeadOwl');
+  if(_ho) _ho.src = isRight ? 'owl-celebrating.png' : 'owl-confused.png';
   document.getElementById('quizResultMsg').textContent = isRight ? 'Correct! Well done!' : 'Not quite — but keep going!';
   const isLast = quizIdx >= quizData.length - 1;
   document.getElementById('quizNextBtn').textContent = isLast ? 'See Results 🏆' : 'Next →';
@@ -5731,7 +5757,8 @@ function showQuizResults() {
   document.getElementById('quizQuestion').textContent = '';
   document.getElementById('quizResult').style.display = 'block';
   const pct = Math.round((quizScore / quizData.length) * 100);
-  document.getElementById('quizResultEmo').textContent = pct === 100 ? '🏆' : pct >= 66 ? '⭐' : '📖';
+  const _fo=document.getElementById('quizResultOwl');
+  if(_fo) _fo.src = pct === 100 ? 'owl-medal.png' : pct >= 66 ? 'owl-cheerleader.png' : 'owl-reading.png';
   document.getElementById('quizResultMsg').textContent = `You got ${quizScore} / ${quizData.length}! ${pct===100?'Perfect score! Gugut is proud of you!':pct>=66?'Great job! Keep reading!':'Keep reading to learn more!'}`;
   document.getElementById('quizNextBtn').textContent = 'Close ✕';
   document.getElementById('quizNextBtn').onclick = () => { document.getElementById('quizOverlay').style.display='none'; };
@@ -7630,22 +7657,24 @@ function _cqShowScore(){
 </div>
 
 <!-- QUIZ OVERLAY -->
-<div class="modal-overlay" id="quizOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:520;display:none;align-items:center;justify-content:center;padding:16px;">
-  <div class="modal-sheet" style="background:var(--card-bg);border-radius:18px;max-height:80vh;overflow-y:auto;max-width:500px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);">
-    <div style="display:flex;justify-content:flex-end;margin-bottom:4px;">
-      <button onclick="document.getElementById('quizOverlay').style.display='none';" aria-label="Skip quiz" style="background:none;border:none;color:var(--text-light);font-size:22px;cursor:pointer;padding:0;line-height:1;opacity:.7;">✕</button>
+<div class="modal-overlay" id="quizOverlay" style="position:fixed;inset:0;background:rgba(12,26,14,.78);backdrop-filter:blur(3px);z-index:520;display:none;align-items:center;justify-content:center;padding:16px;">
+  <div class="modal-sheet quiz-sheet">
+    <div class="quiz-head">
+      <img id="quizHeadOwl" src="owl-question.png" alt=""/>
+      <div style="flex:1;min-width:0;">
+        <h3 id="quizTitle"></h3>
+        <p id="quizProgress">Question 1 of 3</p>
+      </div>
+      <button onclick="document.getElementById('quizOverlay').style.display='none';" aria-label="Skip quiz" class="quiz-close">✕</button>
     </div>
-    <div style="text-align:center;margin-bottom:20px;">
-      <div style="font-size:44px;margin-bottom:8px;" id="quizBookEmo"></div>
-      <h3 id="quizTitle" style="margin:0 0 4px;color:var(--green-dark);font-size:18px;"></h3>
-      <p style="color:var(--text-light);font-size:12px;margin:0;" id="quizProgress">Question 1 of 3</p>
-    </div>
-    <p id="quizQuestion" style="font-size:17px;font-weight:700;text-align:center;margin-bottom:20px;color:var(--text);"></p>
-    <div id="quizOptions" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;"></div>
-    <div id="quizResult" style="display:none;text-align:center;padding:20px 0;">
-      <div style="font-size:48px;margin-bottom:8px;" id="quizResultEmo"></div>
-      <p id="quizResultMsg" style="font-size:18px;font-weight:800;color:var(--green-dark);margin-bottom:16px;"></p>
-      <button onclick="nextQuizQuestion()" id="quizNextBtn" style="background:var(--green);color:#fff;border:none;border-radius:20px;padding:10px 28px;font-weight:800;font-size:15px;cursor:pointer;">Next →</button>
+    <div class="quiz-body">
+      <p id="quizQuestion"></p>
+      <div id="quizOptions"></div>
+      <div id="quizResult" style="display:none;">
+        <img id="quizResultOwl" src="owl-celebrating.png" alt=""/>
+        <p id="quizResultMsg"></p>
+        <button onclick="nextQuizQuestion()" id="quizNextBtn">Next →</button>
+      </div>
     </div>
   </div>
 </div>
