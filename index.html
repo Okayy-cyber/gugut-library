@@ -3255,7 +3255,9 @@ const LANG_KEY={'English':'en','Amharic':'am','Tigrinya':'ti','Oromiffa':'om','S
 // Somali/Wolaytta properly, so read-aloud is gated to English until per-language
 // voices ship (Azure has am+so; MMS or human recordings for the rest).
 // Flip a language to true here the moment its voice pipeline is ready.
-const VOICE_READY={'English':true,'Amharic':false,'Oromiffa':false,'Tigrinya':false,'Somali':false,'Wolaytta':false};
+const VOICE_READY={'English':true,'Amharic':true,'Oromiffa':false,'Tigrinya':false,'Somali':true,'Wolaytta':false};
+// Amharic + Somali speak via Azure (am-ET-MekdesNeural / so-SO-UbaxNeural)
+// through /.netlify/functions/tts-azure — see AZURE_LANGS below.
 // User-facing display names (self-designations) for toasts/badges
 const LANG_DISPLAY={'English':'English','Amharic':'አማርኛ','Oromiffa':'Afaan Oromoo','Tigrinya':'ትግርኛ','Somali':'Soomaali','Wolaytta':'Wolayttattuwa'};
 // Which language would the reader SPEAK right now?
@@ -4735,6 +4737,56 @@ async function _elFetch(text, voiceId){
   } catch(err){ console.warn('TTS proxy fetch failed:', err); return null; }
 }
 
+// ── Azure Speech fetch (Amharic + Somali) via server-side proxy ──────────────
+// Languages ElevenLabs can't speak. Returns { url, alignment:null } or null.
+const AZURE_LANGS = { 'Amharic':'am', 'Somali':'so' };
+async function _azureFetch(text, langCode){
+  const cacheKey = `az::${langCode}::${_readSpeed}::${text}`;
+  if(_elAudioCache.has(cacheKey)) return _elAudioCache.get(cacheKey);
+  try {
+    const resp = await fetch('/.netlify/functions/tts-azure', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({ text, lang: langCode, speed: _readSpeed })
+    });
+    if(!resp.ok){ console.warn('Azure TTS proxy error', resp.status); return null; }
+    const data = await resp.json();
+    if(!data.audio_base64) return null;
+    const binary = atob(data.audio_base64);
+    const bytes  = new Uint8Array(binary.length);
+    for(let i=0;i<binary.length;i++) bytes[i]=binary.charCodeAt(i);
+    const url = URL.createObjectURL(new Blob([bytes], {type:'audio/mpeg'}));
+    const result = { url, alignment: null };
+    _elAudioCache.set(cacheKey, result);
+    return result;
+  } catch(err){ console.warn('Azure TTS fetch failed:', err); return null; }
+}
+
+// Even-spread word highlighting for audio without alignment data (Azure):
+// distributes the page's words evenly across the audio duration.
+function _evenSpreadHighlights(el){
+  _elClearHighlightTimers();
+  const spans=_ttsWordSpans;
+  if(!spans.length) return;
+  const run=()=>{
+    if(!el.duration || !isFinite(el.duration)) return;
+    const per=Math.max(120,(el.duration*1000-400)/spans.length);
+    spans.forEach((sp,i)=>{
+      const t=setTimeout(()=>{
+        if(el.paused) return;
+        spans.forEach(s=>s.classList.remove('lit'));
+        sp.classList.add('lit');
+        sp.scrollIntoView({block:'nearest',behavior:'smooth'});
+      }, 200+i*per);
+      _elWordTimers.push(t);
+    });
+    const clearT=setTimeout(()=>spans.forEach(s=>s.classList.remove('lit')), el.duration*1000+400);
+    _elWordTimers.push(clearT);
+  };
+  if(el.duration && isFinite(el.duration)) run();
+  else el.addEventListener('loadedmetadata', run, { once:true });
+}
+
 // ── Background prefetch of the next page's audio (fills _elAudioCache) ──────
 function _elPrefetchNext(){
   try{
@@ -4747,7 +4799,10 @@ function _elPrefetchNext(){
       ? ((activeLang==='all'||activeLang==='English') ? b.lang : activeLang)
       : 'English';
     const txt=_getPageText(np, displayLang);
-    if(txt) _elFetch(txt, _elSelectedVoice); // result lands in the cache
+    if(!txt) return;
+    const azCode = AZURE_LANGS[displayLang];
+    if(azCode) _azureFetch(txt, azCode);       // result lands in the cache
+    else _elFetch(txt, _elSelectedVoice);
   }catch(e){}
 }
 
@@ -4816,12 +4871,24 @@ async function _startELAudio(b, text, mySession){
   const pb = document.getElementById('playBtn');
   if(pb) pb.textContent = '⏳';
 
-  const result = await _elFetch(text, _elSelectedVoice);
+  // Route by reading language: Amharic/Somali → Azure, everything else → ElevenLabs
+  const _azCode = AZURE_LANGS[_voiceLang()];
+  const result = _azCode
+    ? await _azureFetch(text, _azCode)
+    : await _elFetch(text, _elSelectedVoice);
 
   // Session guard: if stopAudio() was called while we were fetching, bail out
   if(mySession !== _ttsSessionId){ if(pb) pb.textContent='▶'; return true; }
 
   if(!result){
+    if(_azCode){
+      // Never let an English browser voice mangle Amharic/Somali text
+      showToast('🎙️ '+(LANG_DISPLAY[_voiceLang()]||_voiceLang())+' voice is unavailable right now — try again soon');
+      if(pb) pb.textContent='▶';
+      autoReadMode=false;
+      if(typeof _updateAutoReadBtn==='function') _updateAutoReadBtn();
+      return true; // handled — do NOT fall back to Web Speech
+    }
     showToast('⚠️ ElevenLabs unavailable — using browser voice');
     if(pb) pb.textContent='▶';
     return false; // fall through to Web Speech
@@ -4857,8 +4924,9 @@ async function _startELAudio(b, text, mySession){
       const secs=Math.floor(el.currentTime);
       document.getElementById('audioTime').textContent=`${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`;
     },100);
-    // Schedule word highlights using alignment data
-    _elScheduleHighlights(result.alignment, el);
+    // Schedule word highlights: exact alignment (ElevenLabs) or even spread (Azure)
+    if(result.alignment) _elScheduleHighlights(result.alignment, el);
+    else _evenSpreadHighlights(el);
   };
   el.onended=()=>{
     _elClearHighlightTimers();
@@ -6648,6 +6716,12 @@ async function _gameSpeak(text){
   }
   try{ if(_gameAudio){ _gameAudio.pause(); _gameAudio=null; } }catch(e){}
   try{
+    const _azc = (typeof AZURE_LANGS!=='undefined') ? AZURE_LANGS[_gl] : null;
+    if(_azc && typeof _azureFetch==='function'){
+      const res=await _azureFetch(text,_azc);
+      if(res&&res.url){ _gameAudio=new Audio(res.url); _gameAudio.play().catch(()=>{}); }
+      return; // never speak Amharic/Somali with an English voice
+    }
     if(typeof _elFetch==='function'){
       const res=await _elFetch(text,_elSelectedVoice);
       if(res&&res.url){ _gameAudio=new Audio(res.url); _gameAudio.play().catch(()=>{}); return; }
