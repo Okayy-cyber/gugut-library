@@ -3250,6 +3250,26 @@ let _audioEl=null, _audioFlipInterval=null;
 const LANG_TTS={'English':'en-US','Amharic':'am-ET','Tigrinya':'ti-ET','Oromiffa':'om','Somali':'so-SO','Wolaytta':'wal'};
 // Short key used in page.translations objects
 const LANG_KEY={'English':'en','Amharic':'am','Tigrinya':'ti','Oromiffa':'om','Somali':'so','Wolaytta':'wal','all':'en'};
+// ── Read-aloud voice availability ─────────────────────────────────────────────
+// ElevenLabs (and browser voices) can't yet speak Amharic/Afaan Oromoo/Tigrinya/
+// Somali/Wolaytta properly, so read-aloud is gated to English until per-language
+// voices ship (Azure has am+so; MMS or human recordings for the rest).
+// Flip a language to true here the moment its voice pipeline is ready.
+const VOICE_READY={'English':true,'Amharic':false,'Oromiffa':false,'Tigrinya':false,'Somali':false,'Wolaytta':false};
+// User-facing display names (self-designations) for toasts/badges
+const LANG_DISPLAY={'English':'English','Amharic':'አማርኛ','Oromiffa':'Afaan Oromoo','Tigrinya':'ትግርኛ','Somali':'Soomaali','Wolaytta':'Wolayttattuwa'};
+// Which language would the reader SPEAK right now?
+function _voiceLang(){
+  if(readerDisplayLang!=='local') return 'English';
+  const b=books.find(bk=>bk.id===currentBookId);
+  if(activeLang!=='all'&&activeLang!=='English') return activeLang;
+  return (b&&b.lang)||'Amharic';
+}
+function _voiceReady(){ return !!VOICE_READY[_voiceLang()]; }
+function _voiceComingSoonToast(){
+  const name=LANG_DISPLAY[_voiceLang()]||_voiceLang();
+  showToast('🎙️ '+name+' voice is coming soon! For now, read together out loud 📖');
+}
 
 // Return the right text for a page given the current reading language
 function _getPageText(pg, lang){
@@ -4718,6 +4738,7 @@ async function _elFetch(text, voiceId){
 // ── Background prefetch of the next page's audio (fills _elAudioCache) ──────
 function _elPrefetchNext(){
   try{
+    if(!_voiceReady()) return; // don't spend ElevenLabs credits on gated languages
     const b=books.find(bk=>bk.id===currentBookId);
     if(!b || b.audio_url || b.pdf_url || !b.pages) return;
     const np=b.pages[currentPage+1];
@@ -4857,6 +4878,14 @@ async function startAudio(){
   stopAudio();
   const b=books.find(bk=>bk.id===currentBookId);
   if(!b) return;
+
+  // ── Voice gate: no proper TTS for this reading language yet ──
+  if(!_voiceReady() && !b.audio_url){
+    autoReadMode=false;
+    if(typeof _updateAutoReadBtn==='function') _updateAutoReadBtn();
+    _voiceComingSoonToast();
+    return;
+  }
 
   // ── Use pre-recorded audio if the book has one ──
   if(b.audio_url){
@@ -5207,15 +5236,22 @@ function toggleReaderLang(){
   const b = books.find(bk=>bk.id===currentBookId);
   if(!b) return;
   const langBtn = document.getElementById('langToggleBtn');
+  const _wasNarrating = ttsPlaying || autoReadMode;
   if(readerDisplayLang==='text'){
     readerDisplayLang='local';
-    showToast('📖 '+b.lang);
+    showToast('📖 '+(LANG_DISPLAY[activeLang!=='all'&&activeLang!=='English'?activeLang:b.lang]||b.lang));
   } else {
     readerDisplayLang='text';
     showToast('📖 English');
   }
   _updateLangBtn(langBtn, b);
   stopAudio();
+  // If narration was on and the new language has no voice yet, tell the reader why it stopped
+  if(_wasNarrating && !_voiceReady()){
+    autoReadMode=false;
+    if(typeof _updateAutoReadBtn==='function') _updateAutoReadBtn();
+    setTimeout(_voiceComingSoonToast, 900);
+  }
   _illUpdateOverlay(currentPage);
 }
 
@@ -6600,6 +6636,16 @@ function _worldGamesOpen(cat){return _worldDone(cat)>=1;}
 let _gameAudio=null;
 async function _gameSpeak(text){
   if(!text) return;
+  // Voice gate: game labels are shown in the selected READ-IN language —
+  // skip speaking when that language has no proper voice yet.
+  const _gl=(activeLang==='all'||activeLang==='English')?'English':activeLang;
+  if(typeof VOICE_READY!=='undefined' && !VOICE_READY[_gl]){
+    if(!window._gameVoiceToastShown){
+      window._gameVoiceToastShown=true;
+      showToast('🎙️ '+(LANG_DISPLAY[_gl]||_gl)+' voice is coming soon!');
+    }
+    return;
+  }
   try{ if(_gameAudio){ _gameAudio.pause(); _gameAudio=null; } }catch(e){}
   try{
     if(typeof _elFetch==='function'){
@@ -7507,6 +7553,25 @@ function _showReadModePicker(b){
   const titleEl = document.getElementById('rmpBookTitle');
   if(!picker) return;
   if(titleEl) titleEl.textContent = b.title || '';
+  // Voice gate: badge "Read to Me" when the reading language has no voice yet
+  const listenBtn = picker.querySelector('.rmp-btn.listen');
+  if(listenBtn){
+    let badge = listenBtn.querySelector('.rmp-soon');
+    const gated = (typeof _voiceReady==='function') && !_voiceReady() && !b.audio_url;
+    if(gated){
+      if(!badge){
+        badge = document.createElement('span');
+        badge.className = 'rmp-soon';
+        badge.style.cssText = 'display:block;font-size:10px;font-weight:700;color:var(--amber,#D4A017);margin-top:3px;';
+        listenBtn.appendChild(badge);
+      }
+      badge.textContent = '🎙️ ' + ((LANG_DISPLAY&&LANG_DISPLAY[_voiceLang()])||'') + ' voice coming soon';
+      listenBtn.style.opacity = '.65';
+    } else {
+      if(badge) badge.remove();
+      listenBtn.style.opacity = '';
+    }
+  }
   picker.classList.add('open');
   _rmpShown = true;
 }
