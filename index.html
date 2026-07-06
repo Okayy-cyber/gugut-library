@@ -6,7 +6,7 @@
 <title>Gugut Library</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦉</text></svg>">
 <meta name="theme-color" content="#142B1A">
-<meta name="description" content="Gugut Library by Savannah Printing Press — multilingual children's books in Amharic, Oromiffa, Tigrinya, Somali &amp; Wolaytta. From the makers of Felek notebooks (myfelek.com).">
+<meta name="description" content="Gugut Library by Savannah Printing Press — multilingual children's books in Amharic, Afaan Oromoo, Tigrinya, Somali &amp; Wolaytta. From the makers of Felek notebooks (myfelek.com).">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+Ethiopic:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -1263,7 +1263,7 @@ if(location.protocol === 'file:') {
       <ul class="sub-features">
         <li>All 29 illustrated books across all 5 worlds, new titles added regularly</li>
         <li>Read-aloud with word-by-word highlighting</li>
-        <li>Read in 6 languages — English, አማርኛ, Oromiffa &amp; more</li>
+        <li>Read in 6 languages — English, አማርኛ, Afaan Oromoo &amp; more</li>
         <li>Reading streaks, quizzes &amp; progress tracking</li>
         <li>Light on mobile data — small, fast-loading pages</li>
       </ul>
@@ -1320,7 +1320,7 @@ if(location.protocol === 'file:') {
       <button class="pill active" data-lang="all" onclick="setLang(this,'all')" title="Show all books">All</button>
       <button class="pill" data-lang="English" onclick="setLang(this,'English')" title="Read all books in English">English</button>
       <button class="pill" data-lang="Amharic" onclick="setLang(this,'Amharic')" title="Read all books in Amharic · ሁሉንም መጻሕፍት በአማርኛ አንብብ">አማርኛ</button>
-      <button class="pill" data-lang="Oromiffa" onclick="setLang(this,'Oromiffa')" title="Read all books in Oromiffa">Oromiffa</button>
+      <button class="pill" data-lang="Oromiffa" onclick="setLang(this,'Oromiffa')" title="Read all books in Afaan Oromoo · Kitaabota hunda Afaan Oromoon dubbisi">Afaan Oromoo</button>
       <button class="pill" data-lang="Tigrinya" onclick="setLang(this,'Tigrinya')" title="Read all books in Tigrinya · ሁሎም መጻሕፍቲ ብትግርኛ ኣንብብ">ትግርኛ</button>
       <button class="pill" data-lang="Somali" onclick="setLang(this,'Somali')" title="Read all books in Somali">Soomaali</button>
       <button class="pill" data-lang="Wolaytta" onclick="setLang(this,'Wolaytta')" title="Read all books in Wolaytta">Wolaytta</button>
@@ -1408,7 +1408,7 @@ if(location.protocol === 'file:') {
             <div class="ana-bar"><div class="ana-fill" style="width:48%"></div></div>
           </div>
           <div class="ana-bar-row">
-            <div class="ana-label"><span>Oromiffa</span><span>28%</span></div>
+            <div class="ana-label"><span>Afaan Oromoo</span><span>28%</span></div>
             <div class="ana-bar"><div class="ana-fill" style="width:28%"></div></div>
           </div>
           <div class="ana-bar-row">
@@ -1860,7 +1860,7 @@ if(location.protocol === 'file:') {
       <div class="ff full"><label>Title in Local Language</label><input type="text" id="uploadLocalTitle" placeholder="e.g. ሊያ እና ዝናቡ"/></div>
       <div class="ff"><label>Language</label>
         <select id="uploadLang">
-          <option value="Amharic">Amharic</option><option value="Oromiffa">Oromiffa</option><option value="Tigrinya">Tigrinya</option><option value="Somali">Somali</option><option value="Wolaytta">Wolaytta</option>
+          <option value="Amharic">Amharic</option><option value="Oromiffa">Afaan Oromoo</option><option value="Tigrinya">Tigrinya</option><option value="Somali">Somali</option><option value="Wolaytta">Wolaytta</option>
         </select>
       </div>
       <div class="ff"><label>Age Band</label>
@@ -1982,7 +1982,7 @@ if(location.protocol === 'file:') {
     </div>
 
     <div style="font-size:12.5px;color:var(--text-mid);line-height:1.55;margin-bottom:16px;">
-      We align with the Ethiopian government's growing priority on early-grade reading, and we extend our Montessori work into a library children can actually take home — in Amharic, Tigrinya, Oromiffa, Somali, Wolaytta, and English.
+      We align with the Ethiopian government's growing priority on early-grade reading, and we extend our Montessori work into a library children can actually take home — in Amharic, Tigrinya, Afaan Oromoo, Somali, Wolaytta, and English.
     </div>
 
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
@@ -3308,7 +3308,7 @@ function renderLibrary(){
   const LANG_LABEL={
     English:{flag:'🇬🇧', note:'Reading in English'},
     Amharic:{flag:'🇪🇹', note:'ሁሉም መጻሕፍት — በአማርኛ ያንብቡ · Reading in Amharic'},
-    Oromiffa:{flag:'🇪🇹', note:'Kitaabota hunda — Afaan Oromoon dubbisi · Reading in Oromiffa'},
+    Oromiffa:{flag:'🇪🇹', note:'Kitaabota hunda — Afaan Oromoon dubbisi · Reading in Afaan Oromoo'},
     Tigrinya:{flag:'🇪🇹', note:'ሁሎም መጻሕፍቲ — ብትግርኛ ኣንብቡ · Reading in Tigrinya'},
     Somali:{flag:'🇸🇴', note:'Dhammaan buugaagta — Af Soomaali ku akhri · Reading in Somali'},
     Wolaytta:{flag:'🇪🇹', note:'Buqqissa mariyaappe - Wolayttattan nabbaba · Reading in Wolaytta'},
