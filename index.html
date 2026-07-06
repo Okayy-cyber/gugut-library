@@ -504,9 +504,10 @@ body.night .tag-lang{background:#2a2030;color:#CE93D8;}
 .audio-progress{flex:1;height:4px;background:rgba(255,255,255,.2);border-radius:4px;cursor:pointer;position:relative;}
 .audio-fill{height:100%;background:var(--amber);border-radius:4px;width:0%;transition:width .2s;}
 .audio-time{font-size:11px;color:rgba(255,255,255,.5);flex-shrink:0;min-width:60px;text-align:right;}
-.speed-btn{font-size:11px;font-weight:700;color:rgba(255,255,255,.7);background:rgba(255,255,255,.12);border:1px solid transparent;border-radius:12px;padding:4px 9px;cursor:pointer;transition:background .15s,border-color .15s,color .15s;}
+.speed-group{display:flex;gap:3px;flex-shrink:0;background:rgba(255,255,255,.08);border-radius:14px;padding:2px;}
+.speed-btn{font-size:11px;font-weight:700;color:rgba(255,255,255,.7);background:transparent;border:1px solid transparent;border-radius:12px;padding:4px 8px;cursor:pointer;transition:background .15s,border-color .15s,color .15s;}
 .speed-btn:hover{background:rgba(255,255,255,.2);}
-.speed-btn.speed-active{background:rgba(245,192,32,.18);border-color:rgba(245,192,32,.6);color:var(--amber);}
+.speed-btn.speed-active{background:rgba(245,192,32,.22);border-color:rgba(245,192,32,.6);color:var(--amber);}
 /* Auto-read button states */
 #autoReadBtn{font-size:11px;font-weight:800;background:var(--amber);color:var(--green-dark);border:none;border-radius:14px;padding:5px 11px;cursor:pointer;white-space:nowrap;transition:background .2s,transform .15s;}
 #autoReadBtn:hover{filter:brightness(1.08);}
@@ -1777,7 +1778,11 @@ if(location.protocol === 'file:') {
       <div class="audio-fill" id="audioFill"></div>
     </div>
     <span class="audio-time" id="audioTime">0:00</span>
-    <button class="speed-btn" onclick="cycleSpeed()">1×</button>
+    <div class="speed-group" id="speedGroup" title="Reading speed">
+      <button class="speed-btn" data-sp="0.8" onclick="setReadSpeed(0.8)" title="Slow — best for the youngest">🐢</button>
+      <button class="speed-btn" data-sp="0.9" onclick="setReadSpeed(0.9)" title="Normal — gentle pace for ages 3–6">Normal</button>
+      <button class="speed-btn" data-sp="1.1" onclick="setReadSpeed(1.1)" title="Fast">🐇</button>
+    </div>
     <button id="autoReadBtn" onclick="toggleAutoRead()" title="Read whole book aloud (reads every page automatically)">📖 Read Book</button>
   </div>
 
@@ -3639,6 +3644,7 @@ function openReader(id){
     const audioBar=document.querySelector('.audio-bar');
     if(readerNav) readerNav.style.display='';
     if(audioBar) audioBar.style.display='';
+    _syncSpeedButtons();
     document.getElementById('pfWrap').style.display='flex';
     // Show loading spinner — recreate pfBook if StPageFlip.destroy() ever removed it
     let _pfBook = document.getElementById('pfBook');
@@ -4441,8 +4447,24 @@ function changePage(dir){
 // AUDIO (Web Speech API TTS)
 // ═══════════════════════════════════
 let speechRate=1;
-const speeds=[0.75,1,1.25,1.5];
-let speedIdx=1;
+// Reading speed (ages 3–6 default is a gentle 0.9×). Drives ElevenLabs' native
+// `speed` setting (keeps word-highlight sync automatic), plus the browser-voice
+// and recorded-audio fallbacks. Persisted so a class/family keeps its choice.
+const READ_SPEEDS=[{v:0.8,label:'🐢 Slow'},{v:0.9,label:'Normal'},{v:1.1,label:'Fast 🐇'}];
+let _readSpeed=parseFloat(localStorage.getItem('gugut_read_speed'));
+if(!(_readSpeed>=0.5&&_readSpeed<=1.5)) _readSpeed=0.9;
+function _syncSpeedButtons(){
+  document.querySelectorAll('#speedGroup .speed-btn').forEach(b=>{
+    b.classList.toggle('speed-active', parseFloat(b.dataset.sp)===_readSpeed);
+  });
+}
+function setReadSpeed(v){
+  _readSpeed=v;
+  try{ localStorage.setItem('gugut_read_speed', String(v)); }catch(e){}
+  _syncSpeedButtons();
+  // Restart narration so the new pace applies (ElevenLabs must regenerate).
+  if(ttsPlaying){ startAudio(); }
+}
 
 function getPageText(){
   const b=books.find(bk=>bk.id===currentBookId);
@@ -4662,7 +4684,7 @@ document.getElementById('elModal').addEventListener('click', function(e){
 // POSTs to /.netlify/functions/tts — the ElevenLabs key stays on the server.
 // Returns { url: objectURL, alignment } or null on failure.
 async function _elFetch(text, voiceId){
-  const cacheKey = `${voiceId}::${text}`;
+  const cacheKey = `${voiceId}::${_readSpeed}::${text}`;
   if(_elAudioCache.has(cacheKey)) return _elAudioCache.get(cacheKey);
   try {
     const resp = await fetch(
@@ -4674,7 +4696,7 @@ async function _elFetch(text, voiceId){
           text,
           voice_id: voiceId,
           model_id: EL_MODEL,
-          voice_settings:{ stability:0.50, similarity_boost:0.78, style:0.28, use_speaker_boost:true }
+          voice_settings:{ stability:0.50, similarity_boost:0.78, style:0.28, use_speaker_boost:true, speed:_readSpeed }
         })
       }
     );
@@ -4791,6 +4813,9 @@ async function _startELAudio(b, text, mySession){
   // Hand off to the existing _audioEl pipeline
   const el = _getAudioEl();
   el.src = result.url;
+  // ElevenLabs already generated the audio at _readSpeed, and the alignment
+  // times match it — so play at 1× and the highlight scheduler stays in sync.
+  el.playbackRate = 1;
   el.load();
 
   const _myAudioSession = ++_ttsSessionId;
@@ -4882,7 +4907,7 @@ async function startAudio(){
   ttsUtterance=new SpeechSynthesisUtterance(text);
   // Rate: read at 88% of the user-selected speed for a warmer, more deliberate pace.
   // Children's audiobooks typically read at 130–160 WPM — about 0.85× of the browser default.
-  ttsUtterance.rate = speeds[speedIdx] * 0.88;
+  ttsUtterance.rate = _readSpeed;
   // Pitch 1.0 = neutral baseline; sounds warmer and less robotic than the slightly-raised 1.05.
   ttsUtterance.pitch = 1.0;
   ttsUtterance.lang=ttsLang;
@@ -4899,7 +4924,7 @@ async function startAudio(){
     const hBtn=document.getElementById('audioHeaderBtn');
     if(hBtn){hBtn.textContent='⏸';hBtn.classList.add('playing');}
     let elapsed=0;
-    const _actualRate = speeds[speedIdx] * 0.88; // matches ttsUtterance.rate
+    const _actualRate = _readSpeed; // matches ttsUtterance.rate
     const estimated=text.length*60/_actualRate;
     clearInterval(audioInterval);
     audioInterval=setInterval(()=>{
@@ -4925,7 +4950,7 @@ async function startAudio(){
         _ttsWordSpans.forEach(s=>s.classList.remove('lit'));
         span.classList.add('lit');
         span.scrollIntoView({block:'nearest',behavior:'smooth'});
-        _startWordHighlightTimer(speeds[speedIdx] * 0.88, idx+1);
+        _startWordHighlightTimer(_readSpeed, idx+1);
       }
     }
   };
@@ -4959,7 +4984,8 @@ async function startAudio(){
 function _startRecordedAudio(b){
   const el=_getAudioEl();
   el.src=b.audio_url;
-  el.playbackRate=speeds[speedIdx];
+  el.playbackRate=_readSpeed;
+  try{ el.preservesPitch=true; el.mozPreservesPitch=true; el.webkitPreservesPitch=true; }catch(e){}
   el.load();
 
   const _myAudioSession = ++_ttsSessionId; // guard stale onplay callbacks
@@ -5116,24 +5142,7 @@ function scrubAudio(e){
   }
 }
 
-function cycleSpeed(){
-  speedIdx=(speedIdx+1)%speeds.length;
-  const labels=['¾×','1×','1¼×','1½×'];
-  const btn=document.querySelector('.speed-btn');
-  if(btn){
-    btn.textContent=labels[speedIdx];
-    // Highlight when not at default 1× speed so user knows it's changed
-    btn.classList.toggle('speed-active', speedIdx !== 1);
-    btn.title = speedIdx===1 ? 'Reading speed: normal' : 'Reading speed: '+labels[speedIdx];
-  }
-  if(ttsPlaying){
-    if(_audioEl && _audioEl.src && !_audioEl.paused){
-      _audioEl.playbackRate=speeds[speedIdx]; // update live without restarting
-    } else {
-      startAudio(); // restart TTS at new speed
-    }
-  }
-}
+// (Reading speed is handled by setReadSpeed / the Slow·Normal·Fast buttons above.)
 
 // ═══════════════════════════════════
 // ILLUSTRATED BOOK TEXT OVERLAY
